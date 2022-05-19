@@ -30,7 +30,7 @@
           label="quantity"
           outlined
           bottom-slots
-          placeholder="eos amount"
+          placeholder="XPR amount"
           no-error-icon
           :rules="[
             (val) => !!val || '* Required',
@@ -167,7 +167,7 @@ export default defineComponent({
       is_recurrent_payment: false,
       formIsValidated: false,
       token_contract: "eosio.token",
-      symbol: "EOS",
+      symbol: "XPR",
       recurrence_delay: { label: "monthly", value: 60 * 60 * 24 * 30 },
       recurrence_delay_options: time_options.options,
       action: {

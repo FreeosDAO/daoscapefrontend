@@ -14,6 +14,21 @@
             "url": "https://telos.api.animus.is"
         }
     },
+    "protontest":{
+        "groups_contract": "fdacdaohub1",
+        "system_token": {
+          "contract": "eosio.token",
+          "symbol": "XPR",
+          "precision": 4
+        },
+        "social":{
+          "github": "https://github.com/Animus-Labs-Ltd/daclifyfrontend",
+          "telegram": "https://t.me/Boidcom_official"
+        },
+        "api":{
+          "url": "https://api.testnet.telosunlimited.io"
+        }
+       },
     "telosTest":{
         "groups_contract": "daclifyhub11",
         "system_token": {

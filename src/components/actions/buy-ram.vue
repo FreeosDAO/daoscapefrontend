@@ -15,7 +15,7 @@
       label="quantity"
       outlined
       bottom-slots
-      placeholder="eos amount"
+      placeholder="xpr amount"
       no-error-icon
       :rules="[
         (val) => !!val || '* Required',
@@ -58,7 +58,7 @@ export default defineComponent({
     return {
       formIsValidated: false,
       token_contract: "eosio.token",
-      symbol: "EOS",
+      symbol: "XPR",
       action: {
         account: "eosio",
         name: "buyram",

@@ -56,7 +56,7 @@
             label="RAM"
             outlined
             bottom-slots
-            placeholder="eos amount"
+            placeholder="XPR amount"
             no-error-icon
             :rules="[
               (val) => !!val || '* Required',
@@ -77,7 +77,7 @@
             label="NET"
             outlined
             bottom-slots
-            placeholder="eos amount"
+            placeholder="XPR amount"
             no-error-icon
             :rules="[
               (val) => !!val || '* Required',
@@ -98,7 +98,7 @@
             label="CPU"
             outlined
             bottom-slots
-            placeholder="eos amount"
+            placeholder="XPR amount"
             no-error-icon
             :rules="[
               (val) => !!val || '* Required',
@@ -310,7 +310,7 @@ export default defineComponent({
       //   data: {
       //     from: "piecesnbitss",
       //     to: "%accountname%",
-      //     quantity: "10.0000 EOS",
+      //     quantity: "10.0000 XPR",
       //     memo: "money for food"
       //   }
       // }

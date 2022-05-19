@@ -391,7 +391,7 @@ export default defineComponent({
       }
     },
     openHubWallet() {
-      let msg = `You don't have enough EOS/TLOS/WAX deposits to pay for RAM. Daclify calculated you need a minimum of ${this.getResourceEstimation} to deploy the daclify core contract. Excess deposits will be used to buy extra RAM. Daclify takes no fees.`;
+      let msg = `You don't have enough XPR deposits to pay for RAM. Daclify calculated you need a minimum of ${this.getResourceEstimation} to deploy the daclify core contract. Excess deposits will be used to buy extra RAM. Daclify takes no fees.`;
       this.emitter.emit("showHubDeposits", msg);
     },
     async next(resume_account_name = "") {

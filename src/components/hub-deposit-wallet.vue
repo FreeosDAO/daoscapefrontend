@@ -46,7 +46,7 @@
       bottom-slots
       dense
     >
-      <template v-slot:append> EOS/TLOS/WAX </template>
+      <template v-slot:append> XPR </template>
     </q-input>
 
     <div class="row justify-between q-mt-md">
@@ -101,7 +101,7 @@ export default defineComponent({
   data() {
     return {
       active_tab: "deposit",
-      transfer_asset: { contract: "eosio.token", quantity: "1.0000 EOS" },
+      transfer_asset: { contract: "eosio.token", quantity: "1.0000 XPR" },
       input_value: "",
       is_transfering: false,
       is_withdrawing: false,

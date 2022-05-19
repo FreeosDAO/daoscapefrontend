@@ -17,7 +17,7 @@ export default {
     network: null
   },
 
-  activeNetwork: "mainnet",
+  // activeNetwork: "mainnet",
 
   networks: {
     mainnet: {
@@ -43,6 +43,34 @@ export default {
           {
             protocol: "https",
             host: "api.eostitan.com",
+            port: "443"
+          }
+        ]
+      }
+    },
+    protontest: { // network added by Andrew
+      config: {
+        chainId:
+          "71ee83bcf52142d61019d95f9cc5427ba6a0d7ff8accd9e2088ae2abeaf3d3dd",
+        rpcEndpoints: [
+          {
+            protocol: "https",
+            host: "protontestnet.greymass.com",
+            port: "443"
+          },
+          {
+            protocol: "https",
+            host: "api.protontest.alohaeos.com",
+            port: "443"
+          },
+          {
+            protocol: "https",
+            host: "testnet.proton.pink.gg",
+            port: "443"
+          },
+          {
+            protocol: "https",
+            host: "proton-testnet.eosvenezuela.io",
             port: "443"
           }
         ]

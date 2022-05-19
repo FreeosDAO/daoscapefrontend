@@ -37,11 +37,11 @@
               :label-always="false"
               :label="false"
               label-color="primary"
-              :label-value="clap_amount / 10000 + ' EOS/TLOS/WAX'"
+              :label-value="clap_amount / 10000 + ' XPR/TLOS/WAX'"
               color="primary"
             />
             <q-input :value="clap_amount / 10000" outlined dense :readonly="true">
-              <template v-slot:append> EOS/TLOS </template>
+              <template v-slot:append> XPR </template>
             </q-input>
             <q-btn
               label="clap"
@@ -110,7 +110,7 @@ export default defineComponent({
         data: {
           from: this.getAccountName,
           to: this.getAppConfig.groups_contract,
-          quantity: `${(this.clap_amount / 10000).toFixed(4)} EOS/TLOS`,
+          quantity: `${(this.clap_amount / 10000).toFixed(4)} XPR`,
           memo: `clap for group: ${this.getActiveGroup}`,
         },
       };
