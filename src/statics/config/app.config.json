@@ -15,7 +15,7 @@
         }
     },
     "protontest":{
-        "groups_contract": "fdacdaohub1",
+        "groups_contract": "fdacdaohub2",
         "system_token": {
           "contract": "eosio.token",
           "symbol": "XPR",
