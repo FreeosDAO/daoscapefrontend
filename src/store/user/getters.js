@@ -17,7 +17,7 @@ export function getResourceWarningLevels(state){
 }
 
 export function getSelectedBlockExplorer(state, getters, rootState, rootGetters){
-  return state.selectedBlockExplorer[rootGetters["ual/getActiveNetwork"] ];
+  return state.selectedBlockExplorer[rootGetters["proton/getActiveNetwork"] ];
 }
 
 export function getMinifyGuardians(state){

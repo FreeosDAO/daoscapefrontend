@@ -56,7 +56,7 @@
             label="RAM"
             outlined
             bottom-slots
-            placeholder="XPR amount"
+            placeholder="eos amount"
             no-error-icon
             :rules="[
               (val) => !!val || '* Required',
@@ -77,7 +77,7 @@
             label="NET"
             outlined
             bottom-slots
-            placeholder="XPR amount"
+            placeholder="eos amount"
             no-error-icon
             :rules="[
               (val) => !!val || '* Required',
@@ -98,7 +98,7 @@
             label="CPU"
             outlined
             bottom-slots
-            placeholder="XPR amount"
+            placeholder="eos amount"
             no-error-icon
             :rules="[
               (val) => !!val || '* Required',
@@ -193,7 +193,7 @@ export default defineComponent({
   name: "newAccount",
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getActiveGroup: "group/getActiveGroup",
       getAppConfig: "app/getAppConfig",
       getSelectedBlockExplorer: "user/getSelectedBlockExplorer",
@@ -310,7 +310,7 @@ export default defineComponent({
       //   data: {
       //     from: "piecesnbitss",
       //     to: "%accountname%",
-      //     quantity: "10.0000 XPR",
+      //     quantity: "10.0000 EOS",
       //     memo: "money for food"
       //   }
       // }
@@ -335,7 +335,7 @@ export default defineComponent({
         actions.push(delegatebw);
       }
 
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: actions,
         disable_signing_overlay: true,
       });

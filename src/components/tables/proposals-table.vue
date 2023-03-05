@@ -159,7 +159,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
     }),
   },
   methods: {
@@ -174,7 +174,7 @@ export default defineComponent({
           },
         },
       ];
-      let res = await this.$store.dispatch("ual/transact", { actions: actions });
+      let res = await this.$store.dispatch("proton/transact", { actions: actions });
       if (res) {
         this.$emit("executed");
         this.data = this.data.filter((d) => d.id != id);

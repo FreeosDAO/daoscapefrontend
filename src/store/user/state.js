@@ -32,6 +32,16 @@ export default {
       base: 'https://telos.bloks.io/',
       trx: 'transaction/',
       account: 'account/'
+    },
+    proton:{
+      base: 'https://protonscan.io/',
+      trx: 'transaction/',
+      account: 'account/'
+    },
+    protonTest:{
+      base: 'https://testnet.protonscan.io/',
+      trx: 'transaction/',
+      account: 'account/'
     }
 
   },

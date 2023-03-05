@@ -77,7 +77,7 @@ export async function fetchUserVotes ({ commit, getters, rootGetters }, payload)
   });
   if (res && res.rows[0] && res.rows[0].voter == payload.voter) {
     console.log(`fetched votes from ${payload.voter}`, res.rows[0]);
-    if (rootGetters["ual/getAccountName"] == payload.voter) {
+    if (rootGetters["proton/getAccountName"] == payload.voter) {
       commit('setUserVotes', res.rows[0]);
     }
     return res.rows[0]
@@ -90,7 +90,7 @@ export async function fetchUserVotes ({ commit, getters, rootGetters }, payload)
 export async function fetchUserStakes ({ commit, getters, rootGetters }, payload) {
   //fetch by decreasing votes
   let contract = payload.electionsContract || getters.getElectionsContract;
-  let user = payload.user || rootGetters["ual/getAccountName"];
+  let user = payload.user || rootGetters["proton/getAccountName"];
   let res = await payload.vm.$eos.api.rpc.get_table_rows({
     json: true,
     code: contract,
@@ -109,7 +109,7 @@ export async function fetchUserStakes ({ commit, getters, rootGetters }, payload
       return r;
     })
     console.log(`fetched stakes from ${user}`, res.rows);
-    if (user == rootGetters["ual/getAccountName"]) {
+    if (user == rootGetters["proton/getAccountName"]) {
       commit('setUserStakes', r);
     }
     return r;

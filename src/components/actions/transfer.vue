@@ -140,12 +140,17 @@
         />
         <div class="row justify-end">
           <div style="height: 40px">
-            <propose-bucket-btn
+            <!--<propose-bucket-btn
               @click-propose="emitPropose"
               @click-bucket="emitBucket"
               label="transfer"
               :disabled="!to_input_validated || !quantity_input_validated"
-            />
+            />-->
+            <q-btn
+              color="primary"
+              :disable="!to_input_validated || !quantity_input_validated"
+              @click="emitBucket"
+            >Add To Bucket</q-btn>
           </div>
         </div>
       </div>
@@ -197,7 +202,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getGroupWallet: "group/getGroupWallet",
       getActiveGroup: "group/getActiveGroup",
       getThresholdLinks: "group/getThresholdLinks",

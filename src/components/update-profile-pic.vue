@@ -56,7 +56,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       getAvatar: "group/getAvatar",
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getActiveGroup: "group/getActiveGroup",
     }),
     new_avatar_is_valid() {
@@ -90,7 +90,7 @@ export default defineComponent({
           img_url: this.new_avatar,
         },
       };
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: [action],
         disable_signing_overlay: true,
       });

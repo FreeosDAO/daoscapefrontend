@@ -12,64 +12,73 @@
       <div class="col-xs-12" key="header_info">
         <q-card class="relative-position">
           <q-card-section>
-            <update-logo :show_edit="allowed_to_edit" class="q-mb-md" />
 
             <div class="row justify-between">
-              <q-item class="no-padding q-mr-sm">
-                <q-item-section>
-                  <q-item-label>Group Account</q-item-label>
-                  <q-item-label caption>
-                    <explorer-link :accountname="getActiveGroupConfig.groupname" />
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item class="no-padding">
-                <q-item-section>
-                  <q-item-label>
-                    <group-tags
-                      :tags="getActiveGroupConfig.tags"
-                      content-class="bg-primary text-white"
-                    />
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
+              <div class="col-xs-12 col-md-4 q-col-gutter-md">
+                <update-logo :show_edit="allowed_to_edit" class="q-mb-md" />
+              </div>
+
+              <div class="col-xs-12 col-md-8 q-col-gutter-md">
+                <div class="row justify-between">
+                  <q-item class="no-padding q-mr-sm">
+                    <q-item-section>
+                      <q-item-label>Group Account</q-item-label>
+                      <q-item-label class="text-h4">{{getActiveGroupConfig.groupname}}</q-item-label>
+                      <q-item-label caption>
+                        <explorer-link :accountname="getActiveGroupConfig.groupname" accountnameText="View on explorer" />
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item>
+                    <q-item-section>
+                      <q-item-label caption class="text-right">Created</q-item-label>
+                      <q-item-label
+                        ><date-string :date="getActiveGroupConfig.creation_date"
+                      /></q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </div>
+                
+                <div class="q-mt-md">
+                  <div>About</div>
+                  <q-markdown
+                    class="text-caption text-weight-light"
+                    :src="getActiveGroupConfig.meta.about"
+                    :no-abbreviation="false"
+                  >
+                  </q-markdown>
+                </div>
+
+                <div class="text-weight-light row justify-between items-center">
+                  <div>
+                    <groupLinks :links="getActiveGroupConfig.meta.links" />
+                  </div>
+                  <q-item class="no-padding">
+                    <q-item-section>
+                      <q-item-label>
+                        <group-tags
+                          :tags="getActiveGroupConfig.tags"
+                          content-class="bg-primary text-white"
+                        />
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </div>
+              </div>
             </div>
             
-            <div class="q-mt-md">
-              <div>About</div>
-              <q-markdown
-                class="text-caption text-weight-light"
-                :src="getActiveGroupConfig.meta.about"
-                :no-abbreviation="false"
-              >
-              </q-markdown>
-            </div>
-
-            <div class="text-weight-light row justify-between items-center">
-              <div>
-                <groupLinks :links="getActiveGroupConfig.meta.links" />
-              </div>
-              <q-item>
-                <q-item-section>
-                  <q-item-label caption class="text-right">Created</q-item-label>
-                  <q-item-label
-                    ><date-string :date="getActiveGroupConfig.creation_date"
-                  /></q-item-label>
-                </q-item-section>
-              </q-item>
-            </div>
 
           </q-card-section>
         </q-card>
       </div>
 
-      <div class="col-xs-12" key="clap_info">
+      <!--<div class="col-xs-12" key="clap_info">
         <q-card>
           <div class="row justify-between items-center">
             <clap-for-group />
           </div>
         </q-card>
-      </div>
+      </div>-->
 
       <div class="col-xs-12 col-sm-6 col-lg-4" key="guardians_info">
         <q-card class="primary-hover-list">
@@ -129,7 +138,7 @@
         </q-card>
       </div>
 
-      <div
+      <!--<div
         v-if="getCoreConfig && getCoreConfig.conf.member_registration"
         class="col-xs-12 col-sm-6 col-lg-4"
         key="members_info"
@@ -151,7 +160,7 @@
             </q-item-section>
           </q-item>
         </q-card>
-      </div>
+      </div>-->
 
       <div
         v-if="getCoreConfig && getCoreConfig.conf.maintainer_account.actor"
@@ -220,7 +229,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getActiveGroup: "group/getActiveGroup",
       getActiveGroupConfig: "group/getActiveGroupConfig",
       getCoreConfig: "group/getCoreConfig",

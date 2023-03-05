@@ -37,11 +37,11 @@
               :label-always="false"
               :label="false"
               label-color="primary"
-              :label-value="clap_amount / 10000 + ' XPR/TLOS/WAX'"
+              :label-value="clap_amount / 10000 + ' EOS/TLOS/WAX'"
               color="primary"
             />
             <q-input :value="clap_amount / 10000" outlined dense :readonly="true">
-              <template v-slot:append> XPR </template>
+              <template v-slot:append> EOS/TLOS </template>
             </q-input>
             <q-btn
               label="clap"
@@ -75,12 +75,12 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getActiveGroup: "group/getActiveGroup",
       getActiveGroupConfig: "group/getActiveGroupConfig",
       getIsDark: "user/getIsDark",
       getAppConfig: "app/getAppConfig",
-      getIsTransacting: "ual/getIsTransacting",
+      getIsTransacting: "proton/getIsTransacting",
     }),
   },
   methods: {
@@ -110,7 +110,7 @@ export default defineComponent({
         data: {
           from: this.getAccountName,
           to: this.getAppConfig.groups_contract,
-          quantity: `${(this.clap_amount / 10000).toFixed(4)} XPR`,
+          quantity: `${(this.clap_amount / 10000).toFixed(4)} EOS/TLOS`,
           memo: `clap for group: ${this.getActiveGroup}`,
         },
       };
@@ -126,7 +126,7 @@ export default defineComponent({
 
       //check which actions are needed transfer? open?
 
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: [action],
         disable_signing_overlay: true,
       });

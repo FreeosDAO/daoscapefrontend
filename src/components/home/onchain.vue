@@ -5,20 +5,17 @@
     </q-card-section>
 
     <q-card-section class="bg-white text-grey-9" style="font-size: 17px">
-      <b>On-chain</b>
+      <b>On-Chain</b>
     </q-card-section>
     <q-card-section class="q-pt-none bg-white text-grey-9">
       <q-scroll-area :thumb-style="thumbStyle" style="height: 190px; max-width: 100%">
         <div v-for="n in 1" :key="n" class="q-pa-xs">
           <div>
             <p>
-              Daclify's core has been built on EOSIO platform. The main reason for
-              choosing EOSIO technology was primarly decentralization and speed.
+              The DAOScape's core has been built on using a combination of the Proton blockchain and Dfinity's Internet Computer platform. This creates a fast, easy-to-access, gas-free, and truly decentralised (front-end and back-end) ecosystem of DAOs.
             </p>
             <p>
-              Main UI is free for all to use but with DAC's contracts/operations always
-              running on the blockchain it gives different groups and projects an
-              opportunity to design their own UI if need to.
+              With no central servers hosting either the front or backend, you can be assured that your DAO is unstoppable for your distributed team and lofty goals.
             </p>
           </div>
         </div>

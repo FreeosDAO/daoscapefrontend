@@ -1,13 +1,11 @@
 <template>
   <q-page padding class="bg-white">
     <scrolling-background class="absolute-bottom" />
-
-    <newGroup
-      class="q-mt-lg"
-      :prefill="{ group_account_name: $route.params.newgroupname }"
-    />
-
-    <div style="height: 275px"></div>
+      <newGroup
+        class="q-mt-lg"
+        :prefill="{ group_account_name: $route.params.newgroupname }"
+      />
+      <div style="height: 60vh"></div>
   </q-page>
 </template>
 
@@ -28,8 +26,8 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
-    }),
+      getAccountName: "proton/getAccountName"
+    })
   },
   methods: {},
   watch: {},

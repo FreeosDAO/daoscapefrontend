@@ -17,9 +17,32 @@ export default {
     network: null
   },
 
-  // activeNetwork: "mainnet",
+  activeNetwork: "protonTest",
 
   networks: {
+    protonTest: {
+      config: {
+        chainId:
+          "71ee83bcf52142d61019d95f9cc5427ba6a0d7ff8accd9e2088ae2abeaf3d3dd",
+        rpcEndpoints: [
+          /*{
+            protocol: "https",
+            host: "protontestnet.greymass.com",
+            port: "443"
+          },*/
+          {
+            protocol: "https",
+            host: "test.proton.kiwi",
+            port: "443"
+          },
+          {
+            protocol: "https",
+            host: "tn1.protonnz.com",
+            port: "443"
+          }
+        ]
+      }
+    },
     mainnet: {
       config: {
         chainId:
@@ -27,12 +50,12 @@ export default {
         rpcEndpoints: [ //https://eosbp.atticlab.net", "https://eos.greymass.com", "https://api.eossweden.se
           {
             protocol: "https",
-            host: "api.eosn.io",
+            host: "eos.api.animus.is",
             port: "443"
           },
           {
             protocol: "https",
-            host: "eos.api.animus.is",
+            host: "api.eosn.io",
             port: "443"
           },
           {
@@ -43,34 +66,6 @@ export default {
           {
             protocol: "https",
             host: "api.eostitan.com",
-            port: "443"
-          }
-        ]
-      }
-    },
-    protontest: { // network added by Andrew
-      config: {
-        chainId:
-          "71ee83bcf52142d61019d95f9cc5427ba6a0d7ff8accd9e2088ae2abeaf3d3dd",
-        rpcEndpoints: [
-          {
-            protocol: "https",
-            host: "protontestnet.greymass.com",
-            port: "443"
-          },
-          {
-            protocol: "https",
-            host: "api.protontest.alohaeos.com",
-            port: "443"
-          },
-          {
-            protocol: "https",
-            host: "testnet.proton.pink.gg",
-            port: "443"
-          },
-          {
-            protocol: "https",
-            host: "proton-testnet.eosvenezuela.io",
             port: "443"
           }
         ]

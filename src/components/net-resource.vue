@@ -79,7 +79,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       getNETStats: "group/getNETStats",
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
     }),
     getRelativeCpu: function () {
       if (this.getNETStats) {

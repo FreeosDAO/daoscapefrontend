@@ -98,7 +98,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getActiveGroup: "group/getActiveGroup",
       getIsMember: "user/getIsMember",
       getCoreConfig: "group/getCoreConfig",

@@ -2,7 +2,8 @@
   <span>
     <a :href="getExplorerLink" target="_blank" class="text-link row items-center">
       <q-icon name="search" size="16px" />
-      <span v-if="accountname">{{ accountname }}</span>
+      <span v-if="accountname && !accountnameText">{{ accountname }}</span>
+      <span v-if="accountname && accountnameText">{{ accountnameText }}</span>
     </a>
   </span>
 </template>
@@ -15,6 +16,7 @@ export default defineComponent({
   name: "explorerLink",
   props: {
     accountname: "",
+    accountnameText: "",
     trxid: "",
   },
   data() {
@@ -25,7 +27,7 @@ export default defineComponent({
       getSelectedBlockExplorer: "user/getSelectedBlockExplorer",
     }),
     getExplorerLink() {
-      if (this.accountname) {
+      if (this.accountname && this.getSelectedBlockExplorer) {
         return (
           this.getSelectedBlockExplorer.base +
           this.getSelectedBlockExplorer.account +

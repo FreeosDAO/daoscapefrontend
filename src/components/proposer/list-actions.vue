@@ -3,7 +3,7 @@
     <div v-if="!is_loading">
       <q-input
         v-if="abi_actions.length"
-        placeholder="Search"
+        placeholder="Search Actions"
         outlined
         v-model.trim="filter"
         class="q-mb-md"

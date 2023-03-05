@@ -65,9 +65,14 @@
           <p>Configure the group by clicking the items.</p>
         </q-tab-panel>
 
-        <q-tab-panel name="Members" class="overflow-hidden">
+        <!--<q-tab-panel name="Members" class="overflow-hidden">
           <page-header title="Members" />
           <set-members />
+        </q-tab-panel>-->
+
+        <q-tab-panel name="KYC" class="overflow-hidden">
+          <page-header title="KYC" />
+          <set-kyc />
         </q-tab-panel>
 
         <q-tab-panel name="Guardians" class="overflow-hidden">
@@ -78,7 +83,7 @@
         <q-tab-panel name="Maintainer Account" class="overflow-hidden">
           <page-header title="Maintainer Account" />
           <p>
-            The maintainer account (can be an other group!) will be added to the groups
+            The maintainer account (can be another group!) will be added to the groups
             "owner" permission. This means that this account will (also) have full control
             over the group. By leaving this field blank this feature is disabled and the
             guardians are the only controlling accounts.
@@ -115,6 +120,34 @@
             </template>
           </action-proposer>
         </q-tab-panel>
+
+        <q-tab-panel name="Logo" class="overflow-hidden">
+          <page-header title="Logo" />
+          <action-proposer>
+            <template v-slot="scope">
+              <update-logo />
+            </template>
+          </action-proposer>
+        </q-tab-panel>
+
+        <q-tab-panel name="About" class="overflow-hidden">
+          <page-header title="About" />
+          <action-proposer>
+            <template v-slot="scope">
+              <update-about />
+            </template>
+          </action-proposer>
+        </q-tab-panel>
+
+        <q-tab-panel name="Links" class="overflow-hidden">
+          <page-header title="Links" />
+          <action-proposer>
+            <template v-slot="scope">
+              <update-links />
+            </template>
+          </action-proposer>
+        </q-tab-panel>
+
       </q-tab-panels>
     </template>
   </q-splitter>
@@ -131,10 +164,11 @@ var testtree = [
         label: "Core",
         icon: "mdi-settings",
         children: [
-          { label: "Guardians", test: "bbbbb" },
+          { label: "Guardians" },
           { label: "Proposals" },
-          { label: "Members" },
+          //{ label: "Members" },
           { label: "Internal Accounting" },
+          { label: "KYC" },
           { label: "Maintainer Account" },
         ],
       },
@@ -142,7 +176,7 @@ var testtree = [
       {
         label: "Meta & UI",
         icon: "mdi-television-guide",
-        children: [{ label: "Color" }, { label: "Logo" }, { label: "About" }],
+        children: [{ label: "Color" }, { label: "Logo" }, { label: "About" }, { label: "Links" }],
       },
       {
         label: "Update Code",
@@ -160,9 +194,13 @@ import setInternalAccounting from "components/config/set-internal-accounting";
 import setProposals from "components/config/set-proposals";
 import setMaintainanceAccount from "components/config/set-maintainance-account";
 import setMembers from "components/config/set-members";
+import setKyc from "components/config/set-kyc";
 import pageHeader from "components/page-header";
 import actionProposer from "components/actions/action-proposer";
 import updateColor from "components/actions/update-color";
+import updateLogo from "components/actions/update-logo";
+import updateAbout from "components/actions/update-about";
+import updateLinks from "components/actions/update-links";
 import codeDeployer from "components/deployer/code-deployer";
 
 export default defineComponent({
@@ -172,11 +210,14 @@ export default defineComponent({
     setInternalAccounting,
     setProposals,
     setMembers,
+    setKyc,
     pageHeader,
     updateColor,
     actionProposer,
     codeDeployer,
-
+    updateLogo,
+    updateAbout,
+    updateLinks,
     setMaintainanceAccount,
   },
   data() {

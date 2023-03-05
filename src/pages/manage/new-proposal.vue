@@ -72,7 +72,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getActiveGroup: "group/getActiveGroup",
       getActiveGroupConfig: "group/getActiveGroupConfig",
       getNumberGuardians: "group/getNumberGuardians",
@@ -102,7 +102,7 @@ export default defineComponent({
       this.advanced_slide = "action_fields";
     },
     handleInput(e) {
-      console.log(e)
+      console.log('selected contract', e)
       this.selected_contract = e;
     }
   },

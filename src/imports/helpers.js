@@ -1,4 +1,5 @@
 const crypto = require('crypto')
+const cryptojs = require('crypto-js')
 
 export function randomName () {
   let name = ''
@@ -10,7 +11,7 @@ export function randomName () {
 }
 
 export function sha256 (content) {
-  return crypto.createHash('sha256').update(content).digest('hex');
+  return cryptojs.SHA256(content).toString() //crypto.createHash('sha256').update(content).digest('hex');
 }
 
 export function secondsToDhms (seconds) {

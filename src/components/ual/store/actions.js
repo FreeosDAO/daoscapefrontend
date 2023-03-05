@@ -27,15 +27,16 @@ export async function initUAL({ state, commit, dispatch, getters }, network) {
   const chains = [state.networks[getters.getActiveNetwork].config];
 
   let authenticators = [
-    new Scatter(chains, { appName }),
+    new Anchor(chains, { appName }),
+    new Wax(chains, { appName }),
+    /*new Scatter(chains, { appName }),
     new Ledger(chains),
     new Lynx(chains, { appName }),
     new TokenPocket(chains),
-    new Anchor(chains, { appName }),
     new Wax(chains, { appName }),
     new Sqrl(chains, { appName }),
     new Wombat(chains, { appName }),
-    // new EOSIOAuth(chains, { appName, protocol: 'eosio' })
+    new EOSIOAuth(chains, { appName, protocol: 'eosio' })*/
   ];
   let ual = new UAL(chains, appName, authenticators);
   console.log("UAL", ual);
@@ -254,6 +255,7 @@ export async function transact({ state, dispatch, commit }, payload) {
 }
 
 export async function parseUalError({ }, error) {
+  console.warn('error here', error)
   let cause = "unknown cause";
   let error_code = "";
   if (error.cause) {

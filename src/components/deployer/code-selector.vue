@@ -107,24 +107,29 @@
         </div>
       </div>
     </transition>
+    <wasmCompiler ref="wasm_compiler" />
   </div>
 </template>
 
 <script>
 import { defineComponent } from "vue";
-import { sha256 } from "../../imports/helpers.js";
+import wasmCompiler from "../wasm-compiler";
 
 export default defineComponent({
   name: "codeSelector",
+  components:{
+    wasmCompiler
+  },
+  emits: ['newhex'],
   data() {
     return {
       selected_src: "",
       src_options: [
-        {
+        /*{
           label: "Daclify",
           sublabel: "official releases from Daclify registry",
           value: "daclify",
-        },
+        },*/
         { label: "Remote", sublabel: "github, server, ... ", value: "remote" },
         { label: "Local", sublabel: "disk", value: "local" },
       ],
@@ -142,30 +147,38 @@ export default defineComponent({
   },
   methods: {
     emit_empty() {
-      this.$emit("input", { code_hash: "", abi_hash: "", wasm: "", abi: "" });
+      this.$emit("newhex", { code_hash: "", abi_hash: "", wasm: "", abi: "" });
     },
     async load_remote() {
-      let wasm = await this.loadRemoteWasm(this.wasm_url);
-      let abi = await this.loadRemoteAbi(this.abi_url);
-      let res = Object.assign(wasm, abi);
-      this.$emit("input", res);
+      let wasm = await this.$refs.wasm_compiler.loadRemoteWasm(this.wasm_url);
+      let abi = await this.$refs.wasm_compiler.loadRemoteAbi(this.abi_url);
+      let res = {
+        wasm: wasm.wasm,
+        code_hash: wasm.code_hash,
+        abi: abi.abi,
+        abi_hash: abi.abi_hash,//sha256(new Uint8Array(abi, 0)),
+      }; 
+      
+      this.$emit("newhex", res);
     },
     async compile_local() {
-      console.log(this.wasm_file);
-      let wasm = await this._readLocalFile(this.wasm_file, true);
-      let abi = await this._readLocalFile(this.abi_file, false);
+      let wasm = await this.$refs._readLocalFile(this.wasm_file, true);
+      let abi = await this.$refs._readLocalFile(this.abi_file, false);
 
-      abi = await this.parseAbi(abi);
+      wasm = this.$refs.wasm_compiler.buf2hex(wasm)
+      abi = await this.$refs.wasm_compiler.parseAbi(abi)
+      
       let res = {
-        wasm: this.buf2hex(wasm),
-        code_hash: sha256(new Uint8Array(wasm, 0)),
+        wasm: wasm,
+        code_hash: this.$refs.wasm_compiler.sha256(wasm),//sha256(new Uint8Array(wasm, 0)),
         abi: abi,
-        abi_hash: sha256(new Uint8Array(abi, 0)),
+        abi_hash: this.$refs.wasm_compiler.sha256(abi),//sha256(new Uint8Array(abi, 0)),
       };
-      this.$emit("input", res);
+      this.$emit("newhex", res);
+      //this.emitter.emit("new_hex", res)
     },
 
-    async loadRemoteWasm(url) {
+    /*async loadRemoteWasm(url) {
       url = url + "?t=" + new Date().getTime();
       let res = await this.$axios.get(url, {
         responseType: "arraybuffer",
@@ -228,10 +241,10 @@ export default defineComponent({
       return Buffer.from(buffer.asUint8Array()).toString(`hex`);
     },
     buf2hex(buffer) {
-      return Array.prototype.map
-        .call(new Uint8Array(buffer), (x) => ("00" + x.toString(16)).slice(-2))
-        .join("");
-    },
+      return [...new Uint8Array(buffer)]
+        .map(x => x.toString(16).padStart(2, '0'))
+        .join('');
+    },*/
   },
 });
 </script>

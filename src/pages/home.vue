@@ -2,40 +2,65 @@
   <q-page class=" bg-dark full-height">
 
     <div class="header_box relative-position">
-      <q-parallax src="statics/images/15410.jpg" :height="500">
+      <q-parallax src="~assets/daoscape_background.jpeg" :height="700">
         <div class="text-center text-primary" style="">
-          <div
+          <h1
             style="background:#272822F2"
-            class=" text-h3  text-white text-uppercase text-weight-light"
+            class="shadow-8 q-px-xl q-py-lg q-ma-none text-h2 text-white text-weight-light"
           >
-            eosio Group accounts
-          </div>
-          <div class=" bg-white text-secondary text-weight-bold" style="font-size:17px">
-            Start As Group - Proceed As DAC
+            Enter the DAO Scape
+          </h1>
+          <div class="shadow-8 q-px-lg q-py-sm q-mx-xl  bg-white text-secondary text-weight-bold" style="font-size:17px">
+            Start As Group - Proceed As DAO
           </div>
 
-          <split-btn />
+          <!--<split-btn />-->
+          <div class="row justify-center q-mt-xl text-center">
+            <div>
+              <transition appear enter-active-class="animated fadeInRight" leave-active-class="animated fadeOutRight"  mode="out-in" tag="div" >
+              <q-btn
+                to="browse"
+                label="browse"
+                color="secondary"
+                size="lg"
+                class="q-mr-md "
+              />
+              </transition>
+
+              <transition appear enter-active-class="animated fadeInLeft" leave-active-class="animated fadeOutLeft"  mode="out-in" tag="div" >
+              <q-btn
+                to="create"
+                label="create"
+                color="secondary"
+                size="lg"
+                class="q-ml-md"
+              />
+              </transition>
+            </div>
+          </div>
         </div>
       </q-parallax>
     </div>
     <div class="q-pa-md center-page-content text-white">
-      <div class="text-white text-center q-mb-x1" style="font-size: calc(16px + 1.8vw);" >EMPOWEREMENT OF DECENTRALIZED COMMUNITIES</div>
+      <div class="text-white text-center q-mt-xl q-mb-xl text-h4" >
+        Empowerment Of Decentralized Communities
+      </div>
 
       <div class="">
         <comparison-table style="width:100%"/>
       </div>
 
       <div class=" q-mt-md q-pb-xl row q-col-gutter-lg text-grey-9 text-weight-medium">
-        <q-intersection transition="scale" class="col-xs-12 col-sm-6">
+        <q-intersection transition="scale" once class="col-xs-12 col-sm-6">
             <whatisdac  />
         </q-intersection>
-        <q-intersection transition="scale" class="col-xs-12 col-sm-6">
+        <q-intersection transition="scale" once class="col-xs-12 col-sm-6">
             <whydac  />
         </q-intersection>
-        <q-intersection transition="scale" class="col-xs-12 col-sm-6">
+        <q-intersection transition="scale" once class="col-xs-12 col-sm-6">
             <modules  />
         </q-intersection>
-        <q-intersection transition="scale" class="col-xs-12 col-sm-6">
+        <q-intersection transition="scale" once class="col-xs-12 col-sm-6">
             <onchain  />
         </q-intersection>
       </div>
@@ -90,7 +115,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
     })
   }
 };
@@ -99,5 +124,12 @@ export default {
 <style>
 .header_box {
   border-bottom: 5px solid var(--q-primary);
+}
+.q-parallax__media:after {
+    display: block;
+    content: '';
+    position:absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgb(255 255 255 / 20%);
 }
 </style>

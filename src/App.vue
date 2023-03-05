@@ -1,11 +1,11 @@
 <template>
-  <ual ref="ual-component" />
+  <!--<ual ref="ual-component" />-->
   <router-view />
 
   <q-dialog v-model="show_hub_deposit_wallet">
     <q-card class="overflow-hidden" style="min-width: 300px; max-width: 350px">
       <q-card-section>
-        <page-header title="Daclify hub deposits" />
+        <page-header title="The DAOScape hub deposits" />
         <p class="text-grey-7 text-caption">{{ customHubWalletMessage }}</p>
         <q-btn
           icon="close"
@@ -25,16 +25,16 @@
 <script>
 import { defineComponent } from "vue";
 
-import ual from "components/ual/ual";
+//import ual from "components/ual/ual";
 import hubDepositWallet from "components/hub-deposit-wallet";
-import pageHeader from "components/page-header";
+//import pageHeader from "components/page-header";
 
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import { notifyError, notifySuccess } from "./imports/notifications.js";
 
 export default defineComponent({
   name: "App",
-  components: { ual, hubDepositWallet, pageHeader },
+  components: { hubDepositWallet },
   data() {
     return {
       show_hub_deposit_wallet: false,
@@ -44,7 +44,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       getActiveGroup: "group/getActiveGroup",
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getIsDark: "user/getIsDark",
     }),
   },
@@ -52,15 +52,20 @@ export default defineComponent({
     this.$store.dispatch("app/initRoutine", { vm: this });
   },
   methods: {
+    ...mapActions({
+      reconnect: 'proton/reconnect'
+    }),
     showHubWallet(e) {
       this.customHubWalletMessage =
         e ||
-        "The Daclify Hub Wallet hold your funds to perform certain actions on the hub contract. Examples are creating new groups, clapping for a group, buy NFTs, etc...";
+        "The DAOScape Hub Wallet holds your funds to perform certain actions on the hub contract. e.g. creating new groups etc...";
       this.show_hub_deposit_wallet = true;
     },
   },
   created() {
     this.emitter.on('showHubDeposits', (e)=>{this.showHubWallet(e) } );
+
+    this.reconnect();
 
     if (this.$messaging) {
       this.$messaging.onMessage((payload) => {

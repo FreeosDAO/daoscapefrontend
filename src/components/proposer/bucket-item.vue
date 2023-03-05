@@ -6,11 +6,11 @@
     style="border-bottom: 1px solid grey"
   >
     <template v-slot:header>
-      <q-item-section side>
+      <!--<q-item-section side>
         <q-badge>
           <div class="q-pa-xs drag_handle">{{ i + 1 }}</div>
         </q-badge>
-      </q-item-section>
+      </q-item-section>-->
       <q-item-section>
         <q-item-label> {{ action.account }} > {{ action.name }} </q-item-label>
       </q-item-section>
@@ -49,7 +49,7 @@
         </q-item>
         <q-item>
           <q-item-section>
-            <q-item-label>Autorization</q-item-label>
+            <q-item-label>Authorization</q-item-label>
             <q-item-label caption>
               <authorization-display :action="action" :edit="true" />
             </q-item-label>
@@ -74,6 +74,7 @@ export default defineComponent({
   props: {
     action: {},
     key: '',
+    i: 0
   },
   data() {
     return {};

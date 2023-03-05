@@ -111,7 +111,7 @@
 <script>
 import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
-import loginNetworkSwitcher from "components/ual/login-network-switcher";
+import loginNetworkSwitcher from "components/login/login-network-switcher";
 import mainLogo from "components/main-logo";
 
 export default defineComponent({
@@ -128,7 +128,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
     }),
   },
 });

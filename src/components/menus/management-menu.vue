@@ -10,54 +10,6 @@
       </q-item-section>
       <q-item-section>
         <q-item-label>Group Info</q-item-label>
-        <!-- <q-item-label caption>mining stats</q-item-label> -->
-      </q-item-section>
-    </q-item>
-
-    <q-item clickable :to="`/manage/${getActiveGroup}/guardians`">
-      <q-item-section avatar>
-        <q-icon name="mdi-account-key" />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>Guardians</q-item-label>
-      </q-item-section>
-    </q-item>
-
-    <q-item clickable :to="`/manage/${getActiveGroup}/wallet`">
-      <q-item-section avatar>
-        <q-icon name="mdi-wallet" />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>Wallet</q-item-label>
-        <!-- <q-item-label caption>mining stats</q-item-label> -->
-      </q-item-section>
-    </q-item>
-
-    <q-item
-      v-if="getModuleByName('payroll')"
-      clickable
-      :to="`/manage/${getActiveGroup}/payroll`"
-    >
-      <q-item-section avatar>
-        <q-icon name="mdi-account-cash" />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>Payroll</q-item-label>
-        <!-- <q-item-label caption>mining stats</q-item-label> -->
-      </q-item-section>
-    </q-item>
-
-    <q-item
-      v-if="getModuleByName('hooks')"
-      clickable
-      :to="`/manage/${getActiveGroup}/hooks`"
-    >
-      <q-item-section avatar>
-        <q-icon name="mdi-anchor" />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>Hooks</q-item-label>
-        <!-- <q-item-label caption>mining stats</q-item-label> -->
       </q-item-section>
     </q-item>
 
@@ -92,23 +44,65 @@
       </q-item-section>
     </q-item>
 
-    <q-item clickable :to="`/manage/${getActiveGroup}/members`">
+    <q-item clickable :to="`/manage/${getActiveGroup}/wallet`" v-if="isUserGuardian">
+      <q-item-section avatar>
+        <q-icon name="mdi-wallet" />
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>Wallet</q-item-label>
+      </q-item-section>
+    </q-item>
+
+    <q-item clickable :to="`/manage/${getActiveGroup}/nfts`">
+      <q-item-section avatar>
+        <q-icon name="mdi-image-search" />
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>NFTs</q-item-label>
+      </q-item-section>
+    </q-item>
+
+    <q-item
+      v-if="getModuleByName('payroll') && isUserGuardian"
+      clickable
+      :to="`/manage/${getActiveGroup}/payroll`"
+    >
+      <q-item-section avatar>
+        <q-icon name="mdi-account-cash" />
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>Payroll</q-item-label>
+      </q-item-section>
+    </q-item>
+
+    <q-item
+      v-if="getModuleByName('hooks') && isUserGuardian" 
+      clickable
+      :to="`/manage/${getActiveGroup}/hooks`"
+    >
+      <q-item-section avatar>
+        <q-icon name="mdi-anchor" />
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>Hooks</q-item-label>
+      </q-item-section>
+    </q-item>
+
+    <!--<q-item clickable :to="`/manage/${getActiveGroup}/members`">
       <q-item-section avatar>
         <q-icon name="mdi-account-multiple" />
       </q-item-section>
       <q-item-section>
         <q-item-label>Members</q-item-label>
-        <!-- <q-item-label caption>mining stats</q-item-label> -->
       </q-item-section>
-    </q-item>
+    </q-item>-->
 
-    <q-item clickable :to="`/manage/${getActiveGroup}/thresholds`">
+    <q-item clickable v-if="isUserGuardian" :to="`/manage/${getActiveGroup}/thresholds`">
       <q-item-section avatar>
         <q-icon name="mdi-chart-gantt" class="rotate-270" />
       </q-item-section>
       <q-item-section>
         <q-item-label>Thresholds</q-item-label>
-        <!-- <q-item-label caption>mining stats</q-item-label> -->
       </q-item-section>
     </q-item>
 
@@ -118,17 +112,15 @@
       </q-item-section>
       <q-item-section>
         <q-item-label>Files</q-item-label>
-        <!-- <q-item-label caption>mining stats</q-item-label> -->
       </q-item-section>
     </q-item>
 
-    <q-item clickable :to="`/manage/${getActiveGroup}/resources`">
+    <!--<q-item clickable :to="`/manage/${getActiveGroup}/resources`">
       <q-item-section avatar>
         <q-icon name="mdi-alpha-r-circle" />
       </q-item-section>
       <q-item-section>
         <q-item-label>Resources</q-item-label>
-        <!-- <q-item-label caption>mining stats</q-item-label> -->
       </q-item-section>
       <q-item-section side>
         <transition
@@ -155,15 +147,23 @@
           </q-btn>
         </transition>
       </q-item-section>
+    </q-item>-->
+
+    <q-item clickable :to="`/manage/${getActiveGroup}/guardians`">
+      <q-item-section avatar>
+        <q-icon name="mdi-account-key" />
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>Guardians</q-item-label>
+      </q-item-section>
     </q-item>
 
-    <q-item clickable :to="`/manage/${getActiveGroup}/modules`">
+    <q-item clickable v-if="isUserGuardian" :to="`/manage/${getActiveGroup}/modules`">
       <q-item-section avatar>
         <q-icon name="mdi-settings" />
       </q-item-section>
       <q-item-section>
         <q-item-label>Configuration</q-item-label>
-        <!-- <q-item-label caption>mining stats</q-item-label> -->
       </q-item-section>
     </q-item>
   </q-list>
@@ -184,7 +184,12 @@ export default defineComponent({
       getResourcesLowWarning: "group/getResourcesLowWarning",
       getActionBucket: "bucket/getActionBucket",
       getModuleByName: "group/getModuleByName",
+      getIsGuardian: "group/getIsGuardian",
+      getAccountName: "proton/getAccountName"
     }),
+    isUserGuardian(){
+      return this.getIsGuardian(this.getAccountName) ? true : false
+    }
   },
   methods: {
     handleNewProposal() {

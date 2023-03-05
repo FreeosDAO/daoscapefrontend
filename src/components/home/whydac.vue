@@ -5,26 +5,16 @@
     </q-card-section>
 
     <q-card-section class="bg-white text-grey-9" style="font-size: 17px">
-      <b>Why would you create a DAC?</b>
+      <b>Why would you create a DAO?</b>
     </q-card-section>
 
     <q-card-section class="q-pt-none bg-white text-grey-9">
       <q-scroll-area :thumb-style="thumbStyle" style="height: 190px; max-width: 100%">
         <div v-for="n in 1" :key="n" class="q-pa-xs">
           <div>
-            <p>
-              One of the main reasons is decentralization, where users/guardians are
-              located in different parts of the world and make the organization - in
-              theory - incorruptible.
-            </p>
-            <p>
-              Strenght in different points of view, levels of knowledge and wisdom on many
-              subjects makes these types of organizations a force hard to stop.
-            </p>
-            <p>
-              The engagement of any of the guardians is easy to follow and see what kind
-              of value they represent and what they support and vote for.
-            </p>
+            <p>One of the main advantages of a DAO is that it allows for decentralized decision-making, meaning that decisions are made by the members collectively rather than by a centralized authority. This can lead to greater transparency, fairness, and inclusivity in decision-making processes. </p>
+            <p>Additionally, DAOs can facilitate decentralized coordination and collaboration among individuals who share a common goal or interest, without the need for intermediaries. </p>
+            <p>Finally, DAOs can provide a way to pool resources and coordinate efforts in a decentralized manner, making it easier to fund and manage projects that might be difficult to accomplish through traditional means. </p>
           </div>
         </div>
       </q-scroll-area>

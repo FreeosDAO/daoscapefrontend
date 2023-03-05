@@ -92,7 +92,7 @@ export default defineComponent({
   methods: {},
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getProposals: "group/getProposals",
       getActiveGroup: "group/getActiveGroup",
       getCLOCK: "app/getCLOCK",

@@ -4,6 +4,7 @@ import { createStore } from 'vuex'
 import createPersistedState from "vuex-persistedstate";
 
 import ual from 'components/ual/store';
+import proton from './proton';
 import app from './app';
 import user from './user';
 import group from './group';
@@ -27,6 +28,7 @@ export default store(function (/* { ssrContext } */) {
   const Store = createStore({
     modules: {
       ual,
+      proton,
       app,
       user,
       group,
@@ -36,10 +38,10 @@ export default store(function (/* { ssrContext } */) {
       hooks
     },
     plugins: [
-      createPersistedState({
+      /*createPersistedState({
         key: "ual",
         paths: ["ual.SESSION", "ual.activeNetwork"]
-      }),
+      }),*/
       createPersistedState({
         key: "user",
         paths: ["user.favouriteGroups", "user.resourceWarningLevels", "user.minifyGuardians", "user.isDark", "user.miniState", "user.topicSubscriptions", "user.currentFCMToken"]

@@ -14,26 +14,24 @@
                 width: 20vw;
                 max-width: 135px;
                 min-width: 100px;
-                filter: brightness(0) invert(1);
               "
               contain
-              src="~assets/daclify-logo-small-white.png"
+              src="~assets/the_daoscape_logo.svg"
             />
           </th>
           <th class="text-center bg-grey-9">
-            <q-img
-              style="width: 20vw; max-width: 100px; min-width: 100px"
-              contain
-              src="~assets/other.svg"
-            />
+            <div
+              style="width: 20vw; max-width: 100px; min-width: 100px; margin: 0 auto"
+              class="text-h5 text-center text-white"
+            ><em>Other<br>DAOs</em></div>
           </th>
         </tr>
       </thead>
       <tbody class="bg-white text-weight-bold">
         <tr>
           <td class="text-left bg-grey-9">Pricing</td>
-          <td class="text-center">Free*</td>
-          <td class="text-center">Setup and monthly fees</td>
+          <td class="text-center">Democratic - no tokens required*</td>
+          <td class="text-center">Plutocratic - token weighted voting only</td>
         </tr>
         <tr>
           <td class="text-left bg-grey-9">Modular</td>
@@ -82,9 +80,8 @@
         </tr>
       </tbody>
     </q-markup-table>
-    <div class="text-caption text-grey">
-      *The creator pays for the RAM associated with the deployment. RAM costs can be
-      recovered when the group/DAC is destroyed.
+    <div class="text-caption text-grey q-my-md">
+      *If desired, DAOs may use token-weighted voting, but this is not required, nor the default state for the DAO. 
     </div>
   </div>
 </template>
@@ -105,11 +102,11 @@ export default defineComponent({
 }
 
 .comparison-table th {
-  background-color: var(--q-primary);
+  background-color: #02fbec;
 }
 
 .comparison-table td:first-child {
-  background-color: var(--q-primary);
+  background-color: #02fbec;
   color: white;
 }
 .comparison-table thead th:first-child,

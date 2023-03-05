@@ -5,7 +5,7 @@
       <!-- <div v-if="getNETStats"> -->
       <q-item>
         <q-item-section side>
-          <q-item-label caption>XPR Value</q-item-label>
+          <q-item-label caption>EOS Value</q-item-label>
         </q-item-section>
         <q-item-section>
           <q-item-label caption class="row items-center no-wrap">
@@ -94,7 +94,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       getRAMStats: "group/getRAMStats",
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
     }),
     // getRelativeCpu: function(){
     //   if(this.getNETStats){
@@ -108,7 +108,7 @@ export default defineComponent({
     // Connector Balance in this case is: quote.balance
     // Smart Token Outstanding Supply is: base.balance
     // Connector Weight is: quote.weight
-    // This would give you the price in XPR/BYTE
+    // This would give you the price in EOS/BYTE
     //quote.balance/(base.balance*quote.weight)
     async getRamPrice() {
       this.ramprice_loading = true;

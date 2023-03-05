@@ -46,7 +46,7 @@
       bottom-slots
       dense
     >
-      <template v-slot:append> XPR </template>
+      <template v-slot:append> {{ getAppConfig.system_token.symbol }}</template>
     </q-input>
 
     <div class="row justify-between q-mt-md">
@@ -101,7 +101,7 @@ export default defineComponent({
   data() {
     return {
       active_tab: "deposit",
-      transfer_asset: { contract: "eosio.token", quantity: "1.0000 XPR" },
+      transfer_asset: { contract: "eosio.token", quantity: "1.0000 EOS" },
       input_value: "",
       is_transfering: false,
       is_withdrawing: false,
@@ -111,7 +111,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getAppConfig: "app/getAppConfig",
       getHubDeposits: "user/getHubDeposits",
     }),
@@ -163,7 +163,7 @@ export default defineComponent({
         },
       };
       this.is_transfering = true;
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: [open, transfer],
         disable_signing_overlay: true,
       });
@@ -192,7 +192,7 @@ export default defineComponent({
       };
 
       this.is_withdrawing = true;
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: [withdraw],
         disable_signing_overlay: true,
       });

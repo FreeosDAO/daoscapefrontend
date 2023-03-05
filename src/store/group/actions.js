@@ -416,7 +416,7 @@ export async function propose({ state, rootState, dispatch, commit }, payload) {
     account: state.activeGroup,
     name: "propose",
     data: {
-      proposer: rootState.ual.accountName,
+      proposer: rootState.proton.accountName,
       title: payload.data.title,
       description: payload.data.description,
       actions: [],
@@ -449,7 +449,7 @@ export async function propose({ state, rootState, dispatch, commit }, payload) {
     actions: [propose_action]
   }
 
-  let res = await dispatch('ual/transact', propose_payload, { root: true });
+  let res = await dispatch('proton/transact', propose_payload, { root: true });
 
   if (res && res.trxid) {
 

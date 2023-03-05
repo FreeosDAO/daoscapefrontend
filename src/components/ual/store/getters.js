@@ -40,7 +40,9 @@ export function getAccountName(state) {
 }
 
 export function getActiveNetwork(state) {
-    return state.SESSION.network || state.activeNetwork;
+    let thing = state.SESSION.network || state.activeNetwork;
+    console.warn('network', thing);
+    return thing;
 }
 
 export function getRpcEndpoints(state, getters) {

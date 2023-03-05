@@ -13,30 +13,29 @@
         transition-next="fade"
       >
         <q-tab-panel name="main" class="no-padding" style="min-height:200px">
+          <div class="q-pa-sm">
+            <group-tags :tags="group.tags" content-class="text-white q-mb-xs" />
+          </div>
           <div class="column justify-between overflow-hidden">
             <div
-              class="row text-uppercase justify-center items-center text-white text-weight-light"
+              class="row justify-center items-center text-white text-weight-light q-py-sm"
               style="min-height:115px"
             >
               <q-img
                 contain
                 v-if="group.ui.logo"
                 :src="group.ui.logo"
-                style="filter: brightness(0) invert(1); width: 100px;max-width: 70%; height: 100%"
+                style="width: 100px;max-width: 70%; height: 100%"
                 spinner-color="white"
               >
-                <q-tooltip class="bg-secondary" :delay="500">
-                  account: {{ group.groupname }}
-                </q-tooltip>
               </q-img>
 
-              <div v-else>{{ group.groupname }}</div>
+              <div class="text-bold text-uppercase text-center" style="flex-basis: 100%">{{ group.groupname }}</div>
             </div>
-            <group-tags :tags="group.tags" content-class="text-white q-mb-xs" />
 
             <div
-              style="background: rgba(0,0,0,0.1); height:60px"
-              class="full-width row justify-between items-center absolute-bottom"
+              style="background: #e48b17; height:60px"
+              class="full-width row justify-between items-center"
             >
               <div>
                 <q-btn

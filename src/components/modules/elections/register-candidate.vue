@@ -50,7 +50,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getIsCandidate: "elections/getIsCandidate",
       getUserStakes: "elections/getUserStakes",
       getElectionsContract: "elections/getElectionsContract",
@@ -101,7 +101,7 @@ export default defineComponent({
       actions.push(transferstake);
       actions.push(register);
 
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: actions,
         disable_signing_overlay: true,
       });

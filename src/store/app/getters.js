@@ -27,5 +27,5 @@ export function getRamPricePerByte(state){
 }
 
 export function getAppConfig(state, getters, rootState, rootGetters){
-    return state.config[rootGetters["ual/getActiveNetwork"] ]; 
+    return state.config[rootGetters["proton/getActiveNetwork"] ]; 
 }

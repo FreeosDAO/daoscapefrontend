@@ -214,8 +214,8 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
-      getIsTransacting: "ual/getIsTransacting",
+      getAccountName: "proton/getAccountName",
+      getIsTransacting: "proton/getIsTransacting",
       getActiveGroup: "group/getActiveGroup",
       getGroupWallet: "group/getGroupWallet",
       getThresholdByName: "group/getThresholdByName",
@@ -319,7 +319,7 @@ export default defineComponent({
     },
     async push(action) {
       this.is_signing = true;
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: [action],
         disable_signing_overlay: true,
       });

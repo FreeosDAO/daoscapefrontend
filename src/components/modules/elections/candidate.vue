@@ -112,7 +112,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getElectionsState: "elections/getElectionsState",
       getElectionsConfig: "elections/getElectionsConfig",
       getCandidates: "elections/getCandidates",

@@ -1,6 +1,5 @@
 <template>
   <q-layout view="hHh Lpr lff">
-    <!-- Be sure to play with the Layout demo on docs "hHh Lpr fff" -->
 
     <!-- (Optional) The Header -->
     <q-header>
@@ -13,9 +12,10 @@
           @click="leftDrawer = !leftDrawer"
           class="q-mr-xs"
         />
-
-        <div
-          class="row items-center"
+        <main-logo />
+        <router-link
+          :to="`/manage/${getActiveGroupConfig.groupname}`"
+          class="row items-center q-ml-sm"
           v-if="getActiveGroupConfig && getActiveGroupConfig.ui.logo"
         >
           <img
@@ -24,20 +24,18 @@
             class="gt-xs"
           />
           <img :src="getActiveGroupConfig.ui.logo" style="height: 25px" class="lt-sm" />
-        </div>
-        <span v-else class="text-primary text-h5 text-uppercase">{{
+        </router-link>
+        <span v-else class="text-primary text-subtitle text-uppercase q-ml-sm">{{
           getActiveGroup
         }}</span>
 
         <q-toolbar-title> </q-toolbar-title>
+        <q-tabs shrink stretch class="q-mr-sm" indicator-color="primary" align="right">
+          <q-route-tab label="Browse" to="/browse" />
+        </q-tabs>
         <login-network-switcher />
       </q-toolbar>
     </q-header>
-
-    <!-- (Optional) The Footer -->
-    <q-footer class="bg-secondary" style="height: 80px">
-      <div></div>
-    </q-footer>
 
     <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
 
@@ -63,13 +61,13 @@
               >{{ getActiveGroup }}</q-item-label
             >
           </q-item-section>
-          <q-item-section side>
+          <!--<q-item-section side>
             <q-item-label>
               <span class="text-capitalize"
                 >{{ menu_mode }} <q-icon name="mdi-export"
               /></span>
             </q-item-label>
-          </q-item-section>
+          </q-item-section>-->
         </q-item>
 
         <q-menu fit transition-show="scale" transition-hide="scale">
@@ -110,7 +108,7 @@
               </q-item-section>
             </q-item>
           </q-list>
-        </q-menu>
+        </q-menu>-->
       </q-list>
 
       <q-scroll-area
@@ -139,14 +137,14 @@
             </q-item-section>
           </q-item>
 
-          <q-item clickable to="/browse">
+          <!--<q-item clickable to="/browse">
             <q-item-section avatar>
               <q-icon name="search" />
             </q-item-section>
             <q-item-section>
               <q-item-label>Browse Groups</q-item-label>
             </q-item-section>
-          </q-item>
+          </q-item>-->
         </q-list>
       </q-scroll-area>
       <q-toggle v-model="miniState" class="absolute-bottom-right">
@@ -154,7 +152,7 @@
       </q-toggle>
     </q-drawer>
 
-    <q-page-container class="text-black overflow-hidden" style="padding-bottom: 80px">
+    <q-page-container class="text-black overflow-hidden">
       <router-view v-slot="{ Component }">
         <transition appear enter-active-class="animated fadeInRight" mode="out-in">
           <component :is="Component" />
@@ -163,6 +161,10 @@
       <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 18]">
         <q-btn fab icon="keyboard_arrow_up" color="primary" />
       </q-page-scroller>
+
+      <footer class="bg-secondary footer-border-top">
+        <footer-content />
+      </footer>
     </q-page-container>
 
   </q-layout>
@@ -172,11 +174,13 @@
 import { defineComponent } from "vue";
 import { getCssVar } from "quasar";
 import { mapGetters } from "vuex";
-import loginNetworkSwitcher from "components/ual/login-network-switcher";
+import loginNetworkSwitcher from "components/login/login-network-switcher";
 import managementMenu from "components/menus/management-menu";
 import membersMenu from "components/menus/members-menu";
 import { notifyInfo } from "../imports/notifications.js";
 import isEmpty from "../utils/is-empty";
+import mainLogo from "src/components/main-logo";
+import footerContent from "components/footer-content";
 
 export default defineComponent({
   name: "GroupLayout",
@@ -184,6 +188,8 @@ export default defineComponent({
     loginNetworkSwitcher,
     managementMenu,
     membersMenu,
+    mainLogo,
+    footerContent
   },
   data() {
     return {
@@ -192,11 +198,12 @@ export default defineComponent({
       group_is_loading: false,
       selected_group: "",
       menu_mode: "management",
+      unsubscribeTransactions: null
     };
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getActiveGroup: "group/getActiveGroup",
       getActiveGroupConfig: "group/getActiveGroupConfig",
       getCoreConfig: "group/getCoreConfig",
@@ -215,6 +222,20 @@ export default defineComponent({
       this.menu_mode = "management";
     } else if (this.$route.path.startsWith("/members")) {
       this.menu_mode = "members";
+    }
+
+    this.unsubscribeTransactions = this.$store.subscribeAction({
+      after: (action) => {
+        if(action.type != 'proton/transact') return
+        this.loadGroup(this.getActiveGroup)
+      }
+    })
+  },
+
+  beforeUnmount(){
+    if(this.unsubscribeTransactions) {
+      this.unsubscribeTransactions()
+      this.unsubscribeTransactions = null
     }
   },
 
@@ -294,6 +315,6 @@ export default defineComponent({
       this.$q.addressbarColor.set(getCssVar("primary"));
       this.group_is_loading = false;
     },
-  },
+  }
 });
 </script>

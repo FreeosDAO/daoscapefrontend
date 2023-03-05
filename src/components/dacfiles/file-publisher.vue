@@ -121,7 +121,7 @@ export default defineComponent({
   }, //getActiveGroup: "group/getActiveGroup",
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getActiveGroup: "group/getActiveGroup",
       getIsMember: "user/getIsMember",
       getLinkedThresholdForContractAction: "group/getLinkedThresholdForContractAction",
@@ -131,7 +131,7 @@ export default defineComponent({
     isValidAccountName,
     async upload() {
       this.is_uploading = true;
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: [this.upload_action],
         disable_signing_overlay: true,
       });

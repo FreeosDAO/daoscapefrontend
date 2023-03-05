@@ -44,7 +44,7 @@
         label="login as guardian"
         size="sm"
         flat
-        @click="$store.dispatch('ual/renderLoginModal')"
+        @click="$store.dispatch('proton/login')"
         color="primary"
         :disabled="getIsTransacting"
       />
@@ -72,11 +72,11 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getIsGuardian: "group/getIsGuardian",
       getThresholdByName: "group/getThresholdByName",
       getThresholds: "group/getThresholds",
-      getIsTransacting: "ual/getIsTransacting",
+      getIsTransacting: "proton/getIsTransacting",
     }),
 
     getUserHasApproved() {

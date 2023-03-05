@@ -19,7 +19,7 @@
       development, the api schema may change but we'll do our best to make future updates
       backwards compatible.
     </p>
-    <code-block :code="`#include <croneos.hpp>`" :copy="false" style="max-width: 800px" />
+    <!--<code-block :code="`#include <croneos.hpp>`" :copy="false" style="max-width: 800px" />-->
 
     <div class="info-box">
       The croneos header file is a namespaced wrapper to interact with the croneos smart
@@ -31,10 +31,10 @@
       Full example to schedule an action making use of the croneos::job struct. This is an
       example of a recursive pattern.
     </p>
-    <code-block
+    <!--<code-block
       :code="`https://raw.githubusercontent.com/CRONEOS/croneos-examples/master/snippets/full_example.cpp`"
       style="max-width: 800px"
-    />
+    />-->
 
     <h5>More Examples</h5>
     <p>Coming soon.</p>
@@ -57,7 +57,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getAppConfig: "app/getAppConfig",
     }),
   },

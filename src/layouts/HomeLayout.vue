@@ -6,8 +6,8 @@
         <q-toolbar-title> </q-toolbar-title>
 
         <q-tabs shrink stretch class="q-mr-sm" indicator-color="primary" align="right">
-          <!-- <q-route-tab  label="pricing" to="/mine" /> -->
-          <!-- <q-route-tab  label="docs" to="/docs/getting-started" /> -->
+          <q-route-tab label="Browse" to="/browse" />
+          <q-route-tab label="Create" to="/create" />
         </q-tabs>
         <login-network-switcher :avatar="false" />
       </q-toolbar>
@@ -31,8 +31,8 @@ import { defineComponent } from "vue";
 import { openURL, getCssVar, setCssVar } from "quasar";
 // const { setBrand, getBrand } = colors;
 import { mapGetters } from "vuex";
-import loginBtn from "components/ual/login-btn";
-import loginNetworkSwitcher from "components/ual/login-network-switcher";
+import loginBtn from "components/login/login-btn";
+import loginNetworkSwitcher from "components/login/login-network-switcher";
 import footerContent from "components/footer-content";
 import mainLogo from "components/main-logo";
 
@@ -49,8 +49,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
-      getShouldRenderLoginModal: "ual/getShouldRenderLoginModal",
+      getAccountName: "proton/getAccountName",
     }),
   },
   methods: {
@@ -61,7 +60,7 @@ export default defineComponent({
     this.$store.dispatch("group/resetStore");
   },
   beforeMount() {
-    setCssVar("primary", "#7DC6EC");
+    //setCssVar("primary", "#7DC6EC");
     this.$q.addressbarColor.set(getCssVar("secondary"));
   },
 });

@@ -135,12 +135,12 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       getElectionsContract: "elections/getElectionsContract",
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getElectionsConfig: "elections/getElectionsConfig",
       getElectionsState: "elections/getElectionsState",
       getUserVotes: "elections/getUserVotes",
       getCandidates: "elections/getCandidates",
-      getIsTransacting: "ual/getIsTransacting",
+      getIsTransacting: "proton/getIsTransacting",
     }),
     getNewVotes() {
       if (this.getCandidates) {
@@ -180,7 +180,7 @@ export default defineComponent({
           new_votes: this.getNewVotes,
         },
       };
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: [action],
         disable_signing_overlay: true,
       });

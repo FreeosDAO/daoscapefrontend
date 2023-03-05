@@ -19,7 +19,6 @@
 
 <script>
 import { defineComponent } from "vue";
-import { mapGetters } from "vuex";
 import { sha256 } from "../imports/helpers.js";
 
 export default defineComponent({
@@ -51,10 +50,10 @@ export default defineComponent({
       let res = await this.$axios.get(url, {
         responseType: "arraybuffer",
       });
-      let code_hash = sha256(new Uint8Array(res.data, 0));
-      console.log("calculated code_hash", code_hash);
+      let wasm = this.buf2hex(res.data)
+      let code_hash = sha256(wasm);
       res = {
-        wasm: this.buf2hex(res.data),
+        wasm: wasm,
         code_hash: code_hash,
       };
       return res;
@@ -65,8 +64,13 @@ export default defineComponent({
         responseType: "text",
         transformResponse: [(data) => data],
       });
+      let abi = await this.parseAbi(res.data);
+      let code_hash = sha256(abi);
 
-      res = await this.parseAbi(res.data);
+      res = {
+        abi: abi,
+        abi_hash: code_hash
+      }
 
       return res;
     },
@@ -81,8 +85,8 @@ export default defineComponent({
       console.log(f);
       this.$emit("input", f);
     },
-    async _readLocalFile(asbuffer = false) {
-      var file = this.$refs.myfileinput.files[0];
+    async _readLocalFile(file, asbuffer = false) {
+      // var file = this.$refs.myfileinput.files[0];
       // console.log(file)
       this.filename = file.name;
       this.filesize = `${(file.size / 1024).toFixed(2)}KB`;

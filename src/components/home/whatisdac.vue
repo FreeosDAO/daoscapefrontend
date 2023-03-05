@@ -5,7 +5,7 @@
     </q-card-section>
 
     <q-card-section class="bg-white text-grey-9" style="font-size: 17px">
-      <b>What is a DAC?</b>
+      <b>What is a DAO?</b>
     </q-card-section>
 
     <q-card-section class="q-pt-none bg-white text-grey-9">
@@ -13,17 +13,10 @@
         <div v-for="n in 1" :key="n" class="q-pa-xs">
           <div>
             <p>
-              Decentralized autonomous organization (DAO or DAC) is a new form of social
-              and economic organization enabled by blockchain technology, smart contracts,
-              and cryptocurrencies. DACs are formalized by smart contracts and managed by
-              custiodians elected by users of the DAC. There are many ideas of what would
-              be the best way to vote and it all depends on the way the voting modules are
-              designed.
+              A DAO (Decentralized Autonomous Organization) is a type of organization that is run through smart contracts on a blockchain network, without the need for traditional intermediaries such as a central authority or middlemen. It is governed by a set of rules encoded on the blockchain that are enforced automatically through the smart contracts, allowing members to make decisions through a decentralized voting process. DAOs can be used for a variety of purposes, including managing digital assets, coordinating community efforts, and funding projects through decentralized crowdfunding.
             </p>
             <p>
-              DACs are open-source, transparent and in theory, incorruptible. All
-              transactions of the organization are recorded and maintained on a
-              blockchain.
+              DAOs are open-source, transparent and in theory, incorruptible. All transactions of the organization are recorded and maintained on a blockchain. 
             </p>
           </div>
         </div>

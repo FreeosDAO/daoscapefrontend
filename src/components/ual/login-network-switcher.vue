@@ -152,12 +152,18 @@ export default defineComponent({
       selected_network: null,
       menu_open: false,
       networks: [
-       {
-          label: "ProtonTest",
-          key: "protontest",
-          icon: "img:statics/images/networks/telos.png",
-          msg: "no message placed",
-        },
+        /*{
+          label: "Proton",
+          key: "proton",
+          icon: "img:statics/images/networks/proton.png",
+          msg: "active: beta version",
+        },*/
+        {
+          label: "ProtonTestnet",
+          key: "protonTest",
+          icon: "img:statics/images/networks/proton.png",
+          msg: "active: beta version",
+        }/*,
         {
           label: "Telos",
           key: "telos",
@@ -187,7 +193,7 @@ export default defineComponent({
           key: "wax",
           icon: "img:statics/images/networks/wax.png",
           msg: "active: beta version",
-        },
+        },*/
       ],
     };
   },

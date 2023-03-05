@@ -100,7 +100,14 @@
                   </q-item-section>
                 </q-item>
 
-                <draggable
+                <q-item v-for="action in getActionBucket">
+                  <bucket-item
+                      :key="action.unique_id"
+                      :action="action"
+                    />
+                </q-item>
+
+                <!--<draggable
                   v-model="draggable_action_bucket"
                   ghost-class="ghost"
                   handle=".drag_handle"
@@ -115,23 +122,24 @@
                     />
                   </template>
                 </draggable>
-                <!-- <draggable
-                  v-model="draggable_action_bucket"
+                <draggable
+                  v-for="(action, i) in draggable_action_bucket"
                   ghost-class="ghost"
                   handle=".drag_handle"
+                  :item-key="i"
+                  tag="transition-group"
+                  :component-data="{name:'fade'}"
                 >
                   <transition-group
                     enter-active-class="animated zoomIn"
                     leave-active-class="animated zoomOut"
                   >
                     <bucket-item
-                      v-for="(action, i) in getActionBucket"
                       :key="action.unique_id"
                       :action="action"
-                      :i="i"
                     />
                   </transition-group>
-                </draggable> -->
+                </draggable>-->
               </q-list>
               <!-- {{getActionBucket}} -->
               <transition

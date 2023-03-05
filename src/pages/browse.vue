@@ -120,10 +120,10 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getGroups: "app/getGroups",
       getFavouriteGroups: "user/getFavouriteGroups",
-      getActiveNetwork: "ual/getActiveNetwork",
+      getActiveNetwork: "proton/getActiveNetwork",
     }),
     getGroupsWithFilter() {
       let res = this.getGroups;

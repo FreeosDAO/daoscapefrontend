@@ -18,7 +18,7 @@
       </div>
 
       <div v-else-if="view == 'update_code'" key="updatecode">
-        <code-selector v-model="new_hex" />
+        <code-selector v-model="new_hex" @newhex="newHex" />
       </div>
     </transition>
 
@@ -77,8 +77,8 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getRpcEndpoints: "ual/getRpcEndpoints",
-      getAccountName: "ual/getAccountName",
+      getRpcEndpoints: "proton/getRpcEndpoints",
+      getAccountName: "proton/getAccountName",
       getActiveGroup: "group/getActiveGroup",
     }),
     can_propose_code_update() {
@@ -100,7 +100,7 @@ export default defineComponent({
 
     async proposeCodeUpdate() {
       this.is_proposing = true;
-      let PROPOSAL_NAME = randomName();
+      let PROPOSAL_NAME = 'Update Core Contract';
       console.log(PROPOSAL_NAME);
 
       let setcode = {
@@ -133,17 +133,18 @@ export default defineComponent({
         proposal_name: PROPOSAL_NAME,
         vm: this,
       };
-
+      
       let system_propose_action = await this.$store.dispatch(
-        "ual/proposeSystemMsig",
+        "proton/proposeSystemMsig",
         system_propose_options
       );
+      
 
       let proposal_hash = await this.$eos.api.serializeTransaction(
         system_propose_action.data.trx
       );
       proposal_hash = sha256(proposal_hash);
-      console.log("proposal hash", proposal_hash);
+     
 
       let approve_and_execute = [
         {
@@ -168,33 +169,46 @@ export default defineComponent({
           authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
         },
       ];
+      
       let group_propose_options = {
         return_action: true,
         title: `Code update module "${this.module.module_name}"`,
         description: `updating the the code of ${this.module.module_name}. New code hash: ${this.new_hex.code_hash}.`,
         actions: approve_and_execute,
       };
-      let group_propose_action = await this.$store.dispatch("group/propose", {
-        data: group_propose_options,
-        vm: this,
-      });
 
-      let res = await this.$store.dispatch("ual/transact", {
-        actions: [system_propose_action, group_propose_action],
-        disable_signing_overlay: true,
-      });
-      if (res && res.trxid) {
-        setTimeout(() => {
-          this.$store.dispatch("group/fetchProposals", {
-            groupname: this.getActiveGroup,
-            scope: this.getActiveGroup,
-          });
-        }, 1500);
+      try {
+        let group_propose_action = await this.$store.dispatch("group/propose", {
+          data: group_propose_options,
+          vm: this,
+        });
+
+        let res = await this.$store.dispatch("proton/transact", {
+          actions: [system_propose_action, group_propose_action],
+          disable_signing_overlay: true,
+        });
+
+        if (res && res.trxid) {
+          setTimeout(() => {
+            this.$store.dispatch("group/fetchProposals", {
+              groupname: this.getActiveGroup,
+              scope: this.getActiveGroup,
+            });
+          }, 1500);
+        }
+
+      } catch (error) {
+        console.warn(error)
+        notifyError({message:`Uh oh! Something went wrong: ${error}`});
+        
       }
 
       this.is_proposing = false;
       this.reset_view();
     },
+    newHex(e){
+      this.new_hex = e;
+    }
   },
 
   watch: {
@@ -212,6 +226,6 @@ export default defineComponent({
         }
       },
     },
-  },
+  }
 });
 </script>

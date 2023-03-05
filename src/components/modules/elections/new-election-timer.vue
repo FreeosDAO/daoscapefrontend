@@ -62,12 +62,12 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getElectionsContract: "elections/getElectionsContract",
       getElectionsState: "elections/getElectionsState",
       getElectionsConfig: "elections/getElectionsConfig",
       getActiveGroup: "group/getActiveGroup",
-      getIsTransacting: "ual/getIsTransacting",
+      getIsTransacting: "proton/getIsTransacting",
       getCLOCK: "app/getCLOCK",
     }),
     computedNewElectionStats() {
@@ -109,7 +109,7 @@ export default defineComponent({
           actor: this.getAccountName,
         },
       };
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: [action],
         disable_signing_overlay: true,
       });

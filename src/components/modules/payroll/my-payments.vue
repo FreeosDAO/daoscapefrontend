@@ -28,7 +28,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getModuleByName: "group/getModuleByName",
     }),
   },

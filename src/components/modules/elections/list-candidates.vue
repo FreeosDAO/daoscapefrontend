@@ -60,7 +60,7 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       getElectionsContract: "elections/getElectionsContract",
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getUserVotes: "elections/getUserVotes",
       getElectionsConfig: "elections/getElectionsConfig",
       getElectionsState: "elections/getElectionsState",

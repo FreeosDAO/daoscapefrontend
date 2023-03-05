@@ -101,11 +101,11 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getActiveGroup: "group/getActiveGroup",
       getIsMember: "user/getIsMember",
       getCoreConfig: "group/getCoreConfig",
-      getIsTransacting: "ual/getIsTransacting",
+      getIsTransacting: "proton/getIsTransacting",
     }),
   },
   methods: {
@@ -125,7 +125,7 @@ export default defineComponent({
         },
       };
 
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: [action],
         disable_signing_overlay: true,
       });

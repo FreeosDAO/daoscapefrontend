@@ -17,6 +17,7 @@
       @filter="filterFn"
       placeholder="Find Contract"
       @input-value="handleInput"
+      @blur="onBlur"
     >
 
       <template v-slot:no-option>
@@ -85,6 +86,7 @@ export default defineComponent({
     return {
       model_accountname: "",
       fetchedAccountNames: [],
+      defaultOptions: null
     };
   },
   mounted() {
@@ -104,18 +106,19 @@ export default defineComponent({
 
   methods: {
     setDefaultOptions() {
-      this.fetchedAccountNames = [
-        {
-          label: "Hub contract",
-          account: this.getAppConfig.groups_contract,
-          value: this.getAppConfig.groups_contract,
-        },
-        {
-          label: "Core contract",
-          account: this.$store.state.group.activeGroup,
-          value: this.$store.state.group.activeGroup,
-        },
-      ];
+      console.warn('setting defaults')
+      this.fetchedAccountNames = this.defaultOptions ? [...this.defaultOptions] : [
+      {
+        label: "Hub contract",
+        account: this.getAppConfig.groups_contract,
+        value: this.getAppConfig.groups_contract,
+      },
+      {
+        label: "Core contract",
+        account: this.$store.state.group.activeGroup,
+        value: this.$store.state.group.activeGroup,
+      },
+    ]
       if (this.getModules) {
         this.fetchedAccountNames = this.fetchedAccountNames.concat(
           this.getModules.map((m) => {
@@ -131,25 +134,31 @@ export default defineComponent({
       }
     },
     async fetchAccounts(acc) {
-      let res = await this.$eos.api.rpc
-        .get_table_by_scope({
-          json: true,
-          code: "eosio",
-          scope: "eosio",
-          table: "userres",
-          lower_bound: acc.toLowerCase(),
-          limit: 6,
-        })
-        .catch((e) => false);
-      if (res) {
-        res = res.rows.map((x) => {
-          return { label: x.scope, value: x.scope };
-        });
-        res = res.concat(append_accounts);
-        return res;
-      } else {
-        return [];
+      try {
+        let res = await this.$eos.api.rpc
+          .get_table_by_scope({
+            json: true,
+            code: "eosio",
+            scope: "eosio",
+            table: "userres",
+            lower_bound: acc.toLowerCase(),
+            limit: 6,
+          })
+        if (res) {
+          res = res.rows.map((x) => {
+            return { label: x.scope, value: x.scope };
+          });
+          res = res.concat(append_accounts);
+          return res;
+        } else {
+          console.warn('nothing')
+          return [];
+        }
+        
+      } catch (error) {
+        console.warn(error)
       }
+      
     },
     deleteInput() {
       this.model_accountname = "";
@@ -159,19 +168,30 @@ export default defineComponent({
 
     async filterFn(val, update, abort) {
       update(async () => {
-        val = val.toLowerCase();
-        if (val.charAt(val.length - 1) == "." || val == "") {
+        val = val.toLowerCase().trim()
+        if (val.length <= 2 || val.charAt(val.length - 1) == "." || val == "") {
+          this.setDefaultOptions();
           abort();
           return;
         }
-        let accs = await this.fetchAccounts(val);
-        this.fetchedAccountNames = accs.filter((v) => v.value.startsWith(val));
+        try {
+          let accs = await this.fetchAccounts(val);
+          this.fetchedAccountNames = accs.filter((v) => v.value.startsWith(val));
+        } catch (error) {
+          console.warn(error)
+        }
+        
         // update();
       });
     },
     handleInput(e) {
       this.$emit('inputval', e);
     },
+    onBlur(e){
+      if(!this.fetchedAccountNames.length){
+        this.deleteInput()
+      }
+    }
   },
 });
 </script>

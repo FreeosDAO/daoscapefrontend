@@ -15,7 +15,7 @@ module.exports = configure(function (ctx) {
     supportTS: false,
 
     // https://quasar.dev/quasar-cli/prefetch-feature
-    // preFetch: true,
+    preFetch: true,
 
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
@@ -26,8 +26,7 @@ module.exports = configure(function (ctx) {
       'axios',
       'eosapi',
       'vueclipboard',
-      'emitter',
-      'firebase'
+      'emitter'
     ],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
@@ -298,7 +297,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'daclifyfrontend'
+        appId: 'thedaoscapefrontend'
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain

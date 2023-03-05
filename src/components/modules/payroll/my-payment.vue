@@ -45,7 +45,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters({
-      getAccountName: "ual/getAccountName",
+      getAccountName: "proton/getAccountName",
       getModuleByName: "group/getModuleByName",
     }),
   },
@@ -68,7 +68,7 @@ export default defineComponent({
       };
 
       //check which actions are needed transfer? open?
-      let res = await this.$store.dispatch("ual/transact", {
+      let res = await this.$store.dispatch("proton/transact", {
         actions: [action],
         disable_signing_overlay: true,
       });
