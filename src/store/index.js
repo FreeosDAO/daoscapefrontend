@@ -3,7 +3,7 @@ import { createStore } from 'vuex'
 
 import createPersistedState from "vuex-persistedstate";
 
-import ual from 'components/ual/store';
+//import ual from 'components/ual/store';
 import proton from './proton';
 import app from './app';
 import user from './user';
@@ -27,7 +27,7 @@ import hooks from './hooks';
 export default store(function (/* { ssrContext } */) {
   const Store = createStore({
     modules: {
-      ual,
+      //ual,
       proton,
       app,
       user,
