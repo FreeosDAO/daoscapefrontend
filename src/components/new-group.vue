@@ -1,6 +1,7 @@
 <template>
   <div class="row justify-center">
     <div class="create-group-width">
+      <p class="text-h4 q-mt-lg">Create Your DAO</p>
       <!--STEP COUNTER-->
       <div class="q-mb-md text-grey-5 text-h6 text-weight-light">
         <div v-if="step === 'intro'" class="row justify-between">
@@ -41,10 +42,9 @@
       >
       <q-carousel-slide name="info" class="no-padding">
         <div>
-          <p class="text-h4">Create Your DAO</p>
           <p class="text-subtitle1">Things you'll need to get started:</p>
           <ul>
-            <li><b>DAO Account Name:</b> Choose your DAO account name, based on the normal Proton name restrictions (a-z, 1-5, min 4 characters). Once the DAO has been setup, the account name cannot be changed.</li>
+            <li><b>DAO Account Name:</b> Choose your DAO account name, based on the normal Proton name restrictions (a-z, 1-5, min 4 characters, max 12 characters). Once the DAO has been setup, the account name cannot be changed.</li>
             <li><b>XPR Ready:</b> As part of the setup, you'll need to send {{ getResourceEstimation }} to The DAOScape hub account, so be sure to have that ready to go!</li>
           </ul>
           <div v-if="!isValidWallet" class="text-white text-center bg-secondary q-pa-md rounded-borders">

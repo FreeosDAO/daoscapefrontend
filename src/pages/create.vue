@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="bg-white">
-    <scrolling-background class="absolute-bottom" />
+    <!-- <scrolling-background class="absolute-bottom" /> -->
       <newGroup
         class="q-mt-lg"
         :prefill="{ group_account_name: $route.params.newgroupname }"
@@ -12,14 +12,14 @@
 <script>
 import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
-import scrollingBackground from "components/scrolling-background";
+// import scrollingBackground from "components/scrolling-background";
 import newGroup from 'components/new-group.vue';
 
 export default defineComponent({
   name: "create",
   components: {
     newGroup,
-    scrollingBackground,
+    // scrollingBackground,
   },
   data() {
     return {};
