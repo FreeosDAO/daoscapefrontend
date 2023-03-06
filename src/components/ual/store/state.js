@@ -25,21 +25,21 @@ export default {
         chainId:
           "71ee83bcf52142d61019d95f9cc5427ba6a0d7ff8accd9e2088ae2abeaf3d3dd",
         rpcEndpoints: [
-          /*{
+          {
             protocol: "https",
             host: "protontestnet.greymass.com",
             port: "443"
-          },*/
-          {
-            protocol: "https",
-            host: "test.proton.kiwi",
-            port: "443"
-          },
+          }/*,
           {
             protocol: "https",
             host: "tn1.protonnz.com",
             port: "443"
-          }
+          },
+          {
+            protocol: "https",
+            host: "test.proton.kiwi",
+            port: "443"
+          }*/
         ]
       }
     },

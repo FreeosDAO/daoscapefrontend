@@ -24,7 +24,7 @@ export default {
             protocol: "https",
             host: "protontestnet.greymass.com",
             port: "443"
-          },
+          }/*,
           {
             protocol: "https",
             host: "test.proton.kiwi",
@@ -34,7 +34,7 @@ export default {
             protocol: "https",
             host: "tn1.protonnz.com",
             port: "443",
-          },
+          },*/
         ],
       },
     },
@@ -47,7 +47,7 @@ export default {
             protocol: "https",
             host: "proton.greymass.com",
             port: "443",
-          },
+          }/*,
           {
             protocol: "https",
             host: "main.proton.kiwi",
@@ -57,7 +57,7 @@ export default {
             protocol: "https",
             host: "api.protonnz.com",
             port: "443",
-          },
+          },*/
         ],
       },
     },
