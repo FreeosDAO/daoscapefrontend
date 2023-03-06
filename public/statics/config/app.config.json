@@ -1,4 +1,43 @@
 {
+    "protonTest":{
+        "groups_contract": "fdachub",
+        "system_token": {
+            "contract": "eosio.token",
+            "symbol": "XPR",
+            "precision": 4
+        },
+        "social":{
+            "github": "https://github.com/FreeosDAO",
+            "twitter": "https://twitter.com/free_dao"
+        },
+        "api":{
+            "url": "https://testnet.protonchain.com"
+        },
+        "nft":{
+            "api": "https://test.proton.api.atomicassets.io",
+            "url": "https://dev.protonmarket.com"
+        }
+    },
+    "proton":{
+        "groups_contract": "fdachub",
+        "system_token": {
+            "contract": "eosio.token",
+            "symbol": "XPR",
+            "precision": 4
+        },
+        "social":{
+            "github": "https://github.com/FreeosDAO",
+            "twitter": "https://twitter.com/free_dao"
+        },
+        "api":{
+            "url": "https://testnet.protonchain.com",
+            "atomic": "https://proton.api.atomicassets.io"
+        },
+        "nft":{
+            "api": "https://proton.api.atomicassets.io",
+            "url": "https://protonmint.com"
+        }
+    },
     "telos":{
         "groups_contract": "dacs.master",
         "system_token": {
@@ -8,7 +47,7 @@
         },
         "social":{
             "github": "https://github.com/Animus-Labs-Ltd/daclifyfrontend",
-            "telegram": "https://t.me/Boidcom_official"
+            "telegram": "https://t.me/daclify"
         },
         "api":{
             "url": "https://telos.api.animus.is"
@@ -23,7 +62,7 @@
         },
         "social":{
             "github": "https://github.com/Animus-Labs-Ltd/daclifyfrontend",
-            "telegram": "https://t.me/Boidcom_official"
+            "telegram": "https://t.me/daclify"
         },
         "api":{
             "url": "https://api.testnet.telosunlimited.io"
@@ -38,7 +77,7 @@
         },
         "social":{
             "github": "https://github.com/Animus-Labs-Ltd/daclifyfrontend",
-            "telegram": "https://t.me/Boidcom_official"
+            "telegram": "https://t.me/daclify"
         },
         "api":{
             "url": "https://jungle.eosn.io"
@@ -53,7 +92,7 @@
         },
         "social":{
             "github": "https://github.com/Animus-Labs-Ltd/daclifyfrontend",
-            "telegram": "https://t.me/Boidcom_official"
+            "telegram": "https://t.me/daclify"
         },
         "api":{
             "url": "https://wax.eosn.io"
@@ -68,7 +107,7 @@
         },
         "social":{
             "github": "https://github.com/Animus-Labs-Ltd/daclifyfrontend",
-            "telegram": "https://t.me/Boidcom_official"
+            "telegram": "https://t.me/daclify"
         },
         "api":{
             "url": "https://eos.api.animus.is"

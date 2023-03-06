@@ -85,11 +85,24 @@ module.exports = configure(function (ctx) {
           test: /\.pug$/,
           loader: 'pug-plain-loader'
         });
-        cfg.plugins.push(
-          new CopyWebpackPlugin([
-            { context: `${__dirname}/src/statics/manifests`, from: '*.*', to: '', toType: 'dir' }
-          ])
-        );
+        // cfg.plugins.push(
+        //   new CopyWebpackPlugin([
+        //     { context: `${__dirname}/src/statics/manifests`, from: '*.*', to: '', toType: 'dir' }
+        //   ])
+        // );
+        cfg.optimization.splitChunks.cacheGroups.defaultVendors = {
+          test: /[\\/]node_modules[\\/]/,
+          name(module) {
+            // get the name. E.g. node_modules/packageName/not/this/part.js
+            // or node_modules/packageName
+            const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+
+            // npm package names are URL-safe, but some servers don't like @ symbols
+            return `vendor.${packageName.replace('@', '')}`;
+          },
+          priority: -10,
+          chunks: 'all'
+        }
       }
     },
 
