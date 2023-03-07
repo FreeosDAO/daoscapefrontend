@@ -15,7 +15,6 @@ export function getAccountName(state) {
 }
 export function getActiveNetwork(state) {
   let network = state.activeNetwork;
-  console.warn("active network", network);
   return network;
 }
 export function getRpcEndpoints(state, getters) {

@@ -45,7 +45,7 @@ export async function fetchIsMember ({ commit, rootState, rootGetters }, payload
   if (res && res.rows.length) {
     if (res.rows[0].account == payload.accountname) {
       console.log('fetched isMember', res.rows[0]);
-      if (rootState.ual.accountName == payload.accountname) {
+      if (rootState.proton.accountName == payload.accountname) {
         commit('setIsMember', res.rows[0]);
       }
       return res.rows[0];

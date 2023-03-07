@@ -368,7 +368,7 @@ export async function fetchProfile({ state, commit, rootState, rootGetters }, pa
   if (!res || res.account != payload.accountname) {
     data.last_update = "";
     let res = Object.assign(JSON.parse(template), data);
-    if (rootState.ual.SESSION.accountName == payload.accountname) {
+    if (rootState.proton.session.auth.actor == payload.accountname) {
       commit('setMyOldProfile', JSON.parse(JSON.stringify(res)));
     }
 
@@ -394,7 +394,7 @@ export async function fetchProfile({ state, commit, rootState, rootGetters }, pa
   data = Object.assign(JSON.parse(template), data);
   commit('addProfile', data);
 
-  if (rootState.ual.SESSION.accountName == payload.accountname) {
+  if (rootState.proton.session.auth.actor == payload.accountname) {
     commit('setMyOldProfile', JSON.parse(JSON.stringify(data)));
   }
 
@@ -454,7 +454,7 @@ export async function propose({ state, rootState, dispatch, commit }, payload) {
   if (res && res.trxid) {
 
     let block_time = res.block_time.split('.')[0];
-    commit('setGuardianLastActive', { guardian: rootState.ual.accountName, block_time: block_time });
+    commit('setGuardianLastActive', { guardian: rootState.proton.accountName, block_time: block_time });
     /*
     try{
       let url = rootState.app.config.api.url+'/push_msg';
