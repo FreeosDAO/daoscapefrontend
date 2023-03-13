@@ -88,9 +88,9 @@
         <div
           v-for="group in getGroupsWithFilter"
           :key="group.groupname"
-          class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-3"
+          class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-3 row items-stretch"
         >
-          <group-card :group="group" class="full-height" />
+          <group-card :group="group" class="full-width" />
         </div>
       </transition-group>
       <!-- <div v-else class="row justify-center items-center" style="200px">
