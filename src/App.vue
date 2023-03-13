@@ -5,7 +5,7 @@
   <q-dialog v-model="show_hub_deposit_wallet">
     <q-card class="overflow-hidden" style="min-width: 300px; max-width: 350px">
       <q-card-section>
-        <page-header title="The DAOScape hub deposits" />
+        <page-header title="The DAOScape hub deposits" class="q-pr-lg q-mb-sm" />
         <p class="text-grey-7 text-caption">{{ customHubWalletMessage }}</p>
         <q-btn
           icon="close"
@@ -27,14 +27,14 @@ import { defineComponent } from "vue";
 
 //import ual from "components/ual/ual";
 import hubDepositWallet from "components/hub-deposit-wallet";
-//import pageHeader from "components/page-header";
+import pageHeader from "./components/page-header";
 
 import { mapActions, mapGetters } from "vuex";
 import { notifyError, notifySuccess } from "./imports/notifications.js";
 
 export default defineComponent({
   name: "App",
-  components: { hubDepositWallet },
+  components: { hubDepositWallet, pageHeader },
   data() {
     return {
       show_hub_deposit_wallet: false,

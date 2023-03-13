@@ -22,7 +22,7 @@ module.exports = configure(function (ctx) {
     // https://quasar.dev/quasar-cli/boot-files
     boot: [
       'addressbar-color',
-      'i18n',
+      //'i18n',
       'axios',
       'eosapi',
       'vueclipboard',

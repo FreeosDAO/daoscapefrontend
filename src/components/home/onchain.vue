@@ -1,7 +1,7 @@
 <template>
   <q-card style="max-height: 600px">
     <q-card-section class="bg-white">
-      <q-img src="~assets/blockchain.jpg" style="max-width: 100%; max-height: 300px" />
+      <q-img src="~assets/04-onchain.jpeg" style="max-width: 100%; max-height: 300px" />
     </q-card-section>
 
     <q-card-section class="bg-white text-grey-9" style="font-size: 17px">

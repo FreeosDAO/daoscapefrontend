@@ -2,7 +2,7 @@
   <q-page class=" bg-dark full-height">
 
     <div class="header_box relative-position">
-      <q-parallax src="~assets/daoscape_background.jpeg" :height="700">
+      <q-parallax src="~assets/00-thedaoscape-hero-cyan.jpeg" :height="700">
         <div class="text-center text-primary" style="">
           <h1
             style="background:#272822F2"
@@ -124,12 +124,5 @@ export default {
 <style>
 .header_box {
   border-bottom: 5px solid var(--q-primary);
-}
-.q-parallax__media:after {
-    display: block;
-    content: '';
-    position:absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgb(255 255 255 / 20%);
 }
 </style>

@@ -2,7 +2,7 @@
   <q-card style="max-height: 600px">
     <q-card-section class="bg-white text-center">
       <q-img
-        src="~assets/modules.jpg"
+        src="~assets/03-modular.jpeg"
         class="flex-center"
         style="max-width: 100%; max-height: 300px"
       />
