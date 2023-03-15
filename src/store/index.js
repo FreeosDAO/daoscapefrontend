@@ -38,13 +38,24 @@ export default store(function (/* { ssrContext } */) {
       hooks
     },
     plugins: [
-      /*createPersistedState({
-        key: "ual",
-        paths: ["ual.SESSION", "ual.activeNetwork"]
-      }),*/
+      createPersistedState({
+        key: "proton",
+        paths: [
+          "proton.session",
+          "proton.activeNetwork"
+        ]
+      }),
       createPersistedState({
         key: "user",
-        paths: ["user.favouriteGroups", "user.resourceWarningLevels", "user.minifyGuardians", "user.isDark", "user.miniState", "user.topicSubscriptions", "user.currentFCMToken"]
+        paths: [
+          "user.favouriteGroups",
+          "user.resourceWarningLevels",
+          "user.minifyGuardians",
+          "user.isDark",
+          "user.miniState",
+          "user.topicSubscriptions",
+          "user.currentFCMToken"
+        ]
       })
     ],
 
