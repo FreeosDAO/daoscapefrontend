@@ -24,7 +24,7 @@ export async function login({ state, commit, getters, rootGetters }) {
 }
 
 export async function reconnect({ state, commit, getters, rootGetters }) {
-  commit("clear");
+  //commit("clear");
 
   let session = await Proton.reconnect(
     getters.getRpcEndpoints,
@@ -39,6 +39,11 @@ export async function reconnect({ state, commit, getters, rootGetters }) {
 
     console.warn("session", session);
     notifySuccess({message: 'Welcome back ' + state.accountName + '!'})
+  }
+
+  else{
+    commit("clear")
+    notifyError({message: 'Could not reconnect. Please login again.'})
   }
 }
 

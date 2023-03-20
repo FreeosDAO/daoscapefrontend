@@ -1,5 +1,4 @@
 <template>
-  <div>
     <q-card class="shadow-1 overflow-hidden">
       <q-list class="primary-hover-list overflow-hidden">
         <q-item clickable>
@@ -28,19 +27,18 @@
               </q-badge>
             </q-item-label>
             <q-item-label v-if="!is_deserializing" caption>
-              <div>{{ deserialized_action.data }}</div>
+              <div style="word-break: break-word;">{{ deserialized_action.data }}</div>
             </q-item-label>
             <q-item-label v-else caption>
               <q-spinner color="primary" />
             </q-item-label>
           </q-item-section>
-          <q-item-section side>
+          <!-- <q-item-section side>
             <q-icon name="search" color="primary" />
-          </q-item-section>
+          </q-item-section> -->
         </q-item>
       </q-list>
     </q-card>
-  </div>
 </template>
 
 <script>

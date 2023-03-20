@@ -177,20 +177,22 @@ export async function get_content_from_trace (trxid, block_num, actionname, data
 
 export async function getCurrentCodeHash (rpcEndpoints, account, vm) {
 
-  let url = rpcEndpoints[0] + '/v1/chain/get_raw_abi';
-  let res = await vm.$axios({
-    method: 'post',
-    url: url,
-    data: {
-      account_name: account
+  try {
+
+    let res = await vm.$eos.api.rpc.get_raw_abi(account)
+
+    console.log('fetched code hash for', account, res);
+
+    return {
+      code_hash: res.code_hash != "0000000000000000000000000000000000000000000000000000000000000000" ? res.code_hash : false,
+      abi_hash: res.abi != "" ? res.abi_hash : false
     }
-  });
-
-  console.log('fetched code hash for', account, res.data);
-
-  return {
-    code_hash: res.data.code_hash != "0000000000000000000000000000000000000000000000000000000000000000" ? res.data.code_hash : false,
-    abi_hash: res.data.abi != "" ? res.data.abi_hash : false
+  } catch (error) {
+    console.log('error fetching code hash', error)
+    return {
+      code_hash: false,
+      abi_hash: false
+    }
   }
 }
 

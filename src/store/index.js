@@ -42,7 +42,8 @@ export default store(function (/* { ssrContext } */) {
         key: "proton",
         paths: [
           "proton.session",
-          "proton.activeNetwork"
+          "proton.activeNetwork",
+          "proton.accountName"
         ]
       }),
       createPersistedState({

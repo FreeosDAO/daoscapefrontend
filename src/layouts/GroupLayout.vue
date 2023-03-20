@@ -227,6 +227,7 @@ export default defineComponent({
     this.unsubscribeTransactions = this.$store.subscribeAction({
       after: (action) => {
         if(action.type != 'proton/transact') return
+        console.log('---- refreshing group -----')
         this.loadGroup(this.getActiveGroup)
       }
     })

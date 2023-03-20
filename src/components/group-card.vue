@@ -11,15 +11,17 @@
           class="row justify-center items-center text-white text-weight-light q-py-sm"
           style="min-height: 115px"
         >
-          <q-img
-            contain
-            v-if="group.ui.logo"
-            :src="group.ui.logo"
-            style="width: 100px; max-width: 70%; height: auto"
-            spinner-color="white"
-            class="q-mb-sm"
+          <q-avatar
+          v-if="group.ui.logo"
+          class="q-mb-sm"
+          size="80px"
           >
-          </q-img>
+            <q-img
+              contain
+              :src="group.ui.logo"
+              spinner-color="white"
+            />
+          </q-avatar>
 
           <div
             class="text-bold text-uppercase text-center"

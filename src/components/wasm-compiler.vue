@@ -51,12 +51,18 @@ export default defineComponent({
         responseType: "arraybuffer",
       });
       let wasm = this.buf2hex(res.data)
-      let code_hash = sha256(wasm);
-      res = {
+      let code_hash = sha256(wasm)
+      const data = {
         wasm: wasm,
         code_hash: code_hash,
-      };
-      return res;
+      }
+    
+      // var test1 = WebAssembly.validate(res.data)
+      // console.warn('test1', test1)
+      // var test2 = WebAssembly.validate(this.hex_decode(wasm))
+      // console.warn('test2', test2)
+
+      return data;
     },
     async loadRemoteAbi(url) {
       url = url + "?t=" + new Date().getTime();
@@ -125,6 +131,13 @@ export default defineComponent({
         .call(new Uint8Array(buffer), (x) => ("00" + x.toString(16)).slice(-2))
         .join("");
     },
+    // hex_decode(string) {
+    //   let bytes = [];
+    //   string.replace(/../g, function (pair) {
+    //       bytes.push(parseInt(pair, 16));
+    //   });
+    //   return new Uint8Array(bytes).buffer;
+    // }
   },
 });
 </script>

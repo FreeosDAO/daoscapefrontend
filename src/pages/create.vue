@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="bg-white">
+  <q-page padding>
     <!-- <scrolling-background class="absolute-bottom" /> -->
       <newGroup
         class="q-mt-lg"

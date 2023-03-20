@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pb-xs">
+  <div class="q-pb-xs" style="max-width:100%">
     <q-card class="proposal" :class="{ 'proposal-voted': hasVoted }">
       <q-expansion-item
         class="primary-hover-list"

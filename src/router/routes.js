@@ -46,8 +46,9 @@ const routes = [
       { path: 'hooks', component: () => import(/* webpackChunkName: "groupHooks" */ 'pages/manage/hooks.vue') },
       { path: 'nfts', component: () => import(/* webpackChunkName: "groupNFTs" */ 'pages/manage/nfts.vue') },
     ],
-    beforeEnter: (to, from) => {
-      if(!store().getters['proton/getSession']){
+    beforeEnter: async (to, from) => {
+      let session = await store().getters['proton/getSession']
+      if(!session){
         return {path: '/login', query: {redirect: to.path}}
       }
     }

@@ -15,6 +15,10 @@
           <div>CREATE ACCOUNT</div>
           <div>2/{{ number_of_steps }}</div>
         </div>
+        <div v-if="step === 'request_activation'" class="row justify-between">
+          <div>ACTIVATE DAO</div>
+          <div>3/{{ number_of_steps }}</div>
+        </div>
         <div
           v-else-if="step === 'request_signature'"
           class="row justify-between"
@@ -40,7 +44,7 @@
         height="auto"
         class="bg-transparent"
       >
-      <q-carousel-slide name="info" class="no-padding">
+      <q-carousel-slide name="intro" class="no-padding">
         <div>
           <p class="text-subtitle1">Things you'll need to get started:</p>
           <ul>
@@ -185,7 +189,7 @@
         <!--ACTIVATION-->
         <q-carousel-slide :name="`request_activation`" class="no-padding">
           <div class="column items-center full-height text-grey-6 q-pt-md">
-            Account created
+            <p>Your DAO Account ({{ this.new_group_account_name }}) has been created. The final step is to activate it!</p>
             <q-btn
               color="primary"
               label="activate"
@@ -258,7 +262,7 @@ export default defineComponent({
   data() {
     return {
       number_of_steps: 3,
-      step: "info", //request_account_name, request_signature
+      step: "intro", //request_account_name, request_signature
       new_group_account_name: "",
       account_name_validated: false,
       voice_only: false,

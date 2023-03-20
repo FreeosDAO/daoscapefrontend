@@ -11,7 +11,7 @@
         <div class="row">
           account: <explorer-link :accountname="module.slave_permission.actor" />
         </div>
-        <div v-if="current_code_and_abi_hash">
+        <div v-if="current_code_and_abi_hash?.abi_hash && current_code_and_abi_hash?.code_hash">
           <div>abi hash: {{ current_code_and_abi_hash.abi_hash }}</div>
           <div>code hash: {{ current_code_and_abi_hash.code_hash }}</div>
         </div>
@@ -100,8 +100,7 @@ export default defineComponent({
 
     async proposeCodeUpdate() {
       this.is_proposing = true;
-      let PROPOSAL_NAME = 'Update Core Contract';
-      console.log(PROPOSAL_NAME);
+      // let PROPOSAL_NAME = 'Update Core Contract';
 
       let setcode = {
         account: "eosio",
@@ -126,55 +125,55 @@ export default defineComponent({
         authorization: [this.module.slave_permission],
       };
 
-      let system_propose_options = {
-        return_action: true,
-        actions: [setcode, setabi], 
-        requested: [{ actor: this.getActiveGroup, permission: "owner" }],
-        proposal_name: PROPOSAL_NAME,
-        vm: this,
-      };
+      // let system_propose_options = {
+      //   return_action: true,
+      //   actions: [setcode, setabi], 
+      //   requested: [{ actor: this.getActiveGroup, permission: "owner" }],
+      //   proposal_name: PROPOSAL_NAME,
+      //   vm: this,
+      // };
       
-      let system_propose_action = await this.$store.dispatch(
-        "proton/proposeSystemMsig",
-        system_propose_options
-      );
+      // let system_propose_action = await this.$store.dispatch(
+      //   "proton/proposeSystemMsig",
+      //   system_propose_options
+      // );
       
 
-      let proposal_hash = await this.$eos.api.serializeTransaction(
-        system_propose_action.data.trx
-      );
-      proposal_hash = sha256(proposal_hash);
+      // let proposal_hash = await this.$eos.api.serializeTransaction(
+      //   system_propose_action.data.trx
+      // );
+      // proposal_hash = sha256(proposal_hash);
      
 
-      let approve_and_execute = [
-        {
-          account: "eosio.msig",
-          name: "approve",
-          data: {
-            proposer: this.getAccountName,
-            proposal_name: PROPOSAL_NAME,
-            level: { actor: this.getActiveGroup, permission: "owner" },
-            proposal_hash: proposal_hash,
-          },
-          authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
-        },
-        {
-          account: "eosio.msig",
-          name: "exec",
-          data: {
-            proposer: this.getAccountName,
-            proposal_name: PROPOSAL_NAME,
-            executer: this.getActiveGroup,
-          },
-          authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
-        },
-      ];
+      // let approve_and_execute = [
+      //   {
+      //     account: "eosio.msig",
+      //     name: "approve",
+      //     data: {
+      //       proposer: this.getAccountName,
+      //       proposal_name: PROPOSAL_NAME,
+      //       level: { actor: this.getActiveGroup, permission: "owner" },
+      //       proposal_hash: proposal_hash,
+      //     },
+      //     authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
+      //   },
+      //   {
+      //     account: "eosio.msig",
+      //     name: "exec",
+      //     data: {
+      //       proposer: this.getAccountName,
+      //       proposal_name: PROPOSAL_NAME,
+      //       executer: this.getActiveGroup,
+      //     },
+      //     authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
+      //   },
+      // ];
       
       let group_propose_options = {
         return_action: true,
-        title: `Code update module "${this.module.module_name}"`,
-        description: `updating the the code of ${this.module.module_name}. New code hash: ${this.new_hex.code_hash}.`,
-        actions: approve_and_execute,
+        title: `Code update for "${this.module.module_name}"`,
+        description: `Updating "${this.module.module_name}" contract code. New wasm hash: ${this.new_hex.code_hash}. New abi hash: ${this.new_hex.abi_hash}.`,
+        actions: [setcode, setabi],
       };
 
       try {
@@ -184,18 +183,18 @@ export default defineComponent({
         });
 
         let res = await this.$store.dispatch("proton/transact", {
-          actions: [system_propose_action, group_propose_action],
+          actions: [group_propose_action],
           disable_signing_overlay: true,
         });
 
-        if (res && res.trxid) {
+        /*if (res && res.trxid) {
           setTimeout(() => {
             this.$store.dispatch("group/fetchProposals", {
               groupname: this.getActiveGroup,
               scope: this.getActiveGroup,
             });
           }, 1500);
-        }
+        }*/
 
       } catch (error) {
         console.warn(error)

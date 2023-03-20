@@ -27,18 +27,23 @@
       mode="out-in"
     >
       <div v-if="selected_src.value == 'remote'" key="remote" class="row items-center">
-        <q-input label="wasm url" outlined v-model="wasm_url" class="q-mr-md">
+        <q-input label="wasm url" outlined v-model="wasm_url" class="q-mr-md q-mb-md">
           <template v-slot:prepend>
             <q-icon name="mdi-file-link" />
           </template>
         </q-input>
-        <q-input label="abi url" outlined v-model="abi_url" class="q-mr-md">
+        <q-input label="abi url" outlined v-model="abi_url" class="q-mr-md q-mb-md">
           <template v-slot:prepend>
             <q-icon name="mdi-file-link" />
           </template>
         </q-input>
         <div class="q-mr-md">
-          <q-btn label="load" color="primary" @click="load_remote" />
+          <q-btn class="q-mr-sm q-mb-sm" label="use The DAOScape core" color="primary" outline @click="load_core" />
+          <q-btn class="q-mr-sm q-mb-sm" label="load" color="primary" @click="load_remote" />
+        </div>
+        <div class="q-mt-lg">
+          <p class="text-left">The most recent version of The DAOScape Core contract <a target="_blank" title="The DAOScape Core contract" href="https://github.com/FreeosDAO/daclifycore">can be found here.</a></p>
+          <p class="text-left"><em><b>Please note:</b> Loading from github requres the url to start with "https://raw.githubusercontent.com/".</em></p>
         </div>
       </div>
 
@@ -123,7 +128,7 @@ export default defineComponent({
   emits: ['newhex'],
   data() {
     return {
-      selected_src: "",
+      selected_src: { label: "Remote", sublabel: "github, server, ... ", value: "remote" },
       src_options: [
         /*{
           label: "Daclify",
@@ -131,7 +136,7 @@ export default defineComponent({
           value: "daclify",
         },*/
         { label: "Remote", sublabel: "github, server, ... ", value: "remote" },
-        { label: "Local", sublabel: "disk", value: "local" },
+        //{ label: "Local", sublabel: "disk", value: "local" },
       ],
       wasm_url: "",
       abi_url: "",
@@ -148,6 +153,11 @@ export default defineComponent({
   methods: {
     emit_empty() {
       this.$emit("newhex", { code_hash: "", abi_hash: "", wasm: "", abi: "" });
+    },
+    load_core(){
+      this.wasm_url = "https://raw.githubusercontent.com/FreeosDAO/daclifycore/master/daclifycore.wasm"
+      this.abi_url = "https://raw.githubusercontent.com/FreeosDAO/daclifycore/master/daclifycore.abi"
+      this.load_remote()
     },
     async load_remote() {
       let wasm = await this.$refs.wasm_compiler.loadRemoteWasm(this.wasm_url);

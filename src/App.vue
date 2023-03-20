@@ -45,10 +45,14 @@ export default defineComponent({
     ...mapGetters({
       getActiveGroup: "group/getActiveGroup",
       getAccountName: "proton/getAccountName",
+      getSession: "proton/getSession",
       getIsDark: "user/getIsDark",
     }),
   },
-  mounted() {
+  async mounted() {
+    if(this.getSession){
+      await this.reconnect();
+    }
     this.$store.dispatch("app/initRoutine", { vm: this });
   },
   methods: {
@@ -64,8 +68,6 @@ export default defineComponent({
   },
   created() {
     this.emitter.on('showHubDeposits', (e)=>{this.showHubWallet(e) } );
-
-    this.reconnect();
 
     if (this.$messaging) {
       this.$messaging.onMessage((payload) => {
@@ -85,6 +87,7 @@ export default defineComponent({
       });
     }
   },
+
 
   watch: {
     getAccountName: {
