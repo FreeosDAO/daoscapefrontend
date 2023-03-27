@@ -103,6 +103,8 @@ export default defineComponent({
       // ***************
       // 1. Serialize the actions
 
+      console.log("proposeCodeUpdate 1");
+
       const actions = [
         {
           account: 'eosio',
@@ -132,6 +134,8 @@ export default defineComponent({
       })
 
       // 2. Proposal Input
+      console.log("proposeCodeUpdate 2");
+
       const proposeInput = {
         proposer: this.module.slave_permission.actor,
         proposal_name: 'upgradedao',
@@ -155,6 +159,8 @@ export default defineComponent({
       };
 
       // 3. Propose
+      console.log("proposeCodeUpdate 3");
+      
       await api.transact({
         actions: [{
           account: 'eosio.msig',
@@ -171,6 +177,27 @@ export default defineComponent({
         broadcast: true,
         sign: true
       });
+    },
+    newHex(e){
+      this.new_hex = e;
     }
+  },
 
+  watch: {
+    module: {
+      immediate: true,
+      handler: async function (newV, oldV) {
+        if (newV && newV != oldV && newV.slave_permission) {
+          if (this.current_code_and_abi_hash === "") {
+            this.current_code_and_abi_hash = await getCurrentCodeHash(
+              this.getRpcEndpoints,
+              this.module.slave_permission.actor,
+              this
+            );
+          }
+        }
+      },
+    },
+  }
+});
 </script>
