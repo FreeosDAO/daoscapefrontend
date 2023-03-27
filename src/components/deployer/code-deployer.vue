@@ -99,151 +99,78 @@ export default defineComponent({
     },
 
     async proposeCodeUpdate() {
-      console.log(">>> Start of proposeCodeUpdate");
-      this.is_proposing = true;
-      // let PROPOSAL_NAME = 'Update Core Contract';
 
-      // START OF ORIGINAL CODE BLOCK 1
-      // let setcode = {
-      //   account: "eosio",
-      //   name: "setcode",
-      //   data: {
-      //     account: this.module.slave_permission.actor,
-      //     vmtype: 0,
-      //     vmversion: 0,
-      //     code: this.new_hex.wasm,
-      //   },
+      // ***************
+      // 1. Serialize the actions
 
-      //   authorization: [this.module.slave_permission],
-      // };
-      // let setabi = {
-      //   account: "eosio",
-      //   name: "setabi",
-      //   data: {
-      //     account: this.module.slave_permission.actor,
-      //     abi: this.new_hex.abi,
-      //   },
-
-      //   authorization: [this.module.slave_permission],
-      // };
-      // END OF ORIGINAL CODE BLOCK 1
-
-
-      // START OF COMMENTED MULTISIG CODE
-      let system_propose_options = {
-        return_action: true,
-        actions: [setcode, setabi], 
-        requested: [{ actor: this.getActiveGroup, permission: "owner" }],
-        proposal_name: PROPOSAL_NAME,
-        vm: this,
-      };
-
-      console.log(">>> proposeCodeUpdate 1");
-      
-      let system_propose_action = await this.$store.dispatch(
-        "proton/proposeSystemMsig",
-        system_propose_options
-      );
-      
-      console.log(">>> proposeCodeUpdate 2");
-
-      let proposal_hash = await this.$eos.api.serializeTransaction(
-        system_propose_action.data.trx
-      );
-      proposal_hash = sha256(proposal_hash);
-     
-
-      let approve_and_execute = [
+      const actions = [
         {
-          account: "eosio.msig",
-          name: "approve",
+          account: 'eosio',
+          name: 'setabi',
+          authorization: [this.module.slave_permission],
           data: {
-            proposer: this.getAccountName,
-            proposal_name: PROPOSAL_NAME,
-            level: { actor: this.getActiveGroup, permission: "owner" },
-            proposal_hash: proposal_hash,
-          },
-          authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
+            account: this.module.slave_permission.actor,
+            abi: this.new_hex.abi,
+          }
         },
         {
-          account: "eosio.msig",
-          name: "exec",
+          account: "eosio",
+          name: "setcode",
           data: {
-            proposer: this.getAccountName,
-            proposal_name: PROPOSAL_NAME,
-            executer: this.getActiveGroup,
+            account: this.module.slave_permission.actor,
+            vmtype: 0,
+            vmversion: 0,
+            code: this.new_hex.wasm,
           },
-          authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
-        },
-      ];
-      console.log(">>> proposeCodeUpdate 3");
-      // END OF COMMENTED MULTISIG CODE
-      
 
-      // START OF ORIGINAL CODE BLOCK 2
-/* 
-      let group_propose_options = {
-        return_action: true,
-        title: `Code update for "${this.module.module_name}"`,
-        description: `Updating "${this.module.module_name}" contract code. New wasm hash: ${this.new_hex.code_hash}. New abi hash: ${this.new_hex.abi_hash}.`,
-        actions: [setcode, setabi],
-      };
-
-      try {
-        let group_propose_action = await this.$store.dispatch("group/propose", {
-          data: group_propose_options,
-          vm: this,
-        });
-
-        let res = await this.$store.dispatch("proton/transact", {
-          actions: [group_propose_action],
-          disable_signing_overlay: true,
-        });
-
-        if (res && res.trxid) {
-          setTimeout(() => {
-            this.$store.dispatch("group/fetchProposals", {
-              groupname: this.getActiveGroup,
-              scope: this.getActiveGroup,
-            });
-          }, 1500);
+          authorization: [this.module.slave_permission],
         }
+      ];
 
-      } catch (error) {
-        console.warn(error)
-        notifyError({message:`Uh oh! Something went wrong: ${error}`});
-        
-      }
-*/
-    console.log(">>> proposeCodeUpdate 4");
+      (async () => {
+        const serialized_actions = await api.serializeActions(actions)
+      })
 
-      this.is_proposing = false;
-      this.reset_view();
-    console.log(">>> proposeCodeUpdate 5");
-    },
-    newHex(e){
-      this.new_hex = e;
+      // 2. Proposal Input
+      const proposeInput = {
+        proposer: this.module.slave_permission.actor,
+        proposal_name: 'upgradedao',
+        requested: [
+          {
+            actor: 'bigverndao',
+            permission: 'active'
+          }
+        ],
+        trx: {
+          expiration: '2023-09-14T16:39:15',
+          ref_block_num: 0,
+          ref_block_prefix: 0,
+          max_net_usage_words: 0,
+          max_cpu_usage_ms: 0,
+          delay_sec: 0,
+          context_free_actions: [],
+          actions: serialized_actions,
+          transaction_extensions: []
+        }
+      };
+
+      // 3. Propose
+      await api.transact({
+        actions: [{
+          account: 'eosio.msig',
+          name: 'propose',
+          authorization: [{
+            actor: this.module.slave_permission.actor,
+            permission: 'active',
+          }],
+          data: proposeInput,
+        }]
+      }, {
+        blocksBehind: 3,
+        expireSeconds: 30,
+        broadcast: true,
+        sign: true
+      });
     }
 
-    
-  },
-  // END OF ORIGINAL CODE BLOCK 2
-
-  watch: {
-    module: {
-      immediate: true,
-      handler: async function (newV, oldV) {
-        if (newV && newV != oldV && newV.slave_permission) {
-          if (this.current_code_and_abi_hash === "") {
-            this.current_code_and_abi_hash = await getCurrentCodeHash(
-              this.getRpcEndpoints,
-              this.module.slave_permission.actor,
-              this
-            );
-          }
-        }
-      },
-    },
-  }
-});
 </script>
