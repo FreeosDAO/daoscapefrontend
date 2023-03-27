@@ -1,14 +1,14 @@
 import { boot } from 'quasar/wrappers'
-import { JsonRpc, Api, Serialize, RpcError } from "@jafri/eosjs2";
+import { JsonRpc, Api, Serialize, RpcError } from "@proton/js";
 // import { JsonRpc, Api, Serialize, RpcError } from "eosjs";
-const { JsSignatureProvider } = require('@jafri/eosjs2/dist/eosjs-jssig');
+// const { JsSignatureProvider } = require('@jafri/eosjs2/dist/eosjs-jssig');
 // const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
-if(process.env.DEV){
-  var VConsole = require("vconsole");
-  var vConsole = new VConsole();
-}
+// if(process.env.DEV){
+//   var VConsole = require("vconsole");
+//   var vConsole = new VConsole();
+// }
 
-let signaturep = new JsSignatureProvider(["5JyMQejqoJLLrd6SHYQqkhWeAkXjcps8LEC6KQtebDuUDBwhvp5"]);
+// let signaturep = new JsSignatureProvider(["5JyMQejqoJLLrd6SHYQqkhWeAkXjcps8LEC6KQtebDuUDBwhvp5"]);
 
 
 

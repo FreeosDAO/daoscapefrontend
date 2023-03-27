@@ -38,6 +38,7 @@
           </template>
         </q-input>
         <div class="q-mr-md">
+          <!-- <q-btn class="q-mr-sm q-mb-sm" label="do the hacks" color="primary" outline @click="hacks" /> -->
           <q-btn class="q-mr-sm q-mb-sm" label="use The DAOScape core" color="primary" outline @click="load_core" />
           <q-btn class="q-mr-sm q-mb-sm" label="load" color="primary" @click="load_remote" />
         </div>
@@ -118,6 +119,7 @@
 
 <script>
 import { defineComponent } from "vue";
+import { mapGetters } from "vuex";
 import wasmCompiler from "../wasm-compiler";
 
 export default defineComponent({
@@ -126,6 +128,11 @@ export default defineComponent({
     wasmCompiler
   },
   emits: ['newhex'],
+  computed:{
+    ...mapGetters({
+      getActiveGroup: "group/getActiveGroup"
+    })
+  },
   data() {
     return {
       selected_src: { label: "Remote", sublabel: "github, server, ... ", value: "remote" },
@@ -154,6 +161,27 @@ export default defineComponent({
     emit_empty() {
       this.$emit("newhex", { code_hash: "", abi_hash: "", wasm: "", abi: "" });
     },
+    // async hacks(){
+    //   this.wasm_url = "https://raw.githubusercontent.com/FreeosDAO/freeoscontracts/master/freeosconfig/freeosconfig.wasm"
+    //   this.abi_url = "https://raw.githubusercontent.com/FreeosDAO/freeoscontracts/master/freeosconfig/freeosconfig.abi"
+    //   try {
+    //     let wasm = await this.$refs.wasm_compiler.loadRemoteWasm(this.wasm_url);
+    //     let abi = await this.$refs.wasm_compiler.loadRemoteAbi(this.abi_url);
+        
+    //     let actions = [{
+    //       account: this.getActiveGroup,
+    //       name: "setcontract",
+    //       data: { abi: abi.abi, code: wasm.wasm  }
+    //     }]
+        
+    //     let res = await this.$store.dispatch("proton/transact", {
+    //         actions,
+    //         disable_signing_overlay: true,
+    //       });
+    //   } catch (error) {
+    //     console.error(error)
+    //   }
+    // },
     load_core(){
       this.wasm_url = "https://raw.githubusercontent.com/FreeosDAO/daclifycore/master/daclifycore.wasm"
       this.abi_url = "https://raw.githubusercontent.com/FreeosDAO/daclifycore/master/daclifycore.abi"
