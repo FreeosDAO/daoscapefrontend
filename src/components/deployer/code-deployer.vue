@@ -99,76 +99,89 @@ export default defineComponent({
     },
 
     async proposeCodeUpdate() {
+      console.log(">>> Start of proposeCodeUpdate");
       this.is_proposing = true;
       // let PROPOSAL_NAME = 'Update Core Contract';
 
-      let setcode = {
-        account: "eosio",
-        name: "setcode",
-        data: {
-          account: this.module.slave_permission.actor,
-          vmtype: 0,
-          vmversion: 0,
-          code: this.new_hex.wasm,
-        },
+      // START OF ORIGINAL CODE BLOCK 1
+      // let setcode = {
+      //   account: "eosio",
+      //   name: "setcode",
+      //   data: {
+      //     account: this.module.slave_permission.actor,
+      //     vmtype: 0,
+      //     vmversion: 0,
+      //     code: this.new_hex.wasm,
+      //   },
 
-        authorization: [this.module.slave_permission],
-      };
-      let setabi = {
-        account: "eosio",
-        name: "setabi",
-        data: {
-          account: this.module.slave_permission.actor,
-          abi: this.new_hex.abi,
-        },
-
-        authorization: [this.module.slave_permission],
-      };
-
-      // let system_propose_options = {
-      //   return_action: true,
-      //   actions: [setcode, setabi], 
-      //   requested: [{ actor: this.getActiveGroup, permission: "owner" }],
-      //   proposal_name: PROPOSAL_NAME,
-      //   vm: this,
+      //   authorization: [this.module.slave_permission],
       // };
-      
-      // let system_propose_action = await this.$store.dispatch(
-      //   "proton/proposeSystemMsig",
-      //   system_propose_options
-      // );
-      
+      // let setabi = {
+      //   account: "eosio",
+      //   name: "setabi",
+      //   data: {
+      //     account: this.module.slave_permission.actor,
+      //     abi: this.new_hex.abi,
+      //   },
 
-      // let proposal_hash = await this.$eos.api.serializeTransaction(
-      //   system_propose_action.data.trx
-      // );
-      // proposal_hash = sha256(proposal_hash);
+      //   authorization: [this.module.slave_permission],
+      // };
+      // END OF ORIGINAL CODE BLOCK 1
+
+
+      // START OF COMMENTED MULTISIG CODE
+      let system_propose_options = {
+        return_action: true,
+        actions: [setcode, setabi], 
+        requested: [{ actor: this.getActiveGroup, permission: "owner" }],
+        proposal_name: PROPOSAL_NAME,
+        vm: this,
+      };
+
+      console.log(">>> proposeCodeUpdate 1");
+      
+      let system_propose_action = await this.$store.dispatch(
+        "proton/proposeSystemMsig",
+        system_propose_options
+      );
+      
+      console.log(">>> proposeCodeUpdate 2");
+
+      let proposal_hash = await this.$eos.api.serializeTransaction(
+        system_propose_action.data.trx
+      );
+      proposal_hash = sha256(proposal_hash);
      
 
-      // let approve_and_execute = [
-      //   {
-      //     account: "eosio.msig",
-      //     name: "approve",
-      //     data: {
-      //       proposer: this.getAccountName,
-      //       proposal_name: PROPOSAL_NAME,
-      //       level: { actor: this.getActiveGroup, permission: "owner" },
-      //       proposal_hash: proposal_hash,
-      //     },
-      //     authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
-      //   },
-      //   {
-      //     account: "eosio.msig",
-      //     name: "exec",
-      //     data: {
-      //       proposer: this.getAccountName,
-      //       proposal_name: PROPOSAL_NAME,
-      //       executer: this.getActiveGroup,
-      //     },
-      //     authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
-      //   },
-      // ];
+      let approve_and_execute = [
+        {
+          account: "eosio.msig",
+          name: "approve",
+          data: {
+            proposer: this.getAccountName,
+            proposal_name: PROPOSAL_NAME,
+            level: { actor: this.getActiveGroup, permission: "owner" },
+            proposal_hash: proposal_hash,
+          },
+          authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
+        },
+        {
+          account: "eosio.msig",
+          name: "exec",
+          data: {
+            proposer: this.getAccountName,
+            proposal_name: PROPOSAL_NAME,
+            executer: this.getActiveGroup,
+          },
+          authorization: [{ actor: this.getActiveGroup, permission: "owner" }],
+        },
+      ];
+      console.log(">>> proposeCodeUpdate 3");
+      // END OF COMMENTED MULTISIG CODE
       
+
+      // START OF ORIGINAL CODE BLOCK 2
+/* 
       let group_propose_options = {
         return_action: true,
         title: `Code update for "${this.module.module_name}"`,
@@ -187,28 +200,34 @@ export default defineComponent({
           disable_signing_overlay: true,
         });
 
-        /*if (res && res.trxid) {
+        if (res && res.trxid) {
           setTimeout(() => {
             this.$store.dispatch("group/fetchProposals", {
               groupname: this.getActiveGroup,
               scope: this.getActiveGroup,
             });
           }, 1500);
-        }*/
+        }
 
       } catch (error) {
         console.warn(error)
         notifyError({message:`Uh oh! Something went wrong: ${error}`});
         
       }
+*/
+    console.log(">>> proposeCodeUpdate 4");
 
       this.is_proposing = false;
       this.reset_view();
+    console.log(">>> proposeCodeUpdate 5");
     },
     newHex(e){
       this.new_hex = e;
     }
+
+    
   },
+  // END OF ORIGINAL CODE BLOCK 2
 
   watch: {
     module: {
