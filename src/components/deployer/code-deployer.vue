@@ -100,6 +100,11 @@ export default defineComponent({
 
     async proposeCodeUpdate() {
 
+      // CURRENT USER = this.getAccountName
+      // CURRENT GROUP = this.module.slave_permission.actor
+
+      try {
+
       // ***************
       // 1. Serialize the actions
 
@@ -128,16 +133,22 @@ export default defineComponent({
           authorization: [this.module.slave_permission],
         }
       ];
+      
+      
+      let serialized_actions = []
+      actions.forEach(async (action) => {
+        const contract = await this.$eos.api.getContract(action.account);
+        const serialized = await this.$eos.Serialize.serializeAction(contract, action.account, action.name, action.authorization, action.data)
+        serialized_actions.push(serialized)
+      });
 
-      (async () => {
-        const serialized_actions = await api.serializeActions(actions)
-      })
+      console.log('actions', serialized_actions)
 
       // 2. Proposal Input
       console.log("proposeCodeUpdate 2");
 
       const proposeInput = {
-        proposer: this.module.slave_permission.actor,
+        proposer: this.getAccountName,
         proposal_name: 'upgradedao',
         requested: [
           {
@@ -160,23 +171,23 @@ export default defineComponent({
 
       // 3. Propose
       console.log("proposeCodeUpdate 3");
-      
-      await api.transact({
-        actions: [{
-          account: 'eosio.msig',
-          name: 'propose',
-          authorization: [{
-            actor: this.module.slave_permission.actor,
-            permission: 'active',
+
+      let res = await this.$store.dispatch("proton/transact", {
+          actions: [{
+            account: 'eosio.msig',
+            name: 'propose',
+            authorization: [{
+              actor: this.getAccountName,
+              permission: 'active',
+            }],
+            data: proposeInput,
           }],
-          data: proposeInput,
-        }]
-      }, {
-        blocksBehind: 3,
-        expireSeconds: 30,
-        broadcast: true,
-        sign: true
-      });
+          disable_signing_overlay: true,
+        });
+        
+      } catch (error) {
+        console.error(error)
+      }
     },
     newHex(e){
       this.new_hex = e;
@@ -200,4 +211,5 @@ export default defineComponent({
     },
   }
 });
+
 </script>
