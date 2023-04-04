@@ -107,6 +107,9 @@
                   <span v-else>12 char account name</span>
                 </template>
               </q-input>
+              <p class="q-mt-md text-grey-6">
+                <em>Please note: the group name cannot be changed once it has been created.</em>
+              </p>
             </div>
 
             <div class="column justify-center items-center q-mt-lg">
@@ -170,16 +173,26 @@
             </q-btn>
           </div>
 
-          <div class="text-grey-6">
-            The estimated cost to create your account is
-              {{ getResourceEstimation }}. Your current DAOScape balance is: {{ hubDeposits }}.
+          <p class="text-subtitle1 q-mb-md">
+            The estimated cost to create your DAO account is {{ getResourceEstimation }}.
+          </p>
+
+          <div v-if="!has_enough_deposits">
+            <p class="text-grey-6">
+              You don't have enough {{ getAppConfig.system_token.symbol }} deposits to start your DAO. Please make a deposit below.
+      You need a minimum of {{ getResourceEstimation }} to deploy the core contract. Excess deposits will be used to buy extra RAM.
+            </p>
+            <hub-deposit-wallet :default_input_value="getRamPricePerByte * required_bytes" />
           </div>
 
-          <div class="column justify-center items-center q-mt-md">
+          <div v-if="has_enough_deposits" class="column justify-center items-center q-mt-md">
+            <p class="text-grey-6">
+              Good news! You have enough deposits in The DAOScape Hub to create an account.<br>
+              Clicking the below button will use all your current deposits to create a new DAO account. Excess deposits will be used to buy extra RAM.
+            </p>
             <q-btn
               color="primary"
               label="Create Account"
-              style="width: 150px"
               :disabled="!account_name_validated"
               @click="createGroup"
             />
@@ -188,8 +201,8 @@
 
         <!--ACTIVATION-->
         <q-carousel-slide :name="`request_activation`" class="no-padding">
-          <div class="column items-center full-height text-grey-6 q-pt-md">
-            <p>Your DAO Account ({{ this.new_group_account_name }}) has been created. The final step is to activate it!</p>
+          <div class="column items-center full-height">
+            <p class="text-subtitle1 text-center q-mt-sm">Your DAO account <b>{{ this.new_group_account_name }}</b> has been created.<br>The final step is to activate it!</p>
             <q-btn
               color="primary"
               label="activate"
@@ -214,12 +227,12 @@
 
         <!--SUCCESS!-->
         <q-carousel-slide :name="`group_created`" class="no-padding">
-          <div class="column items-center full-height text-grey-6 q-pt-md">
-            <q-icon color="primary" size="40px" name="check" />
-            <div class="q-mt-xs">Group created successful</div>
+          <div class="column items-center full-height q-pt-md">
+            <q-icon name="mdi-check-circle-outline" color="primary" size="52px" />
+            <div class="q-mt-sm text-subtitle1">Group successfully activated</div>
             <q-btn
               label="visit group"
-              color="secondary"
+              color="primary"
               class="q-mt-md"
               :to="`/manage/${new_group_account_name}`"
             />
@@ -236,18 +249,21 @@ import { mapGetters } from "vuex";
 import { defineComponent } from "vue";
 
 import wasmCompiler from "components/wasm-compiler";
-import loginNetworkSwitcher from 'src/components/login/login-network-switcher.vue';
+import loginNetworkSwitcher from 'src/components/login/login-network-switcher';
+import hubDepositWallet from "./hub-deposit-wallet";
 
 import {
   isValidAccountName,
   isAvailableAccountName,
 } from "../imports/validators";
+import { notifySuccess } from "src/imports/notifications";
 
 export default defineComponent({
   name: "newGroup",
   components: {
     wasmCompiler,
-    loginNetworkSwitcher
+    loginNetworkSwitcher,
+    hubDepositWallet
   },
   props: {
     prefill: {
@@ -262,7 +278,7 @@ export default defineComponent({
   data() {
     return {
       number_of_steps: 3,
-      step: "intro", //request_account_name, request_signature
+      step: "intro", //intro, request_account_name, create_account, request_signature, group_created
       new_group_account_name: "",
       account_name_validated: false,
       voice_only: false,
@@ -324,9 +340,6 @@ export default defineComponent({
     }
   },
   watch: {
-    new_group_account_name: function () {
-      console.log(this.$refs.accountinput.hasError);
-    },
     getAccountName: {
       immediate: true,
       handler: function (newV, oldV) {
@@ -353,10 +366,10 @@ export default defineComponent({
       this.deploycontract(this.new_group_account_name);
     },
     async createGroup() {
-      if (!this.has_enough_deposits) {
-        this.openHubWallet();
-        return;
-      }
+      // if (!this.has_enough_deposits) {
+      //   this.openHubWallet();
+      //   return;
+      // }
 
       try {
         await this.$store.dispatch("app/fetchRamPricePerByte", { vm: this });
@@ -386,6 +399,7 @@ export default defineComponent({
         }, 2000);
 
         if (res && res.trxid) {
+          notifySuccess({message: `"${this.new_group_account_name}" has been created.`})
           this.step = "request_activation";
         } else {
           this.step = "create_account";
@@ -448,6 +462,7 @@ export default defineComponent({
       }, 1000);
 
       if (res && res.trxid) {
+        notifySuccess({message: `"${this.new_group_account_name}" has been activated.`})
         this.step = "group_created";
         return true;
       } else {
@@ -468,9 +483,9 @@ export default defineComponent({
         this.account_name_validated = true;
       } else {
         this.step = "create_account";
-        if (!this.has_enough_deposits) {
-          this.openHubWallet();
-        }
+        // if (!this.has_enough_deposits) {
+        //   this.openHubWallet();
+        // }
       }
     },
     async get_wasm_and_abi_from_github() {

@@ -31,6 +31,22 @@
           </q-item>
         </q-card>
       </div>
+
+      <div v-if="!getHubDeposits.length">
+        <q-card>
+          <q-item>
+            <q-item-section>
+              <q-item-label class="text-weight-light text-h6">
+                <span>0</span>
+                <span class="text-weight-bold"> {{ getAppConfig.system_token.symbol }}</span>
+              </q-item-label>
+              <q-item-label caption class="text-grey">Deposit Balance</q-item-label>
+            </q-item-section>
+            <q-item-section side> </q-item-section>
+          </q-item>
+        </q-card>
+      </div>
+      
     </transition-group>
 
     <q-tabs v-model="active_tab" dense align="left" class="text-primary q-mt-md">
@@ -94,10 +110,16 @@
 <script>
 import { mapGetters } from "vuex";
 import { defineComponent } from "vue";
+import { notifySuccess } from "src/imports/notifications";
 
 export default defineComponent({
   name: "hubDepositWallet",
-
+  props: {
+    default_input_value: {
+      type: Number,
+      default: 0
+    }
+  },
   data() {
     return {
       active_tab: "deposit",
@@ -113,7 +135,7 @@ export default defineComponent({
     ...mapGetters({
       getAccountName: "proton/getAccountName",
       getAppConfig: "app/getAppConfig",
-      getHubDeposits: "user/getHubDeposits",
+      getHubDeposits: "user/getHubDeposits"
     }),
     can_withdraw() {
       return this.getHubDeposits && this.getHubDeposits.length;
@@ -162,19 +184,20 @@ export default defineComponent({
           memo: "",
         },
       };
-      this.is_transfering = true;
+      this.is_transfering = true
       let res = await this.$store.dispatch("proton/transact", {
         actions: [open, transfer],
         disable_signing_overlay: true,
-      });
-      if (res && res.trxid) {
-        //dispatch('fetchHubDeposits', payload.accountname);
-      } else {
-      }
-      this.is_transfering = false;
-      setTimeout(() => {
-        this.refresh_deposits();
-      }, 1000);
+      })
+
+      this.is_transfering = false
+
+      if(!res) return
+      notifySuccess({message: `Successfuly deposited ${Number(this.input_value).toFixed(this.selected_asset.precision)} ${this.selected_asset.symbol}`})
+      setTimeout(()=>{
+        this.refresh_deposits()
+      }, 1000)
+      
     },
     async withdraw() {
       let withdraw = {
@@ -196,18 +219,20 @@ export default defineComponent({
         actions: [withdraw],
         disable_signing_overlay: true,
       });
-      if (res && res.trxid) {
-        //dispatch('fetchHubDeposits', payload.accountname);
-      } else {
-      }
-      this.is_withdrawing = false;
-      setTimeout(() => {
-        this.refresh_deposits();
-      }, 1000);
+
+      this.is_withdrawing = false
+      
+      if(!res) return
+      notifySuccess({message: `Successfuly withdrawn ${Number(this.input_value).toFixed(this.selected_asset.precision)} ${this.selected_asset.symbol}`})
+      setTimeout(()=>{
+        this.refresh_deposits()
+      }, 1000)
+      
     },
   },
   mounted() {
     if (this.getAccountName) {
+      this.input_value = this.default_input_value
       this.$store.dispatch("user/fetchHubDeposits", {
         accountname: this.getAccountName,
         vm: this,

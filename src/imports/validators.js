@@ -14,14 +14,18 @@ export function isValidAccountName (v) {
 
 export async function isAvailableAccountName (payload) {
   payload.v = payload.v.toLowerCase();
-  console.log(payload.v)
-  let res = await payload.vm.$eos.api.rpc.get_account(payload.v).catch(e => false);
-  console.log(res)
-  if (!res) {
-    //accountname not found
+
+  try {
+    let res = await payload.vm.$eos.api.rpc.get_account(payload.v)
+    if (!res) {
+      //accountname not found
+      return true;
+    } else {
+      return "Account name already taken.";
+    }
+    
+  } catch (error) {
     return true;
-  } else {
-    return "Account name already taken.";
   }
 }
 
