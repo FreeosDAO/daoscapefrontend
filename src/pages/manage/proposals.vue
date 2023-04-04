@@ -120,6 +120,9 @@ export default defineComponent({
         this.$store.commit("app/setCLOCK", Date.now());
       }, 1000);
     }
+    this.$store.dispatch('group/fetchProposals', { groupname: this.getActiveGroup, scope: this.getActiveGroup, vm: this });
+    this.$store.dispatch('group/fetchProposals', { groupname: this.getActiveGroup, scope: "cancelled", vm: this });
+    this.$store.dispatch('group/fetchProposals', { groupname: this.getActiveGroup, scope: "executed", vm: this });
   },
   beforeDestroy() {
     clearInterval(this.CLOCK_TIMER);
