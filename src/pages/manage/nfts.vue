@@ -109,9 +109,6 @@ export default defineComponent({
       getAppConfig: "app/getAppConfig",
     })
   },
-  mounted() {
-    this.getNftsFromAtomic()
-  },
   methods: {
     async getNftsFromAtomic() {
 
@@ -121,7 +118,7 @@ export default defineComponent({
       // Store results
       console.log('nfts', result)
       this.nftsLoading = false
-      this.nfts = result.data.data
+      this.nfts = result.data.data//.filter( nft => nft.owner == this.getActiveGroup )
 
       // Check for more
       if(!this.nfts.length){
@@ -143,10 +140,10 @@ export default defineComponent({
 
       // Store results
       console.log('more check', result)
-      this.checkData = result.data.data
+      this.checkData = result.data.data//.filter( nft => nft.owner == this.getActiveGroup )
     },
     async callAtomic(){
-      let url = this.getAppConfig.nft.api+'/atomicassets/v1/assets?owner='+this.getActiveGroup+'&page='+this.page+'&limit='+this.perPage+'&order=desc&sort=asset_id';
+      let url = `${this.getAppConfig.nft.api}/atomicassets/v1/assets?owner=${this.getActiveGroup}&page=${this.page}&limit=${this.perPage}&order=desc&sort=asset_id`;
       console.warn('calling', url)
       return await this.$axios
         //.get(this.getAppConfig.nft.api + '/atomicassets/v1/assets?owner=conorsee&page=' + this.page + '&limit=' + this.perPage + '&order=desc&sort=asset_id')
@@ -156,6 +153,15 @@ export default defineComponent({
           this.error = error
         })
     }
+  },
+  watch:{
+    getActiveGroup(){
+      this.getNftsFromAtomic()
+    }
+  },
+  mounted(){
+    if(!this.getActiveGroup) return
+    this.getNftsFromAtomic()
   }
 });
 </script>
