@@ -15,7 +15,7 @@
         },
         "nft":{
             "api": "https://test.proton.api.atomicassets.io",
-            "url": "https://dev.protonmarket.com"
+            "url": "https://testnet.protonscan.io/nft"
         }
     },
     "proton":{
@@ -34,7 +34,7 @@
         },
         "nft":{
             "api": "https://proton.api.atomicassets.io",
-            "url": "https://protonmint.com"
+            "url": "https://protonscan.io/nft"
         }
     }
 }

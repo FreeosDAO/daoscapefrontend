@@ -63,7 +63,7 @@
 
           <q-card-actions>
             <q-btn flat color="primary" target="_blank" icon-right="mdi-open-in-new" align="between" label="View" 
-              :href="getAppConfig.nft.url + '/' + nft.collection.collection_name + '/' + nft.template.template_id">
+              :href="`${getAppConfig.nft.url}/${nft.asset_id}`">
             </q-btn>
           </q-card-actions>
         </q-card>
