@@ -8,7 +8,7 @@ export function isValidAccountName (v) {
     if (v.length > 12) {
       return "Max 12 characters";
     }
-    return "Allowed chars a-z, 1-5 and .";
+    return "Allowed characters: a-z, 1-5. Minimum of 4 characters.";
   }
 }
 
