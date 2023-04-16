@@ -176,8 +176,29 @@ export async function fetchGuardians({ state, commit }, payload) {
     limit: -1
   });
   if (res && res.rows) {
-    console.log(`fetched guardians for group ${payload.groupname}`, res.rows);
-    commit('setGuardians', res.rows);
+    // add alive status
+    console.log('state', state)
+    let guardians = res.rows.map(guardian => {
+      let alive = 0;
+      if (state.coreConfig && state.coreConfig.conf.inactivate_cust_after_sec) {
+        let last_active = new Date(guardian.last_active + ".000+00:00").getTime();
+        let now = new Date().getTime();
+  
+        let imalive_period = state.coreConfig.conf.inactivate_cust_after_sec * 1000;
+  
+        let inactive_for_ms = now - last_active;
+        let perc = 100 - (inactive_for_ms / imalive_period) * 100;
+        alive = perc >= 0 ? perc : 0;
+      }
+      return {
+        ...guardian,
+        alive
+      }
+    })
+    
+    // dispatch
+    console.log(`fetched guardians for group ${payload.groupname}`, guardians);
+    commit('setGuardians', guardians);
   }
   else {
     console.log(`fetching guardians for group ${payload.groupname} failed`);
