@@ -130,7 +130,8 @@ export default defineComponent({
   emits: ['newhex'],
   computed:{
     ...mapGetters({
-      getActiveGroup: "group/getActiveGroup"
+      getActiveGroup: "group/getActiveGroup",
+      getAppConfig: "app/getAppConfig",
     })
   },
   data() {
@@ -186,8 +187,8 @@ export default defineComponent({
     //   }
     // },
     load_core(){
-      this.wasm_url = "https://raw.githubusercontent.com/FreeosDAO/daoscapecore/master/daoscapecore.wasm"
-      this.abi_url = "https://raw.githubusercontent.com/FreeosDAO/daoscapecore/master/daoscapecore.abi"
+      this.wasm_url = `${this.getAppConfig.core_contract.raw}${this.getAppConfig.core_contract.wasm}`
+      this.abi_url = `${this.getAppConfig.core_contract.raw}${this.getAppConfig.core_contract.abi}`
       this.load_remote()
     },
     async load_remote() {

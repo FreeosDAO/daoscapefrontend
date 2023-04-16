@@ -491,10 +491,10 @@ export default defineComponent({
     async get_wasm_and_abi_from_github() {
       console.log("retrieving code from github");
       let wasm = await this.$refs.wasm_compiler.loadRemoteWasm(
-        "https://raw.githubusercontent.com/FreeosDAO/daclifycore/master/daclifycore.wasm"
+        `${this.getAppConfig.core_contract.raw}${this.getAppConfig.core_contract.wasm}`
       );
       let abi = await this.$refs.wasm_compiler.loadRemoteAbi(
-        "https://raw.githubusercontent.com/FreeosDAO/daclifycore/master/daclifycore.abi"
+        `${this.getAppConfig.core_contract.raw}${this.getAppConfig.core_contract.abi}`
       );
 
       this.wasmhex = wasm.wasm;

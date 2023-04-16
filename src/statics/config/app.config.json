@@ -1,6 +1,12 @@
 {
   "protonTest":{
       "groups_contract": "fdachub",
+      "core_contract": {
+        "repo": "https://github.com/FreeosDAO/daoscapecore/",
+        "raw": "https://raw.githubusercontent.com/FreeosDAO/daoscapecore/master/",
+        "wasm": "daoscapecore_testnet.wasm",
+        "abi": "daoscapecore_testnet.abi"
+      },
       "system_token": {
           "contract": "eosio.token",
           "symbol": "XPR",
@@ -20,6 +26,12 @@
   },
   "proton":{
       "groups_contract": "daoscapehub",
+      "core_contract": {
+        "repo": "https://github.com/FreeosDAO/daoscapecore/",
+        "raw": "https://raw.githubusercontent.com/FreeosDAO/daoscapecore/master/",
+        "wasm": "daoscapecore.wasm",
+        "abi": "daoscapecore.abi"
+      },
       "system_token": {
           "contract": "eosio.token",
           "symbol": "XPR",

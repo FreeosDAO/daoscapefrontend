@@ -1,40 +1,52 @@
 {
-    "protonTest":{
-        "groups_contract": "fdachub",
-        "system_token": {
-            "contract": "eosio.token",
-            "symbol": "XPR",
-            "precision": 4
-        },
-        "social":{
-            "github": "https://github.com/FreeosDAO",
-            "twitter": "https://twitter.com/free_dao"
-        },
-        "api":{
-            "url": "https://testnet.protonchain.com"
-        },
-        "nft":{
-            "api": "https://test.proton.api.atomicassets.io",
-            "url": "https://testnet.protonscan.io/nft"
-        }
-    },
-    "proton":{
-        "groups_contract": "daoscapehub",
-        "system_token": {
-            "contract": "eosio.token",
-            "symbol": "XPR",
-            "precision": 4
-        },
-        "social":{
-            "github": "https://github.com/FreeosDAO",
-            "twitter": "https://twitter.com/free_dao"
-        },
-        "api":{
-            "url": "https://protonchain.com"
-        },
-        "nft":{
-            "api": "https://proton.api.atomicassets.io",
-            "url": "https://protonscan.io/nft"
-        }
-    }
+  "protonTest":{
+      "groups_contract": "fdachub",
+      "core_contract": {
+        "repo": "https://github.com/FreeosDAO/daoscapecore/",
+        "raw": "https://raw.githubusercontent.com/FreeosDAO/daoscapecore/master/",
+        "wasm": "daoscapecore_testnet.wasm",
+        "abi": "daoscapecore_testnet.abi"
+      },
+      "system_token": {
+          "contract": "eosio.token",
+          "symbol": "XPR",
+          "precision": 4
+      },
+      "social":{
+          "github": "https://github.com/FreeosDAO",
+          "twitter": "https://twitter.com/free_dao"
+      },
+      "api":{
+          "url": "https://testnet.protonchain.com"
+      },
+      "nft":{
+          "api": "https://test.proton.api.atomicassets.io",
+          "url": "https://testnet.protonscan.io/nft"
+      }
+  },
+  "proton":{
+      "groups_contract": "daoscapehub",
+      "core_contract": {
+        "repo": "https://github.com/FreeosDAO/daoscapecore/",
+        "raw": "https://raw.githubusercontent.com/FreeosDAO/daoscapecore/master/",
+        "wasm": "daoscapecore.wasm",
+        "abi": "daoscapecore.abi"
+      },
+      "system_token": {
+          "contract": "eosio.token",
+          "symbol": "XPR",
+          "precision": 4
+      },
+      "social":{
+          "github": "https://github.com/FreeosDAO",
+          "twitter": "https://twitter.com/free_dao"
+      },
+      "api":{
+          "url": "https://protonchain.com"
+      },
+      "nft":{
+          "api": "https://proton.api.atomicassets.io",
+          "url": "https://www.protonscan.io/nft"
+      }
+  }
 }
