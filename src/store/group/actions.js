@@ -177,7 +177,6 @@ export async function fetchGuardians({ state, commit }, payload) {
   });
   if (res && res.rows) {
     // add alive status
-    console.log('state', state)
     let guardians = res.rows.map(guardian => {
       let alive = 0;
       if (state.coreConfig && state.coreConfig.conf.inactivate_cust_after_sec) {
