@@ -44,12 +44,12 @@
       </q-item-section>
     </q-item>
 
-    <q-item clickable :to="`/manage/${getActiveGroup}/wallet`" v-if="isUserGuardian">
+    <q-item clickable :to="`/manage/${getActiveGroup}/treasury`" v-if="isUserGuardian">
       <q-item-section avatar>
         <q-icon name="mdi-wallet" />
       </q-item-section>
       <q-item-section>
-        <q-item-label>Wallet</q-item-label>
+        <q-item-label>Treasury</q-item-label>
       </q-item-section>
     </q-item>
 
@@ -87,15 +87,6 @@
         <q-item-label>Hooks</q-item-label>
       </q-item-section>
     </q-item>
-
-    <!--<q-item clickable :to="`/manage/${getActiveGroup}/members`">
-      <q-item-section avatar>
-        <q-icon name="mdi-account-multiple" />
-      </q-item-section>
-      <q-item-section>
-        <q-item-label>Members</q-item-label>
-      </q-item-section>
-    </q-item>-->
 
     <q-item clickable v-if="isUserGuardian" :to="`/manage/${getActiveGroup}/thresholds`">
       <q-item-section avatar>
@@ -155,6 +146,15 @@
       </q-item-section>
       <q-item-section>
         <q-item-label>Guardians</q-item-label>
+      </q-item-section>
+    </q-item>
+
+    <q-item clickable :to="`/manage/${getActiveGroup}/members`">
+      <q-item-section avatar>
+        <q-icon name="mdi-account-multiple" />
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>Members</q-item-label>
       </q-item-section>
     </q-item>
 

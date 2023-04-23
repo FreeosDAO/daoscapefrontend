@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="constrain-page-width">
-    <pageHeader title="Group Wallet" />
+    <pageHeader title="Group Treasury" />
 
     <q-card>
       <q-card-section>

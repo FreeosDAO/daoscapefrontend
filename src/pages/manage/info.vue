@@ -18,8 +18,8 @@
                 <update-logo :show_edit="allowed_to_edit" class="q-mb-md" />
               </div>
 
-              <div class="col-xs-12 col-md-8 q-col-gutter-md">
-                <div class="row justify-between">
+              <div class="col-xs-12 col-md-8 q-col-gutter-md column items-start">
+                <div class="row justify-between full-width">
                   <q-item class="no-padding q-mr-sm">
                     <q-item-section>
                       <q-item-label>Group Account</q-item-label>
@@ -39,7 +39,7 @@
                   </q-item>
                 </div>
                 
-                <div class="q-mt-md">
+                <div v-if="getActiveGroupConfig.meta.about" class="q-mt-md full-width">
                   <div>About</div>
                   <q-markdown
                     class="text-caption text-weight-light"
@@ -49,7 +49,7 @@
                   </q-markdown>
                 </div>
 
-                <div class="text-weight-light row justify-between items-center">
+                <div v-if="getActiveGroupConfig.meta.links.length" class="text-weight-light row justify-between items-center full-width">
                   <div>
                     <groupLinks :links="getActiveGroupConfig.meta.links" />
                   </div>
@@ -63,6 +63,37 @@
                       </q-item-label>
                     </q-item-section>
                   </q-item>
+                </div>
+
+                <div v-if="!getIsGuardian(getAccountName)" class="column full-width q-mt-auto justify-end">
+                  <div
+                    v-if="getCoreConfig && getCoreConfig.conf.userterms"
+                    class="row justify-end q-mt-sm text-weight-light"
+                  >
+                    <q-checkbox
+                      v-model="agree_terms"
+                      left-label
+                      label="I have read and I agree to the user terms."
+                    />
+                  </div>
+                  <div class="row justify-end full-width">
+                    <q-btn
+                      v-if="!getIsMember"
+                      label="Become A Member"
+                      color="primary"
+                      icon="add"
+                      @click="regmember"
+                      :loading="is_transacting"
+                    />
+                    <q-btn
+                      v-else
+                      label="unregister"
+                      color="primary"
+                      outline
+                      @click="unregmember"
+                      :loading="is_transacting"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -138,7 +169,7 @@
         </q-card>
       </div>
 
-      <!--<div
+      <div
         v-if="getCoreConfig && getCoreConfig.conf.member_registration"
         class="col-xs-12 col-sm-6 col-lg-4"
         key="members_info"
@@ -160,7 +191,7 @@
             </q-item-section>
           </q-item>
         </q-card>
-      </div>-->
+      </div>
 
       <div
         v-if="getCoreConfig && getCoreConfig.conf.maintainer_account.actor"
@@ -211,6 +242,7 @@ import groupNotificationManager from "components/group-notification-manager";
 import dateString from "components/date-string";
 import explorerLink from "components/explorer-link";
 import newElectionTimer from "components/modules/elections/new-election-timer";
+import { notifyError } from "src/imports/notifications";
 
 export default defineComponent({
   name: "PageIndex",
@@ -225,7 +257,10 @@ export default defineComponent({
     explorerLink,
   },
   data() {
-    return {};
+    return {
+      agree_terms: false,
+      is_transacting: false,
+    };
   },
   computed: {
     ...mapGetters({
@@ -239,6 +274,7 @@ export default defineComponent({
       getElectionsContract: "elections/getElectionsContract",
       getElectionsState: "elections/getElectionsState",
       getIsGuardian: "group/getIsGuardian",
+      getIsMember: "user/getIsMember",
     }),
     allowed_to_edit() {
       if (this.getIsGuardian(this.getAccountName)) {
@@ -246,10 +282,75 @@ export default defineComponent({
       } else {
         return false;
       }
-    },
+    }
   },
   methods: {
     openURL,
+    async regmember() {
+
+      // check if terms required
+      // if required & terms not agreed, exit
+      if(this.getCoreConfig.conf.userterms && !this.agree_terms){
+        notifyError({"message": "Please agree to the terms to become a member."})
+        return
+      }
+
+      let regmember = {
+        account: this.getActiveGroup,
+        name: "regmember",
+        data: {
+          actor: this.getAccountName,
+        },
+      };
+
+      let sign = {
+        account: this.getActiveGroup,
+        name: "signuserterm",
+        data: {
+          member: this.getAccountName,
+          agree_terms: this.agree_terms,
+        },
+      };
+      let actions = [regmember];
+      if (this.getCoreConfig.conf.userterms) {
+        actions.push(sign);
+      }
+      this.is_transacting = true;
+      let res = await this.$store.dispatch("proton/transact", {
+        actions: actions,
+        disable_signing_overlay: true,
+      });
+      if (res && res.trxid) {
+        let termsv =
+          this.getLatestUserterms && this.getLatestUserterms.id && this.agree_terms
+            ? this.getLatestUserterms.id
+            : 0;
+        this.$store.commit("user/setIsMember", {
+          account: this.getAccountName,
+          member_since: res.block_time,
+          agreed_userterms_version: termsv,
+        });
+      }
+      this.is_transacting = false;
+    },
+    async unregmember() {
+      let action = {
+        account: this.getActiveGroup,
+        name: "unregmember",
+        data: {
+          actor: this.getAccountName,
+        },
+      };
+      this.is_transacting = true;
+      let res = await this.$store.dispatch("proton/transact", {
+        actions: [action],
+        disable_signing_overlay: true,
+      });
+      if (res && res.trxid) {
+        this.$store.commit("user/setIsMember", false);
+      }
+      this.is_transacting = false;
+    },
   },
 });
 </script>

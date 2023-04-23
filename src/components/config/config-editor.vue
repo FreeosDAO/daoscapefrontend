@@ -65,10 +65,10 @@
           <p>Configure the group by clicking the items.</p>
         </q-tab-panel>
 
-        <!--<q-tab-panel name="Members" class="overflow-hidden">
+        <q-tab-panel name="Members" class="overflow-hidden">
           <page-header title="Members" />
           <set-members />
-        </q-tab-panel>-->
+        </q-tab-panel>
 
         <q-tab-panel name="KYC" class="overflow-hidden">
           <page-header title="KYC" />
@@ -166,7 +166,7 @@ var testtree = [
         children: [
           { label: "Guardians" },
           { label: "Proposals" },
-          //{ label: "Members" },
+          { label: "Members" },
           { label: "Internal Accounting" },
           { label: "KYC" },
           { label: "Maintainer Account" },
