@@ -109,7 +109,7 @@ export default defineComponent({
         return this.getProposals.cancelled;
       }
       if (this.tabfilter == "expired") {
-        return [];
+        return this.getProposals.expired;
       }
     },
   },

@@ -21,6 +21,9 @@ export default {
   avatars: [],
   profiles: [],
   myOldProfile: false,
-  latestUserterms: false
-  
+  latestUserterms: false,
+  active_period: {
+    proton: (60 * 60 * 24 * 30) * 1000, // 30 days
+    protonTest: (60 * 10 ) * 1000 // 10 minutes
+  }
 }

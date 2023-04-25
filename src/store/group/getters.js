@@ -223,3 +223,7 @@ export function getCPUStats(state) {
     }
     return warnings;
   }
+
+  export function getActivePeriod(state, getters, rootState, rootGetters){
+    return state.active_period[rootGetters["proton/getActiveNetwork"]]
+  }

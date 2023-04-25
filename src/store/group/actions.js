@@ -1,4 +1,3 @@
-
 import { getLogoForToken } from "../../imports/tokens.js";
 import { notifyError, notifySuccess } from '../../imports/notifications.js';
 // import { colors } from 'quasar';
@@ -214,8 +213,32 @@ export async function fetchProposals({ state, commit }, payload) {
     limit: -1
   });
   if (res && res.rows) {
-    console.log(`fetched proposals for group ${payload.groupname}`, res.rows);
     res = res.rows;
+
+    // if active scope, check for expired
+    if(payload.scope == state.activeGroup){
+      const now = new Date()
+      // get only active 
+      const active = res.filter(proposal => {
+        const expiration = new Date(proposal.expiration)
+        return now < expiration
+      })
+      console.log(`fetched proposals for group ${payload.groupname}`, active);
+      commit('setProposals', { scope: payload.scope, data: active });
+      // get only expired
+      const expired = res.filter(proposal => {
+        const expiration = new Date(proposal.expiration)
+        return now >= expiration
+      })
+      console.log(`fetched proposals for group ${payload.groupname}`, expired);
+      commit('setProposals', { scope: 'expired', data: expired });
+
+      // return early
+      return
+    }
+
+    // other scopes here
+    console.log(`fetched proposals for group ${payload.groupname}`, res.rows);
     commit('setProposals', { scope: payload.scope, data: res });
   }
   else {

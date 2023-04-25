@@ -93,6 +93,9 @@ export function setProposals(state, payload){
         case "cancelled":
             state.proposals.cancelled = data;
             break;
+        case "expired":
+          state.proposals.expired = data;
+          break;
     
         default:
             break;
