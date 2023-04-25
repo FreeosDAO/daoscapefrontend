@@ -445,14 +445,14 @@ export async function fetchProfile({ state, commit, rootState, rootGetters }, pa
 }
 
 
-export async function propose({ state, rootState, dispatch, commit }, payload) {
+export async function propose({ state, rootState, getters, dispatch, commit }, payload) {
   // return_action: false
   // description:"",
   // title:"",
   // expiration:",
   // actions: []
 
-  let active_period = (60 * 60 * 24 * 30) * 1000;
+  let active_period = getters.getActivePeriod;
   let default_expiration = new Date(Date.now() + active_period).toISOString().split('.')[0]; //"2019-12-03T00:28:24.215Z"
 
   let propose_action = {
