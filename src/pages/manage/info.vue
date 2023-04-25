@@ -65,7 +65,7 @@
                   </q-item>
                 </div>
 
-                <div v-if="!getIsGuardian(getAccountName)" class="column full-width q-mt-auto justify-end">
+                <div class="column full-width q-mt-auto justify-end">
                   <div
                     v-if="getCoreConfig && getCoreConfig.conf.userterms"
                     class="row justify-end q-mt-sm text-weight-light"
