@@ -220,14 +220,14 @@ export async function fetchProposals({ state, commit }, payload) {
       const now = new Date()
       // get only active 
       const active = res.filter(proposal => {
-        const expiration = new Date(proposal.expiration)
+        const expiration = new Date(`${proposal.expiration}.000Z`)
         return now < expiration
       })
       console.log(`fetched proposals for group ${payload.groupname}`, active);
       commit('setProposals', { scope: payload.scope, data: active });
       // get only expired
       const expired = res.filter(proposal => {
-        const expiration = new Date(proposal.expiration)
+        const expiration = new Date(`${proposal.expiration}.000Z`)
         return now >= expiration
       })
       console.log(`fetched proposals for group ${payload.groupname}`, expired);
