@@ -27,19 +27,19 @@ export default {
         rpcEndpoints: [
           {
             protocol: "https",
-            host: "protontestnet.greymass.com",
-            port: "443"
-          }/*,
-          {
-            protocol: "https",
-            host: "test.proton.kiwi",
+            host: "test.proton.eosusa.io",
             port: "443",
           },
           {
             protocol: "https",
             host: "tn1.protonnz.com",
             port: "443",
-          },*/
+          },
+          {
+            protocol: "https",
+            host: "protontestnet.greymass.com",
+            port: "443"
+          }
         ],
       },
     },
@@ -50,19 +50,19 @@ export default {
         rpcEndpoints: [
           {
             protocol: "https",
-            host: "proton.greymass.com",
-            port: "443",
-          }/*,
-          {
-            protocol: "https",
-            host: "main.proton.kiwi",
+            host: "proton.eosusa.io",
             port: "443",
           },
           {
             protocol: "https",
             host: "api.protonnz.com",
             port: "443",
-          },*/
+          },
+          {
+            protocol: "https",
+            host: "proton.greymass.com",
+            port: "443",
+          }
         ],
       },
     },
