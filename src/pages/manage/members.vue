@@ -51,7 +51,7 @@
         <div v-if="getCoreState">#{{ getCoreState.state.member_count }}</div>
       </q-toolbar>
       <q-list class="primary-hover-list" bordered separator>
-        <q-expansion-item v-for="member in members" :key="member.account" group="members">
+        <!--<q-expansion-item v-for="member in members" :key="member.account" group="members">
           <template v-slot:header>
             <q-item-section avatar>
               <profile-pic
@@ -64,23 +64,50 @@
               <q-item-label>
                 <profile-link :account="member.account" :inversestyle="true" />
               </q-item-label>
-              <!-- <q-item-label caption>ID {{payment.pay_id}}</q-item-label> -->
-              <!-- {{getIsGuardian(member.account)}} -->
             </q-item-section>
           </template>
           <q-separator />
           <q-card>
             <q-card-section>
-              <q-item-label caption>nothing here yet</q-item-label>
+              <q-item-label caption>
+                <q-btn
+                  color="primary"
+                  dense
+                  label="full profile"
+                  :to="`/members/${getActiveGroup}/profile/${member.account}`"
+                />
+              </q-item-label>
             </q-card-section>
           </q-card>
-        </q-expansion-item>
+        </q-expansion-item>-->
+        <q-item v-for="member in getFilteredMembers" :key="member.account" group="members"
+        :to="`/members/${getActiveGroup}/profile/${member.account}`">
+          <q-item-section avatar>
+            <profile-pic
+              :size="42"
+              :account="member.account"
+              :icon="getIsGuardian(member.account) ? 'mdi-star' : ''"
+            />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              <profile-link :account="member.account" :inversestyle="true" />
+            </q-item-label>
+          </q-item-section>
+          <q-item-section side>
+            <q-btn
+                  color="primary"
+                  label="view profile"
+                  :to="`/members/${getActiveGroup}/profile/${member.account}`"
+                />
+          </q-item-section>
+        </q-item>
         <q-item v-if="is_loading">
           <div class="row items-center justify-center full-width">
             <q-spinner color="primary" size="24px" />
           </div>
         </q-item>
-        <no-items v-if="!is_loading && !members.length" text="No members" />
+        <no-items v-if="!is_loading && !getFilteredMembers.length" text="No members" />
       </q-list>
     </q-card>
     <div class="text-right q-mt-md">
@@ -121,6 +148,14 @@ export default defineComponent({
       getCoreConfig: "group/getCoreConfig",
       getCoreState: "group/getCoreState",
     }),
+    getFilteredMembers() {
+      if (this.searchfilter != "") {
+        this.searchfilter = this.searchfilter.toLowerCase();
+        return this.members.filter((c) => c.account.includes(this.searchfilter));
+      } else {
+        return this.members;
+      }
+    }
   },
   methods: {
     async fetchMembers() {
