@@ -283,7 +283,7 @@ export default defineComponent({
       },
     },
 
-    groupconfigAndAccountLoaded: {
+    /*groupconfigAndAccountLoaded: {
       immediate: true,
       handler(newV, oldV) {
         if (newV && this.getAccountName && this.getActiveGroupConfig) {
@@ -293,7 +293,7 @@ export default defineComponent({
           });
         }
       },
-    },
+    },*/
 
     miniState: {
       immediate: true,

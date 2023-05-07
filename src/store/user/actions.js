@@ -42,6 +42,7 @@ export async function fetchIsMember ({ commit, rootState, rootGetters }, payload
     limit: 1
 
   });
+  
   if (res && res.rows.length) {
     if (res.rows[0].account == payload.accountname) {
       console.log('fetched isMember', res.rows[0]);
@@ -51,6 +52,9 @@ export async function fetchIsMember ({ commit, rootState, rootGetters }, payload
       return res.rows[0];
     }
   }
+
+  console.log('fetched isMember', false);
+  commit('setIsMember', false);
 }
 
 export async function fetchHubDeposits ({ state, rootState, commit, rootGetters }, payload) {

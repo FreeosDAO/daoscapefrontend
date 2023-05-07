@@ -65,6 +65,8 @@ export async function loadGroupRoutine({ dispatch, commit, rootGetters }, payloa
   dispatch('fetchThresholdLinks', { groupname: groupname, vm: payload.vm });
   dispatch('fetchTokensOwnedByScope', { groupname: groupname, scope: groupname, vm: payload.vm });
   dispatch('fetchCoreState', { groupname: groupname, vm: payload.vm });
+
+  dispatch('user/fetchIsMember', {accountname: rootGetters['proton/getAccountName'], vm: payload.vm}, { root: true })
 }
 
 export async function fetchCoreConfig({ dispatch, commit }, payload) {
