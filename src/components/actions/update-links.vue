@@ -53,10 +53,19 @@ export default defineComponent({
     return {
       new_links: [],
       linkOptions:[
+        {label: 'Website', value: 'mdi-open-in-new'},
         {label: 'Telegram', value: 'mdi-telegram'},
         {label: 'Twitter', value: 'mdi-twitter'},
         {label: 'Discord', value: 'mdi-discord'},
-        {label: 'Snipcoins', value: 'mdi-open-in-new'}
+        {label: 'Snipverse', value: 'img:/statics/icons/socials/snipverse.svg'},
+        {label: 'Nuance', value: 'img:/statics/icons/socials/nuance.svg'},
+        {label: 'DSCVR', value: 'img:/statics/icons/socials/dscvr.svg'},
+        {label: 'Open Chat', value: 'img:/statics/icons/socials/openchat.svg'},
+        {label: 'Distrikt', value: 'img:/statics/icons/socials/distrikt.svg'},
+        {label: 'Medium', value: 'img:/statics/icons/socials/medium.svg'},
+        {label: 'Notion', value: 'img:/statics/icons/socials/notion.svg'},
+        {label: 'Trello', value: 'img:/statics/icons/socials/trello.svg'},
+        {label: 'Miro', value: 'img:/statics/icons/socials/miro.svg'},
       ],
       test: {label: 'Discord', icon: 'mdi-discord'}
     };
@@ -122,5 +131,16 @@ export default defineComponent({
       },
     },
   },
+  mounted(){
+    this.linkOptions.sort((a,b) => {
+      if ( a.label < b.label ){
+        return -1;
+      }
+      if ( a.label > b.label ){
+        return 1;
+      }
+      return 0;
+    })
+  }
 });
 </script>
