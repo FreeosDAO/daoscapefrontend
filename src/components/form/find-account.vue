@@ -185,10 +185,13 @@ export default defineComponent({
       });
     },
     handleInput(e) {
+      this.model_accountname = e
       this.$emit('inputval', e);
     },
     onBlur(e){
+      console.log('blur')
       if(!this.fetchedAccountNames.length){
+        console.log('no accoutns')
         this.deleteInput()
       }
     }
