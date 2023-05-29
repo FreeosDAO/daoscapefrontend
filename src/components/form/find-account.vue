@@ -64,8 +64,19 @@ import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
 
 const append_accounts = [
-  { label: "eosio.token", value: "eosio.token" },
-  { label: "eosio.msig", value: "eosio.msig" },
+  {label: "eosio.assert", value: "eosio.assert"},
+  {label: "eosio.bpay", value: "eosio.bpay"},
+  {label: "eosio.msig", value: "eosio.msig"},
+  {label: "eosio.names", value: "eosio.names"},
+  {label: "eosio.proton", value: "eosio.proton"},
+  {label: "eosio.ram", value: "eosio.ram"},
+  {label: "eosio.ramfee", value: "eosio.ramfee"},
+  {label: "eosio.rex", value: "eosio.rex"},
+  {label: "eosio.saving", value: "eosio.saving"},
+  {label: "eosio.stake", value: "eosio.stake"},
+  {label: "eosio.token", value: "eosio.token"},
+  {label: "eosio.vpay", value: "eosio.vpay"},
+  {label: "eosio.wrap", value: "eosio.wrap"},
 ];
 
 export default defineComponent({
@@ -142,7 +153,7 @@ export default defineComponent({
             scope: "eosio",
             table: "userres",
             lower_bound: acc.toLowerCase(),
-            limit: 6,
+            limit: 10,
           })
         if (res) {
           res = res.rows.map((x) => {
@@ -189,9 +200,8 @@ export default defineComponent({
       this.$emit('inputval', e);
     },
     onBlur(e){
-      console.log('blur')
       if(!this.fetchedAccountNames.length){
-        console.log('no accoutns')
+        console.log('no accounts')
         this.deleteInput()
       }
     }
