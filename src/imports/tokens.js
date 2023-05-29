@@ -1,4 +1,4 @@
-const bloks_tokens = require("../statics/tokens.json");
+let bloks_tokens = require("../statics/tokens.json");
 
 //add EOS
 bloks_tokens.unshift({
@@ -30,7 +30,8 @@ bloks_tokens.unshift({
 
 
 
-export function getLogoForToken(contract, symbol) {
+export function getLogoForToken(contract, symbol, extraTokens) {
+  bloks_tokens = bloks_tokens.concat(extraTokens)
   let token = bloks_tokens.find(
     bt => contract == bt.account && symbol == bt.symbol
   );

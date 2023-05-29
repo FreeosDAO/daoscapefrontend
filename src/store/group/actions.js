@@ -320,6 +320,26 @@ export async function fetchTokensOwnedByScope({ state, commit }, payload) {
     limit: -1
   });
 
+  let extraTokens = []
+  let allTokens = await payload.vm.$eos.api.rpc.get_table_rows({
+    json: true,
+    code: 'token.proton',
+    scope: 'token.proton',
+    table: 'tokens',
+    limit: -1
+  });
+  if (allTokens && allTokens.rows){
+    for(const row of allTokens.rows){
+      extraTokens.unshift({
+        name: row.tname,
+        logo: row.iconurl,
+        logo_lg: row.iconurl,
+        symbol: row.symbol.replace(/[^a-zA-Z]/gi, '').trim(),
+        account: row.tcontract
+      });
+    }
+  }
+
   if (res && res.rows) {
     console.log(`fetched tokens owned by ${scope} for group ${groupname}`, res.rows);
     //for each token get the icon
@@ -329,7 +349,7 @@ export async function fetchTokensOwnedByScope({ state, commit }, payload) {
       t.amount = amount;
       t.symbol = symbol;
       t.precision = amount.includes('.') ? amount.split('.')[1].length : 0;
-      t.logo = getLogoForToken(t.contract, t.symbol);
+      t.logo = getLogoForToken(t.contract, t.symbol, extraTokens);
       t.loading = false;
       return t;
     })
