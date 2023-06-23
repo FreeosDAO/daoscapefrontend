@@ -23,9 +23,9 @@
                   <q-item class="no-padding q-mr-sm">
                     <q-item-section>
                       <q-item-label>Group Account</q-item-label>
-                      <q-item-label class="text-h4">{{getActiveGroupConfig.groupname}}</q-item-label>
+                      <q-item-label class="text-h4">{{getActiveGroupConfig.username}}</q-item-label>
                       <q-item-label caption>
-                        <explorer-link :accountname="getActiveGroupConfig.groupname" accountnameText="View on explorer" />
+                        <explorer-link :accountname="getActiveGroupConfig.groupname" :accountnameText="`View @${getActiveGroupConfig.groupname}`" />
                       </q-item-label>
                     </q-item-section>
                   </q-item>

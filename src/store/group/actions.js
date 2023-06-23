@@ -116,13 +116,25 @@ export async function fetchGroupConfig({ commit, rootState, rootGetters }, paylo
     table: "groups",
     limit: -1
   });
-  if (res && res.rows[0] && res.rows[0].groupname == payload.groupname) {
-    return res.rows[0];
-  }
-  else {
+  if (!res || !res.rows[0] || res.rows[0].groupname != payload.groupname){
     console.log(`fetching group config ${payload.groupname} failed`);
     return false;
   }
+
+  // get proton username
+  const usernameRes = await payload.vm.$eos.api.rpc.get_table_rows({
+    code: 'eosio.proton',
+    scope: 'eosio.proton',
+    table: 'usersinfo',
+    limit: 1,
+    lower_bound: payload.groupname,
+    upper_bound: payload.groupname
+  })
+
+  console.warn('username', usernameRes)
+  const username = (usernameRes && usernameRes.rows[0]) ? usernameRes.rows[0].name || payload.groupname : payload.groupname;
+  const config = { ...res.rows[0], username }
+  return config
 }
 
 export async function fetchModules({ commit, rootState, rootGetters }, payload) {
