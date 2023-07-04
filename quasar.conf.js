@@ -78,6 +78,14 @@ module.exports = configure(function (ctx) {
           .test(/\.pug$/)
           .use('pug-plain-loader')
           .loader('pug-plain-loader');
+        chain.module.rule('vue')
+          .use('vue-loader')
+          .tap(options => ({
+            ...options,
+            compilerOptions:{
+              isCustomElement: tag => tag === 'model-viewer'
+            }
+          }))
       },
       extendWebpack (cfg) {
         cfg.resolve.fallback = { crypto: false };

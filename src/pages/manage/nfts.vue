@@ -35,11 +35,19 @@
 
         <q-card>
           <figure>
-            <q-img v-if="'image' in nft.data && nft.data.image" :src="'https://bloks.io/cdn-cgi/image/width=500/https://proton.mypinata.cloud/ipfs/' + nft.data.image"
+            <q-img v-if="'image' in nft.data && nft.data.image" :src="`https://bloks.io/cdn-cgi/image/width=500/https://proton.mypinata.cloud/ipfs/${nft.data.image}`"
               :alt="nft.data.name" />
             <video v-else-if="'video' in nft.data && nft.data.video" controls muted loop preload="auto">
-              <source :src="'https://proton.mypinata.cloud/ipfs/' + nft.data.video" />
+              <source :src="`https://proton.mypinata.cloud/ipfs/${nft.data.video}`" />
             </video>
+            <model-viewer
+              v-else-if="'model' in nft.data && nft.data.model" 
+              style="min-height:300px"
+              :alt="nft.data.name"
+              :src="`https://proton.mypinata.cloud/ipfs/${nft.data.model}`" 
+              :poster="`https://bloks.io/cdn-cgi/image/width=500/https://proton.mypinata.cloud/ipfs/${nft.data.glbthumb}`" 
+              ar shadow-intensity="1" camera-controls touch-action="pan-y">
+            </model-viewer>
             <q-img v-else src="https://via.placeholder.com/1080x720/dddddd/000000/?text=NO%20MEDIA" :alt="nft.data.name" />
           </figure>
 
@@ -87,6 +95,7 @@
 import pageHeader from "components/page-header";
 import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
+import '@google/model-viewer';
 
 export default defineComponent({
   name: "groupNfts",
@@ -144,7 +153,6 @@ export default defineComponent({
     },
     async callAtomic(){
       let url = `${this.getAppConfig.nft.api}/atomicassets/v1/assets?owner=${this.getActiveGroup}&page=${this.page}&limit=${this.perPage}&order=desc&sort=asset_id`;
-      console.warn('calling', url)
       return await this.$axios
         //.get(this.getAppConfig.nft.api + '/atomicassets/v1/assets?owner=conorsee&page=' + this.page + '&limit=' + this.perPage + '&order=desc&sort=asset_id')
         .get(url)
