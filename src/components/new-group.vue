@@ -1,244 +1,48 @@
 <template>
-  <div class="row justify-center">
-    <div class="create-group-width">
-      <p class="text-h4 q-mt-lg">Create Your DAO</p>
-      <!--STEP COUNTER-->
-      <div class="q-mb-md text-grey-5 text-h6 text-weight-light">
-        <div v-if="step === 'intro'" class="row justify-between">
-          <div>CREATING A DAO</div>
-        </div>
-        <div v-if="step === 'request_account_name'" class="row justify-between">
-          <div>CHOOSE YOUR GROUP NAME</div>
-          <div>1/{{ number_of_steps }}</div>
-        </div>
-        <div v-if="step === 'create_account'" class="row justify-between">
-          <div>CREATE ACCOUNT</div>
-          <div>2/{{ number_of_steps }}</div>
-        </div>
-        <div v-if="step === 'request_activation'" class="row justify-between">
-          <div>ACTIVATE DAO</div>
-          <div>3/{{ number_of_steps }}</div>
-        </div>
-        <div
-          v-else-if="step === 'request_signature'"
-          class="row justify-between"
-        >
-          <div>CREATING</div>
-          <div class="text-uppercase text-primary">
-            {{ new_group_account_name }}
-          </div>
-        </div>
-      </div>
-
-      <q-carousel
-        v-model="step"
-        keep-alive
-        :navigation="false"
-        transition-prev="scale"
-        transition-next="scale"
-        :swipeable="false"
-        animated
-        control-color="primary"
-        :padding="false"
-        :arrows="false"
-        height="auto"
-        class="bg-transparent"
-      >
-      <q-carousel-slide name="intro" class="no-padding">
-        <div>
-          <p class="text-subtitle1">Things you'll need to get started:</p>
-          <ul>
-            <li><b>DAO Account Name:</b> Choose your DAO account name, based on the normal Proton name restrictions (a-z, 1-5, min 4 characters, max 12 characters). Once the DAO has been setup, the account name cannot be changed.</li>
-            <li><b>XPR Ready:</b> As part of the setup, you'll need to send {{ getResourceEstimation }} to The DAOScape hub account, so be sure to have that ready to go!</li>
-          </ul>
-          <div v-if="!isValidWallet" class="text-white text-center bg-secondary q-pa-md rounded-borders">
-            <p class="text-h6 text-center">Please login with Anchor</p>
-            <p class="text-center">In order to create a DAO, you must login in Anchor and ensure that <br><b>"Create a session for future use with this app"</b><br> is selected. </p>
-            <login-network-switcher />
-          </div>
-          <div v-else class="row justify-center">
-            <q-btn
-              color="primary"
-              label="Get Started"
-              @click="step = 'request_account_name'"
-            />
-          </div>
-        </div>
-        
-      </q-carousel-slide>
-        <!--CHOOSE GROUP NAME-->
-        <q-carousel-slide :name="`request_account_name`" class="no-padding">
-          <div>
-            <div class="rounded-borders overflow-hidden">
-              <q-input
-                :dark="false"
-                ref="accountinput"
-                autocomplete="off"
-                outlined
-                no-error-icon
-                counter
-                maxlength="12"
-                color="accent"
-                bg-color="white"
-                v-model="new_group_account_name"
-                placeholder="Choose new group name"
-                :rules="[
-                  (val) => !!val || '* Required',
-                  isValidAccountName,
-                  (val) => val.length >= 4 || 'Group name must be min 4 chars.',
-                  isavailableAccountNameWrapper,
-                ]"
-                @input="account_name_validated = false"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="people" />
-                </template>
-                <template v-slot:append>
-                  <q-icon
-                    v-if="account_name_validated"
-                    name="check"
-                    color="positive"
-                  />
-                </template>
-                <template v-slot:hint>
-                  <span class="text-grey-8 row" v-if="account_name_validated">
-                    <span>Account name available!</span>
-                  </span>
-                  <span v-else>12 char account name</span>
-                </template>
-              </q-input>
-              <p class="q-mt-md text-grey-6">
-                <em>Please note: the group name cannot be changed once it has been created.</em>
-              </p>
-            </div>
-
-            <div class="column justify-center items-center q-mt-lg">
-              <q-btn
-                color="primary"
-                label="next"
-                style="width: 150px"
-                :disabled="!account_name_validated"
-                @click="next('')"
-              />
-
-              <div v-if="groups_by_creator.length" class="q-mt-sm">
-                <transition-group
-                  appear
-                  enter-active-class="animated zoomIn"
-                  leave-active-class="animated zoomOut"
-                  mode="out-in"
-                  class="column q-gutter-sm"
-                  tag="div"
-                >
-                  <q-btn
-                    icon="mdi-alert"
-                    :label="group.groupname"
-                    v-for="group in groups_by_creator.filter(
-                      (gbc) => gbc.state === 0
-                    )"
-                    :key="group.groupname"
-                    color="secondary"
-                    @click="next(group.groupname)"
-                  >
-                    <q-tooltip class="bg-secondary" :delay="500">
-                      This group isn't activated yet. Proceed to activation by
-                      clicking the button.
-                    </q-tooltip>
-                  </q-btn>
-                </transition-group>
-              </div>
-            </div>
-          </div>
-        </q-carousel-slide>
-
-        <!--CREATE ACCOUNT-->
-        <q-carousel-slide name="create_account" class="no-padding">
-          <div class="row justify-begin items-center text-black">
-            <span class="text-uppercase">{{ new_group_account_name }}</span>
-            <q-btn
-              icon="edit"
-              round
-              flat
-              size="sm"
-              @click="step = 'request_account_name'"
-            >
-              <q-tooltip
-                :delay="300"
-                anchor="center right"
-                self="center left"
-                :offset="[10, 0]"
-              >
-                Edit Group Name.
-              </q-tooltip>
-            </q-btn>
-          </div>
-
-          <p class="text-subtitle1 q-mb-md">
-            The estimated cost to create your DAO account is {{ getResourceEstimation }}.
-          </p>
-
-          <div v-if="!has_enough_deposits">
-            <p class="text-grey-6">
-              You don't have enough {{ getAppConfig.system_token.symbol }} deposits to start your DAO. Please make a deposit below.
-      You need a minimum of {{ getResourceEstimation }} to deploy the core contract. Excess deposits will be used to buy extra RAM.
-            </p>
-            <hub-deposit-wallet :default_input_value="getRamPricePerByte * required_bytes" />
-          </div>
-
-          <div v-if="has_enough_deposits" class="column justify-center items-center q-mt-md">
-            <p class="text-grey-6">
-              Good news! You have enough deposits in The DAOScape Hub to create an account.<br>
-              Clicking the below button will use all your current deposits to create a new DAO account. Excess deposits will be used to buy extra RAM.
-            </p>
-            <q-btn
-              color="primary"
-              label="Create Account"
-              :disabled="!account_name_validated"
-              @click="createGroup"
-            />
-          </div>
-        </q-carousel-slide>
-
-        <!--ACTIVATION-->
-        <q-carousel-slide :name="`request_activation`" class="no-padding">
-          <div class="column items-center full-height">
-            <p class="text-subtitle1 text-center q-mt-sm">Your DAO account <b>{{ this.new_group_account_name }}</b> has been created.<br>The final step is to activate it!</p>
-            <q-btn
-              color="primary"
-              label="activate"
-              style="width: 150px"
-              @click="activateGroup"
-            />
-          </div>
-        </q-carousel-slide>
-
-        <!--WAITING-->
-        <q-carousel-slide :name="`request_signature`" class="no-padding">
-          <div class="column items-center full-height text-grey-6 q-pt-md">
-            <q-spinner
-              color="primary"
-              size="40px"
-              @click="step = 'request_account_name'"
-              class="cursor-pointer"
-            />
-            <div class="q-mt-md">Waiting for Signature</div>
-          </div>
-        </q-carousel-slide>
-
-        <!--SUCCESS!-->
-        <q-carousel-slide :name="`group_created`" class="no-padding">
-          <div class="column items-center full-height q-pt-md">
-            <q-icon name="mdi-check-circle-outline" color="primary" size="52px" />
-            <div class="q-mt-sm text-subtitle1">Group successfully activated</div>
-            <q-btn
-              label="visit group"
-              color="primary"
-              class="q-mt-md"
-              :to="`/manage/${new_group_account_name}`"
-            />
-          </div>
-        </q-carousel-slide>
-      </q-carousel>
+  <div class="creation-flow dao-page">
+    <ol class="creation-steps" aria-label="Creation progress">
+      <li v-for="(label, index) in ['Choose a name', 'Fund & create', 'Activate DAO']" :key="label" :class="{ current: currentStage === index + 1, complete: currentStage > index + 1 }" :aria-current="currentStage === index + 1 ? 'step' : undefined"><span><q-icon v-if="currentStage > index + 1" name="check" /><template v-else>{{ index + 1 }}</template></span>{{ label }}</li>
+    </ol>
+    <div class="creation-grid">
+      <section class="creation-panel" aria-live="polite" :aria-busy="busy">
+        <div v-if="error" class="creation-error" role="alert"><q-icon name="error_outline" /> {{ error }}</div>
+        <template v-if="step === 'intro'">
+          <span class="creation-icon"><q-icon name="public" /></span>
+          <h2>A place for your people.</h2>
+          <p>Bring your community together with shared decisions, a treasury, and governance on XPR Network.</p>
+          <div class="creation-checklist"><div><q-icon name="check_circle_outline" /><span><strong>A name that’s yours</strong>Choose a unique, permanent account name for your DAO.</span></div><div><q-icon name="account_balance_wallet" /><span><strong>Your XPR wallet</strong>Fund the account and approve its creation with your wallet.</span></div><div><q-icon name="tune" /><span><strong>Room to make it your own</strong>Set up your community and governance after activation.</span></div></div>
+          <q-btn v-if="isValidWallet" unelevated color="primary" label="Get started" icon-right="arrow_forward" @click="step = 'request_account_name'" />
+          <q-btn v-else unelevated color="primary" label="Connect wallet to begin" icon-right="arrow_forward" :to="{ path: '/login', query: { redirect: $route.fullPath } }" />
+          <p class="creation-caption">Three steps. You review each transaction in your wallet.</p>
+        </template>
+        <template v-else-if="!isValidWallet && !busy && step !== 'group_created'">
+          <h2>Reconnect your wallet.</h2><p>Connect your wallet to continue creating your DAO.</p><q-btn unelevated color="primary" label="Connect wallet" :to="{ path: '/login', query: { redirect: $route.fullPath } }" />
+        </template>
+        <template v-else-if="step === 'request_account_name'">
+          <p class="creation-eyebrow">Step 01 · Identity</p><h2>Give your DAO a name.</h2><p>This is your permanent account on XPR Network. You can add a display name and description later.</p>
+          <q-input ref="accountinput" v-model="new_group_account_name" outlined :dark="false" label="DAO account name" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="12" counter :rules="[isavailableAccountNameWrapper]" :hint="account_name_validated ? 'This account name is available.' : '4–12 characters: lowercase a–z and numbers 1–5.'" @update:model-value="account_name_validated = false"><template #prepend><q-icon name="public" /></template><template #append><q-icon v-if="account_name_validated" name="check_circle" color="positive" /></template></q-input>
+          <div class="creation-actions"><q-btn flat label="Back" @click="step = 'intro'" /><q-btn unelevated color="primary" label="Continue" icon-right="arrow_forward" :disable="!account_name_validated" @click="next('')" /></div>
+          <div v-if="unfinishedGroups.length" class="creation-resume"><h3>Pick up where you left off</h3><p>These accounts are ready for activation.</p><q-btn v-for="group in unfinishedGroups" :key="group.groupname" outline color="primary" :label="group.groupname" icon-right="arrow_forward" @click="next(group.groupname)" /></div>
+        </template>
+        <template v-else-if="step === 'create_account'">
+          <p class="creation-eyebrow">Step 02 · Resources</p><h2>Give your DAO a home.</h2><p>Your deposit funds the account’s on-chain storage. Review the current estimate and your hub balance before creating it.</p>
+          <div class="creation-account"><q-icon name="public" /><strong>{{ new_group_account_name }}</strong><q-btn flat round icon="edit" aria-label="Edit DAO account name" @click="step = 'request_account_name'" /></div>
+          <div class="creation-funding-note"><q-icon name="info_outline" /><span>Account creation uses <strong>all your existing {{ getAppConfig.system_token.symbol }} hub deposits</strong>. Any excess buys additional RAM for this DAO.</span></div>
+          <hub-deposit-wallet v-if="artifactsReady && getResourceEstimation" :default_input_value="Math.max(0, Number((getRamPricePerByte * required_bytes - parseFloat(hubDeposits)).toFixed(4)))" />
+          <p v-if="has_enough_deposits" class="creation-ready"><q-icon name="check_circle_outline" /> Your deposit covers the current estimate.</p>
+          <div class="creation-actions"><q-btn flat label="Back" @click="step = 'request_account_name'" /><q-btn unelevated color="primary" label="Create account" icon-right="arrow_forward" :disable="!account_name_validated || !has_enough_deposits || !artifactsReady || busy" @click="createGroup" /></div>
+        </template>
+        <template v-else-if="step === 'request_activation'">
+          <span class="creation-icon"><q-icon name="check" /></span><p class="creation-eyebrow">Step 03 · Activation</p><h2>One last step.</h2><p>Your account <strong>{{ new_group_account_name }}</strong> is created. Activate it to install the DAO contract and open your community workspace.</p><div class="creation-funding-note"><q-icon name="verified_user" /><span>Your wallet will request approval to deploy the contract and activate your DAO.</span></div><q-btn unelevated color="primary" label="Activate DAO" icon-right="arrow_forward" :disable="!artifactsReady || busy" @click="activateGroup" /><p class="creation-caption">You can return later and resume activation with the same wallet.</p>
+        </template>
+        <template v-else-if="step === 'request_signature'">
+          <div class="creation-pending" role="status"><q-spinner color="primary" size="48px" /><h2>Over to your wallet.</h2><p>{{ pendingStage === 3 ? 'Approve activation' : 'Approve account creation' }} for <strong>{{ new_group_account_name }}</strong>.<br />Keep this page open while the transaction is confirmed.</p><span class="creation-caption">Declining the request will return you to the previous step.</span></div>
+        </template>
+        <template v-else-if="step === 'group_created'">
+          <span class="creation-icon"><q-icon name="celebration" /></span><p class="creation-eyebrow">Ready for what’s next</p><h2>Your community starts here.</h2><p><strong>{{ new_group_account_name }}</strong> is active. Add your community’s details, invite members, and start making decisions together.</p><q-btn unelevated color="primary" label="Open your DAO" icon-right="arrow_forward" :to="`/manage/${new_group_account_name}`" />
+        </template>
+      </section>
+      <aside class="creation-summary" aria-label="Setup details"><div class="creation-summary-art" role="img" aria-label="Green and ivory marble sculpture" /><div class="creation-summary-body"><p class="creation-eyebrow">Built for a more open world</p><h3>A shared future.<br />On your terms.</h3><dl><div><dt>Network</dt><dd>XPR Network</dd></div><div v-if="getAccountName"><dt>Creator</dt><dd>{{ getAccountName }}</dd></div><div><dt>Estimated resources</dt><dd>{{ getResourceEstimation || 'Estimate unavailable' }}</dd></div><div v-if="getAccountName"><dt>Hub deposit</dt><dd>{{ hubDeposits }}</dd></div></dl><p class="creation-caption">The estimate follows the current RAM price and may change before you sign.</p><q-btn v-if="!getResourceEstimation" flat color="primary" label="Refresh estimate" icon="refresh" @click="refreshEstimate" /><p v-if="preparing" class="creation-caption" role="status"><q-spinner size="16px" /> Preparing the DAO contract…</p><div v-if="preparationError" class="creation-error" role="alert">{{ preparationError }}<q-btn flat label="Retry" @click="get_wasm_and_abi_from_github" /></div></div></aside>
     </div>
     <wasmCompiler ref="wasm_compiler" />
   </div>
@@ -249,20 +53,16 @@ import { mapGetters } from "vuex";
 import { defineComponent } from "vue";
 
 import wasmCompiler from "components/wasm-compiler";
-import loginNetworkSwitcher from 'src/components/login/login-network-switcher';
+
 import hubDepositWallet from "./hub-deposit-wallet";
 
-import {
-  isValidAccountName,
-  isAvailableAccountName,
-} from "../imports/validators";
 import { notifySuccess } from "src/imports/notifications";
 
 export default defineComponent({
   name: "newGroup",
   components: {
     wasmCompiler,
-    loginNetworkSwitcher,
+
     hubDepositWallet
   },
   props: {
@@ -277,7 +77,11 @@ export default defineComponent({
   },
   data() {
     return {
-      number_of_steps: 3,
+      busy: false,
+      error: "",
+      preparing: false,
+      preparationError: "",
+      pendingStage: 2,
       step: "intro", //intro, request_account_name, create_account, request_signature, group_created
       new_group_account_name: "",
       account_name_validated: false,
@@ -304,34 +108,22 @@ export default defineComponent({
       }
     },
     has_enough_deposits() {
-      let res = false;
-      if (this.getResourceEstimation && this.getHubDeposits.length) {
-        let eos_deposit = this.getHubDeposits.find(
-          (d) => d.symbol == this.getAppConfig.system_token.symbol
-        ).quantity;
-        if (eos_deposit) {
-          return (
-            parseFloat(this.getResourceEstimation) <= parseFloat(eos_deposit)
-          );
-        }
-      }
-      return res;
+      return !!this.getResourceEstimation && parseFloat(this.hubDeposits) >= parseFloat(this.getResourceEstimation);
     },
-    hubDeposits(){
-      return this.getHubDeposits.length ?
-      `${this.getHubDeposits.find((d) => d.symbol == this.getAppConfig.system_token.symbol).quantity}`
-      : `0 ${this.getAppConfig.system_token.symbol}`
+    hubDeposits() {
+      const token = this.getAppConfig.system_token;
+      return (Array.isArray(this.getHubDeposits) ? this.getHubDeposits : []).find(d => d.symbol === token.symbol && d.contract === token.contract)?.quantity || `0 ${token.symbol}`;
     },
-    isValidWallet(){
-      return (this.getSession) ? this.getSession.link.walletType == 'anchor' && this.getSession.type == 'channel' : false
+    isValidWallet() { return !!this.getSession && !!this.getAccountName; },
+    artifactsReady() { return !!this.wasmhex && !!this.abihex; },
+    currentStage() {
+      return this.step === 'group_created' ? 4 : this.step === 'request_signature' ? this.pendingStage : this.step === 'request_activation' ? 3 : this.step === 'create_account' ? 2 : 1;
     },
-    isWebAuth(){
-      return (this.getSession) ? this.getSession.link.walletType == 'proton' : false
-    }
+    unfinishedGroups() { return this.groups_by_creator.filter(group => group.state === 0); },
   },
 
   async mounted() {
-    this.$store.dispatch("app/fetchRamPricePerByte", { vm: this });
+    this.refreshEstimate();
 
     await this.get_wasm_and_abi_from_github();
 
@@ -343,37 +135,44 @@ export default defineComponent({
     getAccountName: {
       immediate: true,
       handler: function (newV, oldV) {
-        if (this.getAccountName) {
-          this.getGroupsByCreator();
-        }
+        this.groups_by_creator = [];
+        if (this.getAccountName) this.getGroupsByCreator();
       },
     },
   },
   methods: {
-    isValidAccountName,
-    isAvailableAccountName,
-    async isavailableAccountNameWrapper(v) {
-      const test = await isAvailableAccountName({ v: v, vm: this });
-      if (test === true) {
+    async refreshEstimate() {
+      try { await this.$store.dispatch("app/fetchRamPricePerByte", { vm: this }); }
+      catch (_) { this.error = 'Unable to load the resource estimate. Check your connection and retry.'; }
+    },
+    async isavailableAccountNameWrapper(value) {
+      this.account_name_validated = false;
+      if (!/^[a-z1-5]{4,12}$/.test(value)) return 'Use 4–12 lowercase letters a–z or numbers 1–5.';
+      try {
+        await this.$eos.api.rpc.get_account(value);
+        return 'This account name is already taken.';
+      } catch (error) {
+        const details = JSON.stringify(error?.json || error?.message || '');
+        if (!/unknown key|account.*(not found|does not exist)|unknown account/i.test(details)) return 'Could not check availability. Please try again.';
+        if (value !== this.new_group_account_name) return false;
         this.account_name_validated = true;
         return true;
-      } else {
-        this.account_name_validated = false;
-        return test;
       }
     },
     async activateGroup() {
-      this.deploycontract(this.new_group_account_name);
+      if (this.busy || !this.artifactsReady || !this.isValidWallet) return;
+      this.busy = true; this.error = ''; this.pendingStage = 3;
+      try { await this.deploycontract(this.new_group_account_name); }
+      catch (_) { this.step = 'request_activation'; this.error = 'Activation was not confirmed. Check your wallet and account status before retrying.'; }
+      finally { this.busy = false; }
     },
     async createGroup() {
-      // if (!this.has_enough_deposits) {
-      //   this.openHubWallet();
-      //   return;
-      // }
-
+      if (this.busy || !this.account_name_validated || !this.artifactsReady || !this.isValidWallet) return;
+      this.busy = true; this.error = ''; this.pendingStage = 2;
       try {
         await this.$store.dispatch("app/fetchRamPricePerByte", { vm: this });
 
+        if (!this.has_enough_deposits) { this.error = "The resource estimate changed. Please review your deposit."; return; }
         this.step = "request_signature";
 
         let create_group = {
@@ -403,11 +202,13 @@ export default defineComponent({
           this.step = "request_activation";
         } else {
           this.step = "create_account";
+          this.error = "Account creation was not confirmed. Check your wallet and account status before retrying.";
           return false;
         }
       } catch (error) {
-        console.warn(error);
-      }
+        this.step = 'create_account';
+        this.error = 'Account creation was not confirmed. Check your connection and wallet before retrying.';
+      } finally { this.busy = false; }
     },
     async deploycontract(new_group) {
       this.step = "request_signature";
@@ -467,6 +268,7 @@ export default defineComponent({
         return true;
       } else {
         this.step = "request_activation";
+        this.error = "Activation was not confirmed. You can retry after checking your wallet.";
         return false;
       }
     },
@@ -489,7 +291,8 @@ export default defineComponent({
       }
     },
     async get_wasm_and_abi_from_github() {
-      console.log("retrieving code from github");
+      this.preparing = true; this.preparationError = '';
+      try {
       let wasm = await this.$refs.wasm_compiler.loadRemoteWasm(
         `${this.getAppConfig.core_contract.raw}${this.getAppConfig.core_contract.wasm}`
       );
@@ -499,6 +302,8 @@ export default defineComponent({
 
       this.wasmhex = wasm.wasm;
       this.abihex = abi.abi;
+      } catch (_) { this.preparationError = 'Could not load the DAO contract. Retry before funding or activating your DAO.'; }
+      finally { this.preparing = false; }
     },
 
     async get_wasm_and_abi_from_block(query) {
@@ -521,6 +326,8 @@ export default defineComponent({
       //return {wasmhex: wasmhex, abihex: abihex};
     },
     async getGroupsByCreator() {
+      const creator = this.getAccountName;
+      try {
       let groups_by_creator = await this.$eos.api.rpc.get_table_rows({
         json: true,
         code: this.getAppConfig.groups_contract,
@@ -544,16 +351,11 @@ export default defineComponent({
       }
       console.log("fetched groups by creator", groups_by_creator);
       //this.groups_by_creator = [{groupname:"test", state:0}, {groupname:"test1", state:0}];
-      this.groups_by_creator = groups_by_creator;
+      if (creator === this.getAccountName) this.groups_by_creator = groups_by_creator;
+      } catch (_) { /* Existing groups can be reloaded after reconnecting. */ }
     },
   },
 });
 </script>
-<style>
-.create-group-width {
-  width: 600px;
-}
-.bg-transparent {
-  background: transparent;
-}
-</style>
+
+<style scoped src="../css/create-flow.scss" lang="scss"></style>

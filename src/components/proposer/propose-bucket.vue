@@ -3,7 +3,7 @@
     <q-card class="overflow-hidden">
       <!-- expand-icon-class="display-none" -->
       <q-expansion-item
-        class="bg-secondary"
+        class="bg-secondary dao-action-bucket"
         v-model="bucket_opened"
         :switch-toggle-side="false"
         expand-icon-class="display-none"
@@ -40,8 +40,8 @@
           </q-item-section>
 
           <q-item-section side @click.stop>
-            <q-icon
-              :name="bucket_menu_visible ? 'menu_open' : 'menu'"
+            <q-btn flat round aria-label="Action bucket options"
+              :icon="bucket_menu_visible ? 'menu_open' : 'menu'"
               class="cursor-pointer"
             >
               <q-menu
@@ -80,7 +80,7 @@
                   </q-item>
                 </q-list>
               </q-menu>
-            </q-icon>
+            </q-btn>
           </q-item-section>
         </template>
         <!-- end header -->
@@ -100,10 +100,11 @@
                   </q-item-section>
                 </q-item>
 
-                <q-item v-for="action in getActionBucket">
+                <q-item v-for="(action, index) in getActionBucket" :key="action.unique_id">
                   <bucket-item
                       :key="action.unique_id"
                       :action="action"
+                      :index="index"
                     />
                 </q-item>
 
@@ -158,7 +159,7 @@
                       size="24px"
                     />
                     <div class="text-caption text-grey-5 q-pt-sm q-pl-xs">
-                      <i>drag to order</i>
+                      <span>Actions run in this order</span>
                     </div>
                   </div>
                   <q-space v-else />

@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="constrain-page-width">
+  <q-page padding class="constrain-page-width dao-page">
     <page-header title="dashboard" />
     <div class="text-grey-7 text-h6">
       <div v-if="getAccountName">Welcome {{ getAccountName }}</div>

@@ -1,5 +1,6 @@
 <template>
-  <q-page padding class="text-black constrain-page-width">
+  <q-page padding class="text-black constrain-page-width dao-page dao-settings">
+    <page-header title="Group settings" eyebrow="Community workspace" description="Manage the details and preferences of your community." />
     <transition
       appear
       enter-active-class="animated fadeInDown"
@@ -41,6 +42,7 @@
 </template>
 
 <script>
+import pageHeader from "components/page-header";
 import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
 import updateLogo from "components/actions/update-logo";
@@ -48,6 +50,7 @@ import updateLogo from "components/actions/update-logo";
 export default defineComponent({
   name: "groupSettings",
   components: {
+    pageHeader,
     updateLogo,
   },
   data() {

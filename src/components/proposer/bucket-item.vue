@@ -2,7 +2,7 @@
   <q-expansion-item
     group="bucketitem"
     clickable
-    class="cursor-default"
+    class="cursor-default dao-bucket-item"
     style="border-bottom: 1px solid grey"
   >
     <template v-slot:header>
@@ -26,12 +26,13 @@
             class="q-mr-sm"
           />
           <q-btn
+            aria-label="Remove action"
             icon="remove"
             unelevated
             dense
             size="sm"
             color="negative"
-            @click="$store.commit('bucket/removeFromActionBucketByIndex', key)"
+            @click.stop="$store.commit('bucket/removeFromActionBucketByIndex', index)"
           >
             <q-tooltip :delay="400" class="bg-secondary">Delete</q-tooltip>
           </q-btn>
@@ -73,7 +74,7 @@ export default defineComponent({
   },
   props: {
     action: {},
-    key: '',
+    index: { type: Number, required: true },
     i: 0
   },
   data() {

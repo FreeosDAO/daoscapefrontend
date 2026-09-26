@@ -1,5 +1,5 @@
 <template>
-  <q-splitter
+  <q-splitter class="dao-config-splitter" :disable="$q.screen.width < 760"
     v-model="splitterModel"
     separator-class="bg-secondary"
     :horizontal="false"
@@ -11,7 +11,8 @@
 
     <template v-slot:before>
       <div class="q-pa-md">
-        <q-tree
+        <q-select v-if="$q.screen.width < 760" outlined label="Settings section" v-model="selected" :options="['Core', 'Guardians', 'Proposals', 'Members', 'Internal Accounting', 'KYC', 'Maintainer Account', 'Color', 'Logo', 'About', 'Links', 'Update Code']" />
+        <q-tree v-else
           control-color="primary"
           :nodes="getGroupTree()"
           node-key="label"
@@ -223,8 +224,8 @@ export default defineComponent({
   data() {
     return {
       splitterModel: 40,
-      selected: "Modules",
-      expanded: [],
+      selected: "Core",
+      expanded: ["Core"],
       expand_all: false,
     };
   },

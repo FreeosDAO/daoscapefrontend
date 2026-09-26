@@ -45,8 +45,8 @@
           "url": "https://protonchain.com"
       },
       "nft":{
-          "api": "https://proton.api.atomicassets.io",
-          "url": "https://www.protonscan.io/nft"
+          "api": "https://xpr.api.atomicassets.io",
+          "url": "https://explorer.xprnetwork.org/nft"
       }
   }
 }

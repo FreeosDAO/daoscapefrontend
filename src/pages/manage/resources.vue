@@ -1,6 +1,6 @@
 <template>
-  <q-page padding class="constrain-page-width">
-    <page-header title="Resources" />
+  <q-page padding class="constrain-page-width dao-page dao-resources">
+    <page-header title="Resources" eyebrow="Community workspace" description="Monitor the network resources that keep your DAO running." />
     <!-- {{resource_carousel_slide}} -->
     <!-- {{getChunkSize}} -->
     <q-carousel

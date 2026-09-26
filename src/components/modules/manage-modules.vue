@@ -8,6 +8,7 @@
       </q-toolbar-title>
       <q-space />
       <q-btn
+        aria-label="Manage modules"
         round
         dense
         :icon="manage_module ? 'mdi-minus' : 'mdi-plus'"

@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="constrain-page-width">
+  <q-page v-if="modulesReady && !pilotGovernance" padding class="constrain-page-width dao-page">
     <page-header title="Elections" />
     <q-tabs
       v-model="selected_tab"
@@ -94,6 +94,8 @@ export default defineComponent({
     };
   },
   computed: {
+    modulesReady() { return this.getActiveGroup === this.$route.params.groupname && Array.isArray(this.getModules); },
+    pilotGovernance() { return this.modulesReady && this.getModules.some(m => m.module_name === "membergov"); },
     ...mapGetters({
       getAccountName: "proton/getAccountName",
       getElectionsContract: "elections/getElectionsContract",
@@ -102,6 +104,7 @@ export default defineComponent({
       getIsCandidate: "elections/getIsCandidate",
       getIsMember: "user/getIsMember",
       getActiveGroup: "group/getActiveGroup",
+      getModules: "group/getModules",
     }),
   },
   methods: {},
@@ -113,10 +116,11 @@ export default defineComponent({
   //   'getAccountName'() {this.$store.dispatch("elections/loadElectionsRoutine")}
   // }
   watch: {
+    pilotGovernance: { immediate: true, handler(enabled) { if(enabled) this.$router.replace(`/manage/${this.$route.params.groupname}/sortition`); } },
     getElectionsContract: {
       immediate: true,
       handler(newVal, oldVal) {
-        if (newVal) {
+        if (newVal && this.modulesReady && !this.pilotGovernance) {
           this.$store.dispatch("elections/loadElectionsRoutine",{vm:this});
         }
       },

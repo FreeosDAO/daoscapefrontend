@@ -1,10 +1,11 @@
 <template>
-  <q-page padding class="constrain-page-width">
+  <q-page padding class="constrain-page-width dao-page dao-modules">
 
+    <page-header title="Configuration" eyebrow="Community workspace" description="Make this DAO your own. Manage governance settings and connected modules." />
     <q-card>
       <div class="row bg-secondary items-center justify-between" style="height: 60px">
         <div class="q-ml-md">
-          <page-header title="Configuration" colorClass="text-primary" />
+          <h2 class="dao-section-title">Governance settings</h2>
         </div>
         <div class="q-mx-md">
           <q-btn

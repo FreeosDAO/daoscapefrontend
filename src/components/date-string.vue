@@ -69,7 +69,7 @@ export default defineComponent({
       }
     }, 30000);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.stopUpdates();
   },
 

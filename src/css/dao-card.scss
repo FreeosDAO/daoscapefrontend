@@ -1,0 +1,43 @@
+.dao-card { background: #fdfcfb; border: 1px solid #e4e5e1; border-radius: 12px; box-shadow: 0 6px 18px #26332a08; overflow: hidden; color: #18282d; font-family: Arial, Helvetica, sans-serif; transition: box-shadow .2s; }
+.dao-card:hover { box-shadow: 0 8px 24px #26332a12; }
+.dao-card-banner { position: relative; aspect-ratio: 2.95; overflow: hidden; background: #acc3b9; }
+.dao-card-art { width: 100%; height: 100%; display: block; object-fit: cover; }
+.dao-card-logo { position: absolute; bottom: 14px; left: 22px; width: 54px; height: 54px; object-fit: contain; padding: 5px; background: #fffffff0; border: 1px solid #ffffff80; border-radius: 12px; }
+.dao-favourite { position: absolute; right: 15px; top: 14px; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: #143331ce; color: #fff; font-size: 24px; cursor: pointer; }
+.dao-favourite.saved { color: #fff2bf; background: #133c37; }
+.dao-favourite:focus-visible, .dao-card a:focus-visible, .dao-card button:focus-visible { outline: 2px solid #3e8d7b; outline-offset: 3px; }
+.dao-card-content { padding: 21px 24px 18px; }
+.dao-card h2 { margin: 0 0 7px; font-size: 24px; font-weight: 600; line-height: 1.25; text-transform: uppercase; letter-spacing: -.6px; overflow-wrap: anywhere; }
+.dao-card-description { color: #7b8382; font-size: 14px; line-height: 1.4; text-align: left; margin: 0; min-height: 39px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.dao-card-stats { display: flex; gap: 26px; flex-wrap: wrap; margin-top: 13px; color: #777f7e; font-size: 13px; line-height: 20px; }
+.dao-card-stats > span { display: inline-flex; align-items: center; gap: 8px; }
+.dao-card-stats .q-icon, .dao-card-stats svg { width: 16px; height: 16px; font-size: 17px; color: #606a6b; }
+.dao-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #e8e9e5; padding-top: 10px; margin-top: 15px; }
+.dao-details-button, .dao-visit-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 43px; padding: 10px 25px; border: 1px solid #9aa7a7; border-radius: 30px; background: transparent; color: #17292c; text-decoration: none; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 20px; cursor: pointer; transition: background .2s; white-space: nowrap; }
+.dao-visit-button { background: linear-gradient(120deg, #063d3e, #075552); color: white; border-color: transparent; min-width: 166px; }
+.dao-visit-button svg { width: 19px; height: 19px; }
+.dao-visit-button:hover { background: #116a61; }
+.dao-details-button:hover { background: #edf2ed; }
+.dao-details-dialog { width: 540px; max-width: calc(100vw - 32px); background: #fbfaf7; color: #1a3030; padding: 28px; border-radius: 16px; font-family: Arial, Helvetica, sans-serif; }
+.dao-details-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+.dao-details-heading p { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 8px; color: #6d7c75; }
+.dao-details-heading h2 { font-family: Georgia, serif; font-size: 32px; margin: 0; line-height: 1.15; }
+.dao-details-dialog h3 { font-size: 18px; line-height: 1.4; margin: 0 0 12px; }
+.dao-details-description { font-size: 15px; line-height: 1.6; color: #62706a; text-align: left; white-space: pre-line; overflow-wrap: anywhere; }
+.dao-details-dialog dl { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 26px 0; padding: 22px 0; border-top: 1px solid #dce2d9; border-bottom: 1px solid #dce2d9; }
+.dao-details-dialog dt { color: #7a857c; font-size: 12px; margin-bottom: 6px; }
+.dao-details-dialog dd { font-size: 15px; margin: 0; }
+.dao-detail-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.dao-detail-tags span { font-size: 12px; background: #e4eee6; padding: 5px 12px; border-radius: 20px; }
+@media (max-width: 1100px) {
+  .dao-card-content { padding: 20px 20px 17px; }
+  .dao-card-stats { gap: 14px; font-size: 12px; }
+  .dao-details-button, .dao-visit-button { padding: 10px 18px; font-size: 13px; min-width: 0; }
+}
+@media (max-width: 370px) {
+  .dao-card-content { padding: 18px 15px 15px; }
+  .dao-card-stats { gap: 12px; font-size: 11px; }
+  .dao-card-stats > span { gap: 4px; }
+  .dao-details-button, .dao-visit-button { padding: 9px 16px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .dao-card, .dao-details-button, .dao-visit-button { transition: none; } }

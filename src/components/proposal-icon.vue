@@ -74,7 +74,7 @@ export default defineComponent({
       }, 5000);
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearInterval(this.icon_timer);
     this.icon_timer = null;
   },

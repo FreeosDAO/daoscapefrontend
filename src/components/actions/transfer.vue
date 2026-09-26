@@ -1,9 +1,10 @@
 <template>
   <div>
     <div v-if="getGroupWallet.length">
-      <q-item clickable @click.native="toggleTokenSelector" id="tokendisplay">
+      <q-item clickable @click="toggleTokenSelector" id="tokendisplay">
         <q-item-section avatar>
-          <q-img
+          <q-avatar v-if="!getGroupWallet[selected_token_index].logo" color="grey-2" text-color="primary" size="52px">{{ getGroupWallet[selected_token_index].symbol.slice(0, 1) }}</q-avatar>
+          <q-img v-else
             contain
             :src="getGroupWallet[selected_token_index].logo"
             spinner-color="white"
@@ -14,7 +15,7 @@
         <q-item-section>
           <q-item-label class="text-weight-light text-h6">
             <span>{{ getGroupWallet[selected_token_index].amount }}</span>
-            <span class="text-weight-bold">
+            <span class="text-weight-bold q-ml-xs">
               {{ getGroupWallet[selected_token_index].symbol }}</span
             >
           </q-item-label>
@@ -39,7 +40,7 @@
           @popup-show="token_selector_popup = true"
           @popup-hide="token_selector_popup = false"
           autocomplete="off"
-          @input="transfer_action.data.quantity = ''"
+          @update:model-value="transfer_action.data.quantity = ''; quantity_input_validated = false"
         >
           <template v-slot:prepend>
             <q-icon name="search" class="q-ml-md" />
@@ -83,6 +84,7 @@
           outlined
           label="To"
           v-model="transfer_action.data.to"
+          @update:model-value="to_input_validated = false"
           placeholder="Receiver"
           bottom-slots
           no-error-icon
@@ -106,6 +108,7 @@
           outlined
           label="Quantity"
           v-model="transfer_action.data.quantity"
+          @update:model-value="quantity_input_validated = false"
           placeholder="Amount"
           no-error-icon
           :rules="[
@@ -228,13 +231,16 @@ export default defineComponent({
     isValidAccountName,
     isExistingAccountName,
     async isExistingAccountNameWrapper(v) {
+      this.to_input_validated = false;
       let t = await isExistingAccountName({value:v,vm:this});
-      if (t === true) {
+      if (t === true && v === this.transfer_action.data.to) {
         this.to_input_validated = true;
       }
       return t;
     },
     validateAmount(v) {
+      this.quantity_input_validated = false;
+      if (!Number.isFinite(Number(v)) || Number(v) <= 0) return "Enter an amount greater than zero";
       // console.log(v)
       let token_from_group_wallet = this.getGroupWallet[this.selected_token_index];
       if (!token_from_group_wallet) {
@@ -274,6 +280,7 @@ export default defineComponent({
       this.$emit("propose", payload);
     },
     emitBucket() {
+      if (!this.to_input_validated || this.validateAmount(this.transfer_action.data.quantity) !== true) return;
       // this.$refs.quant.validate()
       // if(this.$refs.quant.hasError){
       //   return;

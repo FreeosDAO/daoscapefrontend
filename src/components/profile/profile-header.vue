@@ -225,6 +225,7 @@ export default defineComponent({
       getLatestUserterms: "group/getLatestUserterms",
       getCoreConfig: "group/getCoreConfig",
     }),
+    membershipKey() { return `${this.getActiveGroup}:${this.account || ""}`; },
     userterms_enabled() {
       if (this.getCoreConfig) {
         return this.getCoreConfig.conf.userterms;
@@ -304,14 +305,14 @@ export default defineComponent({
     },
   },
   watch: {
-    account: {
+    membershipKey: {
       immediate: true,
       handler: async function (newV, oldV) {
-        if (newV && newV != oldV) {
+        if (this.getActiveGroup && this.account && newV != oldV) {
           this.is_member = await this.$store.dispatch("user/fetchIsMember", {
             accountname:this.account,
             vm: this
-            });
+            }).catch(() => false);
         }
       },
     },

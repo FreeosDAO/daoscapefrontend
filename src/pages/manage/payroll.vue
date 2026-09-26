@@ -1,6 +1,6 @@
 <template>
-  <q-page padding class="constrain-page-width">
-    <page-header title="Payrolls" />
+  <q-page padding class="constrain-page-width dao-page dao-payroll">
+    <page-header title="Payroll" eyebrow="Community workspace" description="Manage recurring payments and the people your community supports." />
     <div v-if="getPayrolls.length">
       <q-input
         placeholder="Find Payment"

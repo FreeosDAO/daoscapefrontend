@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="constrain-page-width">
+  <q-page padding class="constrain-page-width dao-page">
     <page-header title="Internal Accounting" />
     <q-card v-if="getCoreConfig" class="">
       <div class="row justify-between q-mb-md q-py-sm">

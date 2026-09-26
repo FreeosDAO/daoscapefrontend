@@ -11,19 +11,38 @@ export let session;
 // const rpc = new JsonRpc(ENDPOINTS)
 
 export const createLink = async (ENDPOINTS, CHAIN_ID, REQUEST_ACCOUNT, restoreSession = false) => {
-  const { link: localLink, session: localSession } = await ProtonWebSDK({
+  if (process.env.LOCAL_CHAIN) {
+    const local = await import('./local-wallet');
+    session = await local.connectLocal(restoreSession);
+    link = { removeSession: local.logoutLocal };
+    return;
+  }
+  const { link: localLink, session: localSession, error } = await ProtonWebSDK({
     linkOptions: {
       endpoints: ENDPOINTS,
       chainId: CHAIN_ID,
       restoreSession,
+      storagePrefix: `daoscape-xpr-${CHAIN_ID}`,
     },
     transportOptions: {
       requestAccount: REQUEST_ACCOUNT
     },
     selectorOptions: {
-      appName: 'The DAOScape',
+      enabledWalletTypes: ['webauth', 'proton', 'anchor'],
+    },
+    uiOptions: {
+      appInfo: { name: 'The DAOScape' },
+      theme: 'light',
+      themes: { light: { base: { bodyBackground: '#faf9f7', textColorBase: '#172b2a', textColorSecondary: '#65716d', textColorLink: '#28645a' } } },
     },
   });
+  if (error) {
+    if (restoreSession) { session = undefined; link = undefined; return; }
+    throw error instanceof Error ? error : new Error(String(error));
+  }
+  if (localSession && localSession.chainId.toString() !== CHAIN_ID) {
+    throw new Error('The wallet connected to a different network. Please select XPR Network.');
+  }
   link = localLink;
   session = localSession;
 };

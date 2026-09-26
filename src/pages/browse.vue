@@ -1,204 +1,112 @@
 <template>
-  <q-page padding class="text-black">
-    <!-- content -->
-    <div class="center-page-content">
-      <div>
-        <q-input placeholder="Find Group" outlined v-model.trim="searchfilter">
-          <template v-slot:prepend>
-            <q-icon name="search" class="cursor-pointer" />
-          </template>
-          <template v-slot:append>
-            <transition-group
-              appear
-              enter-active-class="animated fadeInRight"
-              leave-active-class="animated fadeOutRight"
-              tag="div"
-            >
-              <q-icon
-                v-if="searchfilter.length"
-                name="close"
-                key="has_filter"
-                @click="searchfilter = ''"
-                class="cursor-pointer"
-              />
-              <q-icon
-                v-else
-                key="no_filter"
-                :name="menu_visible ? 'menu_open' : 'menu'"
-                class="cursor-pointer"
-              >
-                <q-menu
-                  v-if="false"
-                  fit
-                  @before-show="menu_visible = true"
-                  @hide="menu_visible = false"
-                >
-                  <q-list style="min-width: 100px" class="primary-hover-list">
-                    <q-item clickable v-close-popup>
-                      <q-item-section>New Guardian</q-item-section>
-                    </q-item>
-                    <q-item clickable v-close-popup>
-                      <q-item-section>Remove Guardian</q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-menu>
-              </q-icon>
-            </transition-group>
-          </template>
-        </q-input>
-        <div class="q-mb-md">
-          <q-tabs
-            v-model="tabfilter"
-            dense
-            class="text-primary"
-            align="left"
-            no-caps
-            inline-label
-          >
-            <q-tab :label="`All (${getGroups.length})`" name="all" />
-            <q-tab
-              :label="`Favourites (${getFavouriteGroups.length})`"
-              name="favourites"
-              icon="star"
-            />
-          </q-tabs>
-          <q-separator />
+  <q-page class="dao-browser">
+    <header class="browse-header">
+      <div class="browse-header-inner">
+        <router-link to="/" aria-label="The DAO Scape home" class="browse-brand"><landing-brand /></router-link>
+        <nav class="browse-navigation" aria-label="Main navigation">
+          <router-link to="/browse" aria-current="page" class="active">Browse</router-link>
+          <router-link to="/create">Create</router-link>
+          <router-link to="/documentation">Learn</router-link>
+        </nav>
+        <div class="browse-header-actions">
+          <button class="header-search" aria-label="Search DAOs" @click="$refs.searchInput.focus()"><landing-icon name="search" /></button>
+          <login-network-switcher :avatar="false" />
         </div>
       </div>
-
-      <transition
-        appear
-        enter-active-class="animated fadeInDown"
-        class="column q-gutter-md"
-        tag="div"
-      >
-        <span class="row items-center text-grey-7" v-if="!getGroupsWithFilter.length">
-          <q-icon name="error_outline" size="24px" class="q-mr-sm" />
-          No Groups found on {{ getActiveNetwork }}...
-        </span>
-      </transition>
-
-      <transition-group
-        appear
-        enter-active-class="animated zoomIn"
-        leave-active-class="animated zoomOut"
-        class="row q-col-gutter-md"
-        tag="div"
-      >
-        <div
-          v-for="group in getGroupsWithFilter"
-          :key="group.groupname"
-          class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-3 row items-stretch"
-        >
-          <group-card :group="group" class="full-width" />
+    </header>
+    <div class="browse-body">
+      <div class="browse-backdrop" aria-hidden="true" />
+      <section class="browse-content" aria-label="Browse communities">
+        <div class="browse-intro">
+          <p class="browse-eyebrow">Browse DAOs</p>
+          <h1>Find your community</h1>
+          <p class="browse-subtitle">Explore, join, and help shape decentralized communities around the world.</p>
         </div>
-      </transition-group>
-      <!-- <div v-else class="row justify-center items-center" style="200px">
-        <q-spinner color="primary" size="42px" />
-      </div> -->
+        <div class="browse-search-row">
+          <div class="browse-search-field">
+            <landing-icon name="search" />
+            <input ref="searchInput" v-model="searchfilter" type="search" placeholder="Find a group..." aria-label="Find a group" />
+          </div>
+          <button class="browse-filter-button" :class="{ selected: filtersActive }" aria-label="Filter and sort DAOs" :aria-expanded="filtersOpen" @click="filtersOpen = !filtersOpen"><q-icon name="tune" /><span v-if="filtersActive" class="filter-dot" /></button>
+        </div>
+        <div v-if="filtersOpen" class="browse-filters">
+          <label>Sort by<select v-model="sortBy"><option value="name">Name (A–Z)</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label>
+          <label>Community tag<select v-model="tagFilter"><option value="">All tags</option><option v-for="tag in availableTags" :key="tag" :value="tag">{{ tag }}</option></select></label>
+          <button class="filter-reset" @click="resetFilters">Reset filters</button>
+        </div>
+        <nav class="browse-tabs" aria-label="DAO collections">
+          <router-link to="/browse#all" :class="{ active: !isFavourites }" :aria-current="!isFavourites ? 'page' : undefined">All ({{ activeGroups.length }})</router-link>
+          <router-link to="/browse#favourites" :class="{ active: isFavourites }" :aria-current="isFavourites ? 'page' : undefined"><q-icon name="star" /> Favourites ({{ favouriteCount }})</router-link>
+        </nav>
+        <div v-if="loading" class="browse-empty" role="status"><q-spinner size="28px" /><p>Loading communities...</p></div>
+        <div v-else-if="loadError" class="browse-empty" role="alert"><q-icon name="cloud_off" size="32px" /><h2>Couldn’t load communities</h2><p>Check your connection and try again.</p><button class="browse-retry" @click="loadGroups">Try again</button></div>
+        <div v-else-if="!filteredGroups.length" class="browse-empty" role="status">
+          <q-icon :name="isFavourites && !searchfilter ? 'star_border' : 'search'" size="36px" />
+          <h2>{{ isFavourites && !searchfilter ? 'Your favourites start here' : 'No communities found' }}</h2>
+          <p>{{ isFavourites && !searchfilter ? 'Save a community using the star on its card.' : 'Try another name, description, or community tag.' }}</p>
+          <button class="browse-retry" @click="showAll">Explore all DAOs</button>
+        </div>
+        <div v-else class="dao-card-grid" aria-label="DAO results">
+          <group-card v-for="group in filteredGroups" :key="`${activeNetwork}:${group.groupname}`" :group="group" />
+        </div>
+      </section>
     </div>
+    <footer class="browse-footer">
+      <div class="browse-footer-inner">
+        <div class="browse-footer-top">
+          <router-link to="/" class="browse-brand" aria-label="The DAO Scape home"><landing-brand /></router-link>
+          <nav aria-label="Footer navigation"><router-link to="/documentation">Docs</router-link><router-link to="/create">Create</router-link><a :href="appConfig.social.twitter" target="_blank" rel="noopener noreferrer">Community</a><a href="https://github.com/FreeosDAO/daoscapefrontend/issues" target="_blank" rel="noopener noreferrer">Support</a></nav>
+          <div class="browse-social"><a :href="appConfig.social.twitter" target="_blank" rel="noopener noreferrer" aria-label="DAOScape on Twitter"><q-icon name="mdi-twitter" /></a><a :href="appConfig.social.github" target="_blank" rel="noopener noreferrer" aria-label="DAOScape on GitHub"><q-icon name="img:statics/vectors/social/027-github.svg" /></a></div>
+          <p>Empowering decentralized communities.</p>
+        </div>
+        <div class="browse-footer-bottom"><span>© {{ year }} TheDAOScape by FreeDAO. Open source.</span><span>Built for all of us.</span></div>
+      </div>
+    </footer>
   </q-page>
 </template>
-
 <script>
-import { defineComponent } from "vue";
-import { mapGetters } from "vuex";
-import groupCard from "components/group-card";
+import { mapGetters } from 'vuex';
+import GroupCard from 'components/group-card.vue';
+import LandingBrand from 'components/home/landing-brand.vue';
+import LandingIcon from 'components/home/landing-icon.vue';
+import LoginNetworkSwitcher from 'components/login/login-network-switcher.vue';
 
-export default defineComponent({
-  // name: 'LayoutName',
-  components: {
-    groupCard,
-  },
-  data() {
-    return {
-      searchfilter: "",
-      menu_visible: false,
-      tabfilter: "favourites",
-      location_hash: "",
-    };
-  },
+export default {
+  name: 'BrowseDaos',
+  components: { GroupCard, LandingBrand, LandingIcon, LoginNetworkSwitcher },
+  data: () => ({ searchfilter: '', filtersOpen: false, sortBy: 'name', tagFilter: '', loading: true, loadError: false, year: new Date().getFullYear() }),
   computed: {
-    ...mapGetters({
-      getAccountName: "proton/getAccountName",
-      getGroups: "app/getGroups",
-      getFavouriteGroups: "user/getFavouriteGroups",
-      getActiveNetwork: "proton/getActiveNetwork",
-    }),
-    getGroupsWithFilter() {
-      let res = this.getGroups;
-      if (!res) return [];
-      res = res.filter((g) => g.state > 0);
-      if (this.tabfilter == "all") {
-        // return res;
-      } else if (this.tabfilter == "favourites") {
-        res = res.filter((g) => g.is_fav);
-      }
-
-      if (this.searchfilter) {
-        return res.filter(
-          (g) =>
-            g.groupname.includes(this.searchfilter) ||
-            g.meta.about.includes(this.searchfilter) ||
-            this.arrayStartsWith(g.tags, this.searchfilter)
-        );
-      } else {
-        return res;
-      }
+    ...mapGetters({ groups: 'app/getGroups', favourites: 'user/getFavouriteGroups', activeNetwork: 'proton/getActiveNetwork', appConfig: 'app/getAppConfig' }),
+    activeGroups() { return (this.groups || []).filter(group => group.state > 0); },
+    favouriteCount() { return this.activeGroups.filter(group => this.favourites.includes(group.groupname)).length; },
+    isFavourites() { return this.$route.hash === '#favourites'; },
+    availableTags() { return [...new Set(this.activeGroups.flatMap(group => group.tags || []))].sort(); },
+    filtersActive() { return this.sortBy !== 'name' || !!this.tagFilter; },
+    filteredGroups() {
+      const query = this.searchfilter.trim().toLocaleLowerCase();
+      return this.activeGroups.filter(group => {
+        if (this.isFavourites && !this.favourites.includes(group.groupname)) return false;
+        if (this.tagFilter && !(group.tags || []).includes(this.tagFilter)) return false;
+        return [group.groupname, group.meta?.title, group.meta?.about, ...(group.tags || [])].some(value => (value || '').toLocaleLowerCase().includes(query));
+      }).sort((a, b) => {
+        if (this.sortBy === 'name') return a.groupname.localeCompare(b.groupname);
+        const order = (a.creation_date || '').localeCompare(b.creation_date || '');
+        return this.sortBy === 'newest' ? -order : order;
+      });
     },
   },
   methods: {
-    arrayStartsWith(arr, needle) {
-      let test = false;
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].startsWith(needle)) {
-          test = true;
-          break;
-        }
-      }
-      return test;
-    },
+    resetFilters() { this.sortBy = 'name'; this.tagFilter = ''; },
+    showAll() { this.searchfilter = ''; this.resetFilters(); this.$router.push('/browse#all'); },
     async loadGroups() {
-      this.is_loading_groups = true;
-      await this.$store.dispatch("app/fetchGroups", { vm: this });
-      this.is_loading_groups = false;
+      this.loading = true; this.loadError = false;
+      try { await this.$store.dispatch('app/fetchGroups', { vm: this }); }
+      catch (error) { this.loadError = true; }
+      finally { this.loading = false; }
     },
   },
-  mounted() {
-    let hash = window.location.hash;
-    if (hash) {
-      this.location_hash = window.location.hash;
-    } else {
-      this.location_hash = window.location.hash = "#all";
-    }
-
-    console.log(this.location_hash);
-  },
-  watch: {
-    getActiveNetwork: {
-      immediate: true,
-      handler: function (newV, oldV) {
-        if (newV != oldV) {
-          this.loadGroups();
-        }
-      },
-    },
-    location_hash: {
-      immediate: true,
-      handler(newVal, oldVal) {
-        if (newVal != oldVal) {
-          this.tabfilter = newVal.substr(1);
-        }
-      },
-    },
-    tabfilter: {
-      immediate: false,
-      handler(newVal, oldVal) {
-        if (newVal != oldVal && newVal) {
-          window.location.hash = `#${newVal}`;
-        }
-      },
-    },
-  },
-});
+  watch: { activeNetwork: { immediate: true, handler() { this.loadGroups(); } } },
+  mounted() { if (!['#all', '#favourites'].includes(this.$route.hash)) this.$router.replace('/browse#all'); },
+};
 </script>
+<style scoped src="../css/browse.scss" lang="scss"></style>

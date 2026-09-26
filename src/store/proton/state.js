@@ -1,7 +1,8 @@
-let protonStorage = JSON.parse(window.localStorage.getItem('proton'))
+let protonStorage;
+try { protonStorage = JSON.parse(window.localStorage.getItem(process.env.LOCAL_CHAIN ? 'proton-local-' + process.env.LOCAL_CHAIN_ID : 'daoscape-xpr-v1')); } catch { protonStorage = null; }
 let sessionStorage = protonStorage?.proton?.session || null
 let accountNameStorage = protonStorage?.proton?.accountName || null
-let activeNetworkStorage = protonStorage?.proton?.activeNetwork || "proton"
+let activeNetworkStorage = process.env.LOCAL_CHAIN ? 'local' : process.env.PROD ? 'proton' : (['proton', 'protonTest'].includes(protonStorage?.proton?.activeNetwork) ? protonStorage.proton.activeNetwork : 'proton')
 
 export default {
   accountName: accountNameStorage,
@@ -20,6 +21,10 @@ export default {
   activeNetwork: activeNetworkStorage,
 
   networks: {
+    ...(process.env.LOCAL_CHAIN ? { local: { config: {
+      chainId: process.env.LOCAL_CHAIN_ID,
+      rpcEndpoints: [{ protocol: 'http', host: '127.0.0.1', port: '8888' }]
+    } } } : {}),
     protonTest: {
       config: {
         chainId:
@@ -58,11 +63,6 @@ export default {
             host: "api.protonnz.com",
             port: "443",
           },
-          {
-            protocol: "https",
-            host: "proton.greymass.com",
-            port: "443",
-          }
         ],
       },
     },

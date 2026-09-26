@@ -1,321 +1,90 @@
 <template>
-  <q-layout view="hHh Lpr lff">
-
-    <!-- (Optional) The Header -->
-    <q-header>
-      <q-toolbar style="height: 60px" class="bg-secondary">
-        <q-btn
-          flat
-          round
-          dense
-          :icon="leftDrawer ? 'close' : 'menu'"
-          @click="leftDrawer = !leftDrawer"
-          class="q-mr-xs"
-        />
-        <main-logo />
-        <router-link
-          :to="`/manage/${getActiveGroupConfig.groupname}`"
-          class="row items-center q-ml-sm"
-          v-if="getActiveGroupConfig && getActiveGroupConfig.ui.logo"
-        >
-          <img
-            :src="getActiveGroupConfig.ui.logo"
-            style="max-height: 40px; max-width: 200px"
-            class="gt-xs"
-          />
-          <img :src="getActiveGroupConfig.ui.logo" style="height: 25px" class="lt-sm" />
-        </router-link>
-        <span v-else class="text-primary text-subtitle text-uppercase q-ml-sm">{{
-          getActiveGroup
-        }}</span>
-
-        <q-toolbar-title> </q-toolbar-title>
-        <q-tabs shrink stretch class="q-mr-sm" indicator-color="primary" align="right">
-          <q-route-tab label="Browse" to="/browse" />
-        </q-tabs>
-        <login-network-switcher />
+  <q-layout view="lHh Lpr lFf" class="group-workspace">
+    <q-header class="group-topbar">
+      <q-toolbar class="group-toolbar">
+        <q-btn class="group-menu-toggle" flat round dense icon="menu" aria-label="Toggle group navigation" @click="leftDrawer = !leftDrawer" />
+        <router-link to="/browse#all" class="group-back"><q-icon name="arrow_back" /> Back to Browse</router-link>
+        <q-space />
+        <router-link to="/browse#all" class="group-search" aria-label="Search communities"><landing-icon name="search" /></router-link>
+        <login-network-switcher :avatar="false" />
       </q-toolbar>
     </q-header>
-
-    <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
-
-    <q-drawer
-      v-model="leftDrawer"
-      behavior="default"
-      side="left"
-      :width="275"
-      :bordered="false"
-      :show-if-above="false"
-      class="bg-secondary"
-      :mini="miniState"
-    >
-      <q-list class="absolute-top">
-        <q-item clickable style="height: 60px" v-ripple:primary>
-          <q-item-section avatar>
-            <q-icon name="mdi-account-group" color="primary" style="margin-top: -4px" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label
-              class="text-primary text-uppercase"
-              style="margin-left: -29px"
-              >{{ getActiveGroup }}</q-item-label
-            >
-          </q-item-section>
-          <!--<q-item-section side>
-            <q-item-label>
-              <span class="text-capitalize"
-                >{{ menu_mode }} <q-icon name="mdi-export"
-              /></span>
-            </q-item-label>
-          </q-item-section>-->
-        </q-item>
-
-        <q-menu fit transition-show="scale" transition-hide="scale">
-          <q-list style="min-width: 200px" class="primary-hover-list" separator>
-            <q-item
-              v-if="getCoreConfig && menu_mode == 'management'"
-              clickable
-              v-close-popup
-              class="text-right"
-            >
-              <q-item-section side>
-                <q-btn round icon="close" flat color="primary" />
-              </q-item-section>
-              <q-item-section
-                v-if="getCoreConfig.conf.member_registration"
-                @click="menu_mode = 'members'"
-              >
-                <q-item-label>Members</q-item-label>
-                <q-item-label caption>Switch To Member Menu</q-item-label>
-              </q-item-section>
-              <q-item-section v-else>
-                <q-item-label>Members Disabled</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              v-if="menu_mode == 'members'"
-              clickable
-              v-close-popup
-              class="text-right"
-            >
-              <q-item-section side>
-                <q-btn round icon="close" flat color="primary" />
-              </q-item-section>
-              <q-item-section @click="menu_mode = 'management'">
-                <q-item-label>Management</q-item-label>
-                <q-item-label caption>Switch To Management Menu</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-menu>-->
-      </q-list>
-
-      <q-scroll-area
-        :style="`height:calc(100% - 60px); margin-top: 60px; `"
-        class="overflow-hidden"
-      >
-        <transition
-          tag="div"
-          appear
-          enter-active-class="animated fadeInLeft"
-          leave-active-class="animated fadeOutLeft"
-          mode="out-in"
-        >
-          <managementMenu v-if="menu_mode === 'management'" key="management_menu" />
-          <membersMenu v-else-if="menu_mode === 'members'" key="members_menu" />
-        </transition>
-
-        <q-list class="text-grey-4">
-          <q-item clickable @click="loadGroup(getActiveGroup)">
-            <q-item-section avatar>
-              <q-icon v-if="!group_is_loading" name="refresh" />
-              <q-spinner v-else color="primary" size="20px" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Reload Group</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <!--<q-item clickable to="/browse">
-            <q-item-section avatar>
-              <q-icon name="search" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Browse Groups</q-item-label>
-            </q-item-section>
-          </q-item>-->
-        </q-list>
-      </q-scroll-area>
-      <q-toggle v-model="miniState" class="absolute-bottom-right">
-        <q-tooltip class="bg-primary" :delay="500"> Toggle mini menu </q-tooltip>
-      </q-toggle>
+    <q-drawer v-model="leftDrawer" :width="260" :breakpoint="1023" :behavior="$q.screen.width <= 1023 ? 'mobile' : 'desktop'" show-if-above class="group-drawer">
+      <div class="group-sidebar">
+        <router-link to="/" class="sidebar-brand" aria-label="The DAO Scape home"><landing-brand /></router-link>
+        <router-link :to="`/manage/${getActiveGroup}`" class="sidebar-group"><landing-icon name="globe" /><span>{{ getActiveGroup || $route.params.groupname }}</span></router-link>
+        <div class="sidebar-scroll">
+          <management-menu v-if="!isMemberArea" />
+          <template v-else>
+            <router-link :to="`/manage/${getActiveGroup}`" class="member-management-link"><q-icon name="arrow_back" /> Group management</router-link>
+            <members-menu />
+          </template>
+          <button class="group-reload" @click="loadGroup(getActiveGroup)" :disabled="group_is_loading"><q-spinner v-if="group_is_loading" size="22px" /><q-icon v-else name="refresh" />Reload Group</button>
+        </div>
+        <router-link v-if="getAccountName" :to="`/members/${getActiveGroup}/profile/${getAccountName}`" class="sidebar-profile">
+          <span class="profile-monogram">{{ getAccountName.slice(0, 1).toUpperCase() }}</span><span><strong>{{ getAccountName }}</strong><small>@{{ getAccountName }}{{ activeNetwork === 'local' ? '.local' : '' }}</small></span><q-icon name="chevron_right" />
+        </router-link>
+        <button v-else class="sidebar-signin" @click="$store.dispatch('proton/login')">Connect wallet</button>
+      </div>
     </q-drawer>
-
-    <q-page-container class="text-black overflow-hidden">
-      <router-view v-slot="{ Component }">
-        <transition appear enter-active-class="animated fadeInRight" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
-      <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 18]">
-        <q-btn fab icon="keyboard_arrow_up" color="primary" />
-      </q-page-scroller>
-
-      <footer class="bg-secondary footer-border-top">
-        <footer-content />
+    <q-page-container class="group-page-container">
+      <router-view />
+      <footer class="group-footer">
+        <div class="group-footer-top">
+          <router-link to="/" aria-label="The DAO Scape home"><landing-brand /></router-link>
+          <p>Empowering decentralized communities.</p>
+          <nav aria-label="Footer navigation"><router-link to="/documentation">Docs</router-link><router-link to="/browse">Explore</router-link><a :href="appConfig.social.twitter" target="_blank" rel="noopener noreferrer">Community</a><a href="https://github.com/FreeosDAO/daoscapefrontend/issues" target="_blank" rel="noopener noreferrer">Support</a></nav>
+          <div class="group-footer-social"><a :href="appConfig.social.twitter" target="_blank" rel="noopener noreferrer" aria-label="DAOScape on Twitter"><q-icon name="mdi-twitter" /></a><a :href="appConfig.social.github" target="_blank" rel="noopener noreferrer" aria-label="DAOScape on GitHub"><q-icon name="img:statics/vectors/social/027-github.svg" /></a></div>
+        </div>
+        <p class="group-copyright">© {{ new Date().getFullYear() }} TheDAOScape by FreeDAO. Open source.</p>
       </footer>
     </q-page-container>
-
   </q-layout>
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import { getCssVar } from "quasar";
-import { mapGetters } from "vuex";
-import loginNetworkSwitcher from "components/login/login-network-switcher";
-import managementMenu from "components/menus/management-menu";
-import membersMenu from "components/menus/members-menu";
-import { notifyInfo } from "../imports/notifications.js";
-import isEmpty from "../utils/is-empty";
-import mainLogo from "src/components/main-logo";
-import footerContent from "components/footer-content";
+import { mapGetters } from 'vuex';
+import LoginNetworkSwitcher from 'components/login/login-network-switcher.vue';
+import ManagementMenu from 'components/menus/management-menu.vue';
+import MembersMenu from 'components/menus/members-menu.vue';
+import LandingBrand from 'components/home/landing-brand.vue';
+import LandingIcon from 'components/home/landing-icon.vue';
+import { notifyError } from 'src/imports/notifications';
 
-export default defineComponent({
-  name: "GroupLayout",
-  components: {
-    loginNetworkSwitcher,
-    managementMenu,
-    membersMenu,
-    mainLogo,
-    footerContent
-  },
-  data() {
-    return {
-      leftDrawer: true,
-      miniState: this.$store.state.user.miniState,
-      group_is_loading: false,
-      selected_group: "",
-      menu_mode: "management",
-      unsubscribeTransactions: null
-    };
-  },
+export default {
+  name: 'GroupLayout',
+  components: { LoginNetworkSwitcher, ManagementMenu, MembersMenu, LandingBrand, LandingIcon },
+  data() { return { leftDrawer: this.$q.screen.width > 1023, group_is_loading: false, unsubscribeTransactions: null }; },
   computed: {
-    ...mapGetters({
-      getAccountName: "proton/getAccountName",
-      getActiveGroup: "group/getActiveGroup",
-      getActiveGroupConfig: "group/getActiveGroupConfig",
-      getCoreConfig: "group/getCoreConfig",
-      getElectionsConfig: "elections/getElectionsConfig",
-    }),
-    groupconfigAndAccountLoaded() {
-      return {
-        getActiveGroupConfig: this.getActiveGroupConfig,
-        getAccountName: this.getAccountName,
-      };
-    },
+    ...mapGetters({ getAccountName: 'proton/getAccountName', activeNetwork: 'proton/getActiveNetwork', appConfig: 'app/getAppConfig', getActiveGroup: 'group/getActiveGroup' }),
+    isMemberArea() { return this.$route.path.startsWith('/members/'); },
   },
-
   mounted() {
-    if (this.$route.path.startsWith("/manage")) {
-      this.menu_mode = "management";
-    } else if (this.$route.path.startsWith("/members")) {
-      this.menu_mode = "members";
-    }
-
-    this.unsubscribeTransactions = this.$store.subscribeAction({
-      after: (action) => {
-        if(action.type != 'proton/transact') return
-        console.log('---- refreshing group -----')
-        this.loadGroup(this.getActiveGroup)
-      }
-    })
+    document.body.classList.add("dao-theme");
+    this.unsubscribeTransactions = this.$store.subscribeAction({ after: action => {
+      if (action.type === 'proton/transact' && this.getActiveGroup) this.loadGroup(this.getActiveGroup);
+    } });
   },
-
-  beforeUnmount(){
-    if(this.unsubscribeTransactions) {
-      this.unsubscribeTransactions()
-      this.unsubscribeTransactions = null
-    }
-  },
-
+  beforeUnmount() { document.body.classList.remove("dao-theme"); if (this.unsubscribeTransactions) this.unsubscribeTransactions(); },
   watch: {
-    "$route.params.groupname": {
-      immediate: true,
-      handler(newVal, oldVal) {
-        if (newVal && newVal != oldVal) {
-          this.loadGroup(newVal);
-        } else {
-        }
-      },
-    },
-
-    menu_mode: {
-      immediate: false,
-      handler(newVal, oldVal) {
-        if (newVal == "members") {
-          console.log(`/members/${this.$route.params.groupname}/dashboard`);
-          if (this.$route.path.split("/")[1] === "members") return;
-          if (this.getAccountName) {
-            this.$router
-              .push(
-                `/members/${this.$route.params.groupname}/profile/${this.getAccountName}`
-              )
-              .catch((err) => {});
-          } else {
-            if (this.getElectionsConfig && this.getElectionsConfig.elections) {
-              this.$router
-                .push(`/members/${this.$route.params.groupname}/elections`)
-                .catch((err) => {});
-            } else {
-              this.$router
-                .push(`/members/${this.$route.params.groupname}/register`)
-                .catch((err) => {});
-            }
-          }
-
-          notifyInfo({ message: `you switched to members menu.` });
-        } else {
-          this.$router.push(`/manage/${this.$route.params.groupname}`).catch((err) => {});
-          notifyInfo({ message: `you switched to management menu.` });
-        }
-      },
-    },
-
-    /*groupconfigAndAccountLoaded: {
-      immediate: true,
-      handler(newV, oldV) {
-        if (newV && this.getAccountName && this.getActiveGroupConfig) {
-          this.$store.dispatch("user/fetchIsMember", {
-            accountname: this.getAccountName,
-            vm: this,
-          });
-        }
-      },
-    },*/
-
-    miniState: {
-      immediate: true,
-      handler(newVal, oldval) {
-        this.$store.commit("user/setMiniState", newVal);
-      },
+    '$q.screen.width'(width, previous) { if (width <= 1023 && previous > 1023) this.leftDrawer = false; },
+    '$route.path'() { if (this.$q.screen.width <= 1023) this.leftDrawer = false; },
+    '$route.params.groupname': { immediate: true, handler(group, previous) { if (group && group !== previous) this.loadGroup(group); } },
+  },
+  methods: {
+    async loadGroup(groupname) {
+      if (!groupname) return;
+      this.group_is_loading = true;
+      try {
+        await this.$store.dispatch('group/loadGroupRoutine', { groupname, vm: this });
+        this.$q.addressbarColor.set('#f8f7f4');
+      } catch (error) { notifyError({ message: 'Could not reload this group. Please try again.' }); }
+      finally { this.group_is_loading = false; }
     },
   },
-
-  methods: {
-    getCssVar,
-    isEmpty,
-    async loadGroup(groupname) {
-      this.group_is_loading = true;
-      await this.$store.dispatch("group/loadGroupRoutine", {
-        groupname: groupname,
-        vm: this,
-      });
-      await new Promise((resolve) => setTimeout(resolve, 400));
-      this.$q.addressbarColor.set(getCssVar("primary"));
-      this.group_is_loading = false;
-    },
-  }
-});
+};
 </script>
+
+<style scoped src="../css/group-workspace.scss" lang="scss"></style>
+
+<style src="../css/dao-workspace.scss" lang="scss"></style>

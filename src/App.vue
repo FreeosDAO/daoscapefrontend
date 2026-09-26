@@ -3,11 +3,12 @@
   <router-view />
 
   <q-dialog v-model="show_hub_deposit_wallet">
-    <q-card class="overflow-hidden" style="min-width: 300px; max-width: 350px">
+    <q-card role="dialog" aria-modal="true" aria-label="Hub deposits" class="overflow-hidden" style="width: 460px; max-width: calc(100vw - 32px)">
       <q-card-section>
         <page-header title="The DAOScape hub deposits" class="q-pr-lg q-mb-sm" />
         <p class="text-grey-7 text-caption">{{ customHubWalletMessage }}</p>
         <q-btn
+          aria-label="Close hub deposits"
           icon="close"
           flat
           round
@@ -51,7 +52,8 @@ export default defineComponent({
   },
   async mounted() {
     if(this.getSession){
-      await this.reconnect();
+      try { await this.reconnect(); }
+      catch { this.$store.commit('proton/clear'); notifyError({ message: 'Please reconnect your XPR wallet.' }); }
     }
     this.$store.dispatch("app/initRoutine", { vm: this });
   },

@@ -7,7 +7,7 @@
       v-model="menu_open"
       dark
       @click="handleLoginClick"
-      :loading="false"
+      :loading="connecting"
       dropdown-icon="keyboard_arrow_down"
     >
       <template v-slot:label>
@@ -16,7 +16,7 @@
             flat
             class="bg-secondary q-mr-sm networkbuttonhover"
             round
-            :icon="`img:statics/images/networks/${getActiveNetwork}.png`"
+            :icon="getActiveNetwork === 'local' ? 'computer' : `img:statics/images/networks/${getActiveNetwork}.png`"
             size="sm"
           >
             <q-tooltip class="bg-secondary" :delay="500">
@@ -39,7 +39,7 @@
             :account="getAccountName"
             class="q-mr-xs"
           />
-          <div class="text-center">{{ getAccountName ? getAccountName : "login" }}</div>
+          <div class="text-center">{{ getActiveNetwork === 'local' ? 'LOCAL · ' : '' }}{{ getAccountName ? getAccountName : "login" }}</div>
         </div>
       </template>
 
@@ -151,19 +151,20 @@ export default defineComponent({
     return {
       selected_network: null,
       menu_open: false,
-      networks: [
+      connecting: false,
+      networks: process.env.LOCAL_CHAIN ? [{ label: 'Local development', key: 'local', icon: 'computer', msg: 'Private chain' }] : [
         {
-          label: "Proton",
+          label: "XPR Network",
           key: "proton",
           icon: "img:statics/images/networks/proton.png",
           msg: "Mainnet",
         },
-        {
-          label: "Proton Testnet",
+        ...(!process.env.PROD ? [{
+          label: "XPR Testnet",
           key: "protonTest",
           icon: "img:statics/images/networks/protonTest.png",
           msg: "Testnet",
-        }
+        }] : [])
       ],
     };
   },
@@ -180,10 +181,17 @@ export default defineComponent({
   methods: {
     async handleLoginClick() {
       if (!!!this.getAccountName) {
-        this.$store.dispatch("proton/login")
+        await this.connectWallet();
       } else {
         this.menu_open = !this.menu_open;
       }
+    },
+    async connectWallet() {
+      if (this.connecting) return;
+      this.connecting = true;
+      try { await this.$store.dispatch('proton/login'); }
+      catch { notifyError({ message: 'Wallet connection was not completed. Please try again.' }); }
+      finally { this.connecting = false; }
     },
     toggleNightMode() {
       this.$q.dark.toggle();
@@ -200,13 +208,14 @@ export default defineComponent({
       this.$store.commit("proton/setActiveNetwork", network_key);
       this.$eos.build(this.getRpcEndpoints);
 
-      await this.$store.dispatch("proton/login");
+      await this.connectWallet();
     },
   },
   watch:{
     getAccountName(n,o){
       if(!o && n && 'redirect' in this.$route.query){
-        this.$router.push(this.$route.query.redirect)
+        const redirect = this.$route.query.redirect;
+        this.$router.push(typeof redirect === 'string' && /^\/(manage|members|browse|create)(\/|\?|#|$)/.test(redirect) ? redirect : '/browse#all');
       }
       if(o && !n && this.$route.path.includes('manage')){
         this.$router.push('/')

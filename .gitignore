@@ -1,6 +1,8 @@
 .DS_Store
 .thumbs.db
 node_modules
+.local-chain.json
+.icp/cache/
 
 # Quasar core related directories
 .quasar
@@ -32,3 +34,21 @@ yarn-error.log*
 *.njsproj
 *.sln
 .vscode
+
+# Local browser evidence and generated output
+.playwright-cli/
+/output/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.wallet
+
+# Only the public mainnet canister mapping belongs in Git.
+.icp/*
+!.icp/data/
+.icp/data/*
+!.icp/data/mappings/
+.icp/data/mappings/*
+!.icp/data/mappings/ic.ids.json

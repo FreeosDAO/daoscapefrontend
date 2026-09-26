@@ -1,10 +1,11 @@
 <template>
-  <q-page padding class="constrain-page-width">
-    <page-header title="New Proposal" />
+  <q-page padding class="constrain-page-width dao-page dao-new-proposal">
+    <page-header title="Create a proposal" eyebrow="Community workspace" description="Build a decision for your DAO. Add actions, describe your intent, and submit for approval." />
     <proposeBucket />
+    <p class="dao-builder-hint">Start with a transfer from <router-link :to="`/manage/${getActiveGroup}/treasury`">Treasury</router-link>, or choose a contract action below.</p>
 
     <q-tabs v-model="active_tab" class="text-primary q-mt-md" dense align="left">
-      <q-tab label="Advanced" name="advanced" />
+      <q-tab label="Contract actions" name="advanced" />
     </q-tabs>
     <q-separator class="q-mb-md" />
     <q-tab-panels

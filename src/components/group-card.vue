@@ -1,158 +1,68 @@
 <template>
-    <q-card
-      v-if="group.state"
-      class="overflow-hidden relative-position"
-      :style="{ backgroundColor: getGroupColor}"
-    >
-      <div
-        class="full-height column justify-between overflow-hidden q-pt-xl"
-      >
-        <div
-          class="row justify-center items-center text-white text-weight-light q-py-sm"
-          style="min-height: 115px"
-        >
-          <q-avatar
-          v-if="group.ui.logo"
-          class="q-mb-sm"
-          size="80px"
-          >
-            <q-img
-              contain
-              :src="group.ui.logo"
-              spinner-color="white"
-            />
-          </q-avatar>
-
-          <div
-            class="text-bold text-uppercase text-center"
-            style="flex-basis: 100%"
-          >
-            {{ group.groupname }}
-          </div>
-        </div>
-
-        <div
-          style="background: rgb(0 0 0 / 25%); height: 60px"
-          class="full-width row justify-between items-center"
-        >
-          <div>
-            <q-btn
-              round
-              :color="group.is_fav ? 'yellow' : 'white'"
-              flat
-              icon="star"
-              size="md"
-              @click="
-                $store.commit('user/setFavouriteGroups', group.groupname);
-                group.is_fav = !group.is_fav;
-              "
-            />
-          </div>
-          <div>
-            <q-btn
-              v-if="getUiUrl.startsWith('/')"
-              label="Visit Group"
-              :to="getUiUrl"
-              flat
-              size="sm"
-              text-color="white"
-              :style="{ backgroundColor: getGroupColor }"
-            />
-            <q-btn
-              v-else
-              label="Visit Group"
-              @click="openURL(getUiUrl)"
-              icon="link"
-              flat
-              size="sm"
-              text-color="white"
-              :style="{ backgroundColor: group.ui.hexcolor }"
-            >
-              <q-tooltip
-                class="bg-secondary"
-                :delay="500"
-                anchor="center left"
-                self="center right"
-                :offset="[10, 10]"
-              >
-                {{ getUiUrl }}
-              </q-tooltip>
-            </q-btn>
-          </div>
-        </div>
+  <article class="dao-card">
+    <div class="dao-card-banner">
+      <img class="dao-card-art" src="~assets/dao-card-art.png" alt="" loading="lazy" />
+      <img v-if="group.ui && group.ui.logo && !logoFailed" :src="group.ui.logo" :alt="`${group.groupname} logo`" class="dao-card-logo" @error="logoFailed = true" />
+      <button class="dao-favourite" :class="{ saved: isFavourite }" :aria-label="`${isFavourite ? 'Remove' : 'Save'} ${group.groupname} ${isFavourite ? 'from' : 'to'} favourites`" :aria-pressed="isFavourite" @click="$store.commit('user/setFavouriteGroups', group.groupname)"><q-icon :name="isFavourite ? 'star' : 'star_border'" /></button>
+    </div>
+    <div class="dao-card-content">
+      <h2>{{ group.groupname }}</h2>
+      <p class="dao-card-description">{{ description }}</p>
+      <div class="dao-card-stats">
+        <span :title="members === null ? 'Member count unavailable' : 'Registered members'"><q-icon name="group" />{{ members === null ? '— members' : `${members} ${members === 1 ? 'member' : 'members'}` }}</span>
+        <span title="Active, executed and cancelled proposals"><q-icon name="description" />{{ proposals === null ? '— proposals' : `${proposals}${moreProposals ? '+' : ''} ${proposals === 1 && !moreProposals ? 'proposal' : 'proposals'}` }}</span>
+        <span><landing-icon name="globe" />{{ networkLabel }}</span>
       </div>
-      <div v-if="group.tags.length" class="absolute-top row justify-start q-pa-sm full-width">
-          <group-tags
-            :tags="group.tags"
-            content-class="text-white q-mb-xs q-pa-sm"
-          />
+      <div class="dao-card-actions">
+        <button class="dao-details-button" @click="detailsOpen = true">View Details</button>
+        <router-link v-if="!customUrl" class="dao-visit-button" :to="`/manage/${group.groupname}`">Visit Group <landing-icon name="arrow" /></router-link>
+        <a v-else class="dao-visit-button" :href="customUrl" target="_blank" rel="noopener noreferrer">Visit Group <landing-icon name="arrow" /></a>
       </div>
-      <!-- {{group}} -->
-    </q-card>
+    </div>
+    <q-dialog v-model="detailsOpen">
+      <q-card class="dao-details-dialog">
+        <div class="dao-details-heading"><div><p>Community details</p><h2>{{ group.groupname }}</h2></div><q-btn flat round icon="close" aria-label="Close community details" v-close-popup /></div>
+        <h3 v-if="group.meta && group.meta.title">{{ group.meta.title }}</h3>
+        <p class="dao-details-description">{{ description }}</p>
+        <dl><div><dt>Network</dt><dd>{{ networkLabel }}</dd></div><div><dt>Created by</dt><dd>{{ group.creator }}</dd></div><div><dt>Members</dt><dd>{{ members === null ? 'Unavailable' : members }}</dd></div><div><dt>Proposals</dt><dd>{{ proposals === null ? 'Unavailable' : `${proposals}${moreProposals ? '+' : ''}` }}</dd></div></dl>
+        <div v-if="group.tags && group.tags.length" class="dao-detail-tags"><span v-for="tag in group.tags" :key="tag">{{ tag }}</span></div>
+        <router-link v-if="!customUrl" class="dao-visit-button" :to="`/manage/${group.groupname}`" @click="detailsOpen = false">Visit Group <landing-icon name="arrow" /></router-link>
+        <a v-else class="dao-visit-button" :href="customUrl" target="_blank" rel="noopener noreferrer">Visit Group <landing-icon name="arrow" /></a>
+      </q-card>
+    </q-dialog>
+  </article>
 </template>
-
 <script>
-import { defineComponent } from "vue";
-import { openURL } from "quasar";
-import { isValidUrl } from "../imports/validators.js";
-import groupTags from "components/group-tags";
+import { mapGetters } from 'vuex';
+import LandingIcon from 'components/home/landing-icon.vue';
 
-export default defineComponent({
-  name: "groupCard",
-  components: {
-    groupTags,
-  },
-  props: {
-    group: {
-      type: Object,
-      default: () => {
-        return {};
-      },
-    },
-  },
-  data() {
-    return {
-      view_mode: "main",
-      group_info: {
-        about: "",
-      },
-      info_is_loading: false,
-    };
-  },
+export default {
+  name: 'GroupCard',
+  components: { LandingIcon },
+  props: { group: { type: Object, required: true } },
+  data: () => ({ detailsOpen: false, members: null, proposals: null, moreProposals: false, logoFailed: false }),
   computed: {
-    getUiUrl() {
-      let res = `/manage/${this.group.groupname}`;
-      if (this.group.ui.custom_ui_url) {
-        if (isValidUrl(this.group.ui.custom_ui_url)) {
-          res = this.group.ui.custom_ui_url;
-        }
-      }
-      return res;
-    },
-    getGroupColor() {
-      return this.group.ui.hexcolor.startsWith("#")
-        ? this.group.ui.hexcolor
-        : `#${this.group.ui.hexcolor}`;
+    ...mapGetters({ favourites: 'user/getFavouriteGroups', activeNetwork: 'proton/getActiveNetwork' }),
+    isFavourite() { return this.favourites.includes(this.group.groupname); },
+    description() { return this.group.meta?.about || 'A community building its future together. Explore the group to learn more.'; },
+    networkLabel() { return { local: 'Local', proton: 'XPR Network', protonTest: 'XPR Testnet' }[this.activeNetwork] || this.activeNetwork; },
+    customUrl() {
+      const url = this.group.ui?.custom_ui_url;
+      if (!url) return null;
+      try { const parsed = new URL(url.includes('://') ? url : `https://${url}`); return ['https:', 'http:'].includes(parsed.protocol) ? parsed.href : null; }
+      catch (error) { return null; }
     },
   },
-  methods: {
-    openURL,
-    switchViewMode() {
-      if (this.view_mode == "main") {
-        this.view_mode = "info";
-        this.fetchGroupInfo();
-      } else {
-        this.view_mode = "main";
-      }
-    },
-    fetchGroupInfo() {
-      this.group_info.about = this.group.meta.about;
-
-      this.info_is_loading = true;
-      setTimeout(() => {
-        this.info_is_loading = false;
-      }, 500);
-    },
+  async mounted() {
+    const code = this.group.groupname;
+    const query = (table, scope = code) => this.$eos.api.rpc.get_table_rows({ json: true, code, scope, table, limit: table === 'corestate' ? 1 : 1000 });
+    const [state, ...proposalResults] = await Promise.allSettled([query('corestate'), ...[code, 'executed', 'cancelled'].map(scope => query('proposals', scope))]);
+    if (state.status === 'fulfilled') this.members = state.value.rows[0]?.state?.member_count ?? null;
+    if (proposalResults.every(result => result.status === 'fulfilled')) {
+      this.proposals = proposalResults.reduce((total, result) => total + result.value.rows.length, 0);
+      this.moreProposals = proposalResults.some(result => !!result.value.more);
+    }
   },
-});
+};
 </script>
+<style scoped src="../css/dao-card.scss" lang="scss"></style>

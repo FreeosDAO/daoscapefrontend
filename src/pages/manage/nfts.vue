@@ -1,185 +1,64 @@
 <template>
-  <q-page padding class="constrain-page-width q-pb-lg">
-
-    <page-header title="NFTs" />
-
-    <transition-group appear enter-active-class="animated zoomIn" leave-active-class="animated zoomOut"
-      class="row q-col-gutter-md q-mt-md items-stretch" tag="div">
-
-      <div v-if="nftsLoading" key="loading" class="col-xs-12 nft">
-        <q-card>
-          <q-card-section class="bg-grey-9 text-white loading">
-            Loading
-          </q-card-section>
-        </q-card>
+  <q-page class="dao-page dao-nfts">
+    <page-header title="NFTs" eyebrow="Community workspace" description="Discover the digital assets held by your community." />
+    <div v-if="isLocal" class="dao-empty"><q-icon name="mdi-image-multiple-outline" /><h2>Your collection starts here</h2><p>The local development network does not have an NFT indexer configured. NFT collections will appear when an indexer is connected.</p></div>
+    <template v-else>
+      <div v-if="error" class="dao-empty q-mb-lg" role="alert"><q-icon name="cloud_off" /><h2>Collection unavailable</h2><p>{{ error }}</p><q-btn outline color="primary" label="Try again" :loading="nftsLoading" @click="fetchPage(page)" /></div>
+      <div v-if="nftsLoading && !nfts.length" class="dao-empty" role="status"><q-spinner size="36px" color="primary" /><p>Loading your collection…</p></div>
+      <div v-else-if="!nfts.length && !error" class="dao-empty"><q-icon name="mdi-image-multiple-outline" /><h2>No NFTs yet</h2><p>This DAO’s digital collection will appear here when it holds NFTs.</p></div>
+      <div class="row q-col-gutter-lg">
+        <div v-for="nft in nfts" :key="nft.asset_id" class="col-12 col-sm-6 col-lg-4">
+          <q-card>
+            <figure class="nft-media">
+              <q-img v-if="nft.data.image" :src="assetUrl(nft.data.image)" :alt="nft.data.name || 'NFT artwork'" :ratio="1" loading="lazy" />
+              <video v-else-if="nft.data.video" controls muted preload="metadata" :src="assetUrl(nft.data.video)" />
+              <model-viewer v-else-if="nft.data.model && modelViewerReady" :src="assetUrl(nft.data.model)" :alt="nft.data.name" camera-controls touch-action="pan-y" />
+              <div v-else class="nft-no-media"><q-icon name="image" size="48px" /></div>
+            </figure>
+            <q-card-section><div class="text-caption text-grey-7">{{ nft.collection.name || nft.collection.collection_name }} · #{{ nft.template_mint }}</div><h2 class="dao-section-title q-mt-sm">{{ nft.data.name || `Asset #${nft.asset_id}` }}</h2></q-card-section>
+            <q-separator /><q-card-actions><q-btn flat color="primary" label="View asset" icon-right="north_east" target="_blank" rel="noopener noreferrer" :href="`${getAppConfig.nft.url}/${nft.asset_id}`" /></q-card-actions>
+          </q-card>
+        </div>
       </div>
-
-      <div v-if="!nftsLoading && !nfts.length && !error" key="loading" class="col-xs-12 nft">
-        <q-card>
-          <q-card-section class="bg-grey-9 text-white loading">
-            This DAO doesn't hold any NFTs.
-          </q-card-section>
-        </q-card>
-      </div>
-
-      <div v-if="!nftsLoading && error" key="loading" class="col-xs-12 nft">
-        <q-card>
-          <q-card-section class="bg-grey-9 text-white loading">
-            {{ error }}
-          </q-card-section>
-        </q-card>
-      </div>
-
-      <div v-if="nfts.length" v-for="nft in nfts" :key="nft.asset_id"
-        class="col-xs-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 nft">
-
-        <q-card>
-          <figure>
-            <q-img v-if="'image' in nft.data && nft.data.image" :src="`https://bloks.io/cdn-cgi/image/width=500/https://proton.mypinata.cloud/ipfs/${nft.data.image}`"
-              :alt="nft.data.name" />
-            <video v-else-if="'video' in nft.data && nft.data.video" controls muted loop preload="auto">
-              <source :src="`https://proton.mypinata.cloud/ipfs/${nft.data.video}`" />
-            </video>
-            <model-viewer
-              v-else-if="'model' in nft.data && nft.data.model" 
-              style="min-height:300px"
-              :alt="nft.data.name"
-              :src="`https://proton.mypinata.cloud/ipfs/${nft.data.model}`" 
-              :poster="`https://bloks.io/cdn-cgi/image/width=500/https://proton.mypinata.cloud/ipfs/${nft.data.glbthumb}`" 
-              ar shadow-intensity="1" camera-controls touch-action="pan-y">
-            </model-viewer>
-            <q-img v-else src="https://via.placeholder.com/1080x720/dddddd/000000/?text=NO%20MEDIA" :alt="nft.data.name" />
-          </figure>
-
-          <q-card-section>
-            <div class="row no-wrap items-center text-grey text-caption">
-              <div class="col ellipsis">
-                {{ 'name' in nft.collection && nft.collection.name ? nft.collection.name : nft.collection.collection_name }}
-              </div>
-              <div class="col-auto row no-wrap items-center">
-                #{{ nft.template_mint }}
-              </div>
-            </div>
-            <div class="row no-wrap items-center">
-              <div class="col text-h6 ellipsis">
-                <p class="text-h6">{{ nft.data.name }}</p>
-              </div>
-            </div>
-          </q-card-section>
-
-          <q-separator />
-
-          <q-card-actions>
-            <q-btn flat color="primary" target="_blank" icon-right="mdi-open-in-new" align="between" label="View" 
-              :href="`${getAppConfig.nft.url}/${nft.asset_id}`">
-            </q-btn>
-          </q-card-actions>
-        </q-card>
-      </div>
-
-    </transition-group>
-
-  <div class="row align-center justify-center q-mt-lg">
-    <q-btn v-if="this.checkData.length"
-    @click="checkForMoreNFTs()"
-    flat color="secondary">
-      Load More
-    </q-btn>
-  </div>
-
-
+      <div v-if="hasMore && nfts.length" class="text-center q-mt-lg"><q-btn outline color="primary" label="Load more NFTs" :loading="nftsLoading" @click="fetchPage(page)" /></div>
+    </template>
   </q-page>
 </template>
-
 <script>
-import pageHeader from "components/page-header";
-import { defineComponent } from "vue";
-import { mapGetters } from "vuex";
-import '@google/model-viewer';
-
-export default defineComponent({
-  name: "groupNfts",
-  components: {
-    pageHeader
-  },
-  data() {
-    return {
-      nftsLoading: true,
-      nfts: [],
-      perPage: 6,
-      page: 1,
-      checkData: [],
-      error: false
-    };
-  },
+import { mapGetters } from 'vuex';
+import pageHeader from 'components/page-header';
+export default {
+  components: { pageHeader },
+  data: () => ({ nfts: [], nftsLoading: false, error: '', page: 1, hasMore: false, requestId: 0, modelViewerReady: false }),
   computed: {
-    ...mapGetters({
-      getActiveGroup: "group/getActiveGroup",
-      getAppConfig: "app/getAppConfig",
-    })
+    ...mapGetters({ getActiveGroup: 'group/getActiveGroup', getAppConfig: 'app/getAppConfig', network: 'proton/getActiveNetwork' }),
+    isLocal() { return this.network === 'local'; },
+    collectionKey() { return `${this.network}:${this.getActiveGroup}`; },
   },
+  watch: { collectionKey: { immediate: true, handler() { this.requestId++; this.nfts = []; this.page = 1; this.error = ''; this.nftsLoading = false; this.hasMore = false; if (this.getActiveGroup && !this.isLocal) this.fetchPage(1); } } },
+  beforeUnmount() { this.requestId++; },
   methods: {
-    async getNftsFromAtomic() {
-
-      // make request to atomic assets api
-      let result = await this.callAtomic()
-
-      // Store results
-      console.log('nfts', result)
-      this.nftsLoading = false
-      this.nfts = result.data.data//.filter( nft => nft.owner == this.getActiveGroup )
-
-      // Check for more
-      if(!this.nfts.length){
-        return true
-      }
-      this.checkForMoreNFTs()
+    assetUrl(value) { return /^https?:\/\//i.test(value) ? value : `https://proton.mypinata.cloud/ipfs/${value.replace(/^ipfs:\/\//, '')}`; },
+    async fetchPage(page) {
+      if (this.nftsLoading || this.isLocal) return;
+      const id = ++this.requestId;
+      this.nftsLoading = true; this.error = '';
+      try {
+        const response = await this.$axios.get(`${this.getAppConfig.nft.api}/atomicassets/v1/assets`, { params: { owner: this.getActiveGroup, page, limit: 12, order: 'desc', sort: 'asset_id' }, timeout: 10000 });
+        if (id !== this.requestId) return;
+        const assets = response.data.data;
+        if (!Array.isArray(assets)) throw new Error('Invalid collection response');
+        this.nfts.push(...assets.map(nft => ({ ...nft, data: nft.data || {}, collection: nft.collection || {} })));
+        this.hasMore = assets.length === 12; this.page = page + 1;
+        if (assets.some(nft => nft.data?.model)) { await import('@google/model-viewer'); this.modelViewerReady = true; }
+      } catch (error) { if (id === this.requestId) this.error = 'We couldn’t reach the NFT indexer. Please try again.'; }
+      finally { if (id === this.requestId) this.nftsLoading = false; }
     },
-    async checkForMoreNFTs() {
-
-      // plus one to page
-      this.page++
-
-      // merge more with current
-      this.nfts.push(...this.checkData)
-      this.checkData = {}
-
-      // make request to atomic assets api
-      let result = await this.callAtomic()
-
-      // Store results
-      console.log('more check', result)
-      this.checkData = result.data.data//.filter( nft => nft.owner == this.getActiveGroup )
-    },
-    async callAtomic(){
-      let url = `${this.getAppConfig.nft.api}/atomicassets/v1/assets?owner=${this.getActiveGroup}&page=${this.page}&limit=${this.perPage}&order=desc&sort=asset_id`;
-      return await this.$axios
-        //.get(this.getAppConfig.nft.api + '/atomicassets/v1/assets?owner=conorsee&page=' + this.page + '&limit=' + this.perPage + '&order=desc&sort=asset_id')
-        .get(url)
-        .catch(error => {
-          this.nftsLoading = false
-          this.error = error
-        })
-    }
   },
-  watch:{
-    getActiveGroup(){
-      this.getNftsFromAtomic()
-    }
-  },
-  mounted(){
-    if(!this.getActiveGroup) return
-    this.getNftsFromAtomic()
-  }
-});
+};
 </script>
-
 <style scoped>
-.nft figure {
-  margin: 0
-}
-
-.nft figure>* {
-  width: 100%;
-}
+.nft-media { margin: 0; background: #e9eee5; }
+.nft-media video, .nft-media model-viewer { width: 100%; min-height: 260px; max-height: 360px; }
+.nft-no-media { display: grid; place-items: center; aspect-ratio: 1; color: #7b9185; }
 </style>

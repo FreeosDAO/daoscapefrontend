@@ -1,8 +1,8 @@
 <template>
-  <q-page padding class="constrain-page-width">
+  <q-page padding class="constrain-page-width dao-page">
     <div class="row q-col-gutter-md">
       <div class="col-xs-12">
-        <profile-header :account="account" />
+        <profile-header v-if="account" :account="account" />
       </div>
       <div class="col-xs-12" v-if="getElectionsContract && userVotes">
         <display-votes :votes="userVotes" />
@@ -210,6 +210,7 @@ export default defineComponent({
       // getActiveGroupConfig: "group/getActiveGroupConfig",
       // getCoreConfig: "group/getCoreConfig"
     }),
+    profileKey() { return `${this.getActiveGroup}:${this.$route.params.accountname || ""}`; },
     isProfileChanged() {
       if (
         this.getMyOldProfile &&
@@ -279,11 +280,11 @@ export default defineComponent({
   },
 
   watch: {
-    "$route.params.accountname": {
+    profileKey: {
       immediate: true,
       async handler(newVal, oldVal) {
-        if (newVal && newVal != oldVal) {
-          this.account = newVal;
+        if (this.getActiveGroup && this.$route.params.accountname && newVal != oldVal) {
+          this.account = this.$route.params.accountname;
           this.profile_data = await this.$store.dispatch("group/fetchProfile", {
             accountname: this.account,
             vm: this,

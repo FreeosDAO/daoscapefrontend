@@ -1,7 +1,8 @@
 <template>
-  <q-page padding class="constrain-page-width">
+  <q-page padding class="constrain-page-width dao-page dao-files">
+    <page-header title="Files" eyebrow="Community workspace" description="A shared library of documents, agreements, and on-chain records." />
     <files-index @loadfile="currentFile = $event" />
-    <file-viewer :file="currentFile" class="q-mt-md" />
+    <file-viewer v-if="currentFile" :file="currentFile" class="q-mt-md" />
     <!-- <action-proposer>
       <template v-slot="scope">
           <file-publisher :content="`test`" @propose="scope.propose" @addtobucket="scope.addtobucket" />
@@ -11,6 +12,7 @@
 </template>
 
 <script>
+import pageHeader from "components/page-header";
 import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
 // import actionProposer from "components/actions/action-proposer";
@@ -21,6 +23,7 @@ import filesIndex from "components/dacfiles/files-index";
 export default defineComponent({
   name: "files",
   components: {
+    pageHeader,
     fileViewer,
     filesIndex,
   },

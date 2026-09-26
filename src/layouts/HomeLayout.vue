@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lhh Lpr fff">
-    <q-header :elevated="true" reveal>
+    <q-header v-if="!hasCustomChrome" :elevated="true" reveal>
       <q-toolbar style="height: 60px" class="bg-secondary">
         <main-logo />
         <q-toolbar-title> </q-toolbar-title>
@@ -15,12 +15,12 @@
 
     <q-page-container>
       <router-view />
-      <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 18]">
+      <q-page-scroller v-if="!hasCustomChrome" position="bottom-right" :scroll-offset="150" :offset="[18, 18]">
         <q-btn fab icon="keyboard_arrow_up" color="primary" />
       </q-page-scroller>
     </q-page-container>
 
-    <q-footer class="bg-secondary footer-border-top">
+    <q-footer v-if="!hasCustomChrome" class="bg-secondary footer-border-top">
       <footer-content />
     </q-footer>
   </q-layout>
@@ -48,6 +48,9 @@ export default defineComponent({
     return {};
   },
   computed: {
+    hasCustomChrome() {
+      return ['/', '/browse', '/login'].includes(this.$route.path) || /^\/create(?:\/|$)/.test(this.$route.path);
+    },
     ...mapGetters({
       getAccountName: "proton/getAccountName",
     }),

@@ -6,7 +6,7 @@
   >
     <q-item clickable :to="`/manage/${getActiveGroup}`" exact>
       <q-item-section avatar>
-        <q-icon name="mdi-cellphone-information" />
+        <q-icon name="mdi-home-outline" />
       </q-item-section>
       <q-item-section>
         <q-item-label>Group Info</q-item-label>
@@ -23,6 +23,7 @@
       <q-item-section side>
         <!-- $route.path!=`/manage/${getActiveGroup}/new-proposal` -->
         <q-btn
+          aria-label="Create proposal"
           unelevated
           round
           :flat="false"
@@ -32,7 +33,7 @@
               ? 'secondary'
               : 'primary'
           "
-          @click="handleNewProposal"
+          @click.stop.prevent="handleNewProposal"
         >
           <q-icon v-if="getActionBucket.length == 0" name="add" color="white" />
           <span v-else>{{ getActionBucket.length }}</span>
@@ -44,6 +45,10 @@
       </q-item-section>
     </q-item>
 
+    <template v-if="getModuleByName('membergov')">
+      <q-item clickable :to="`/manage/${getActiveGroup}/sortition`"><q-item-section avatar><q-icon name="groups" /></q-item-section><q-item-section>Sortition</q-item-section></q-item>
+      <q-item clickable :to="`/manage/${getActiveGroup}/member-governance`"><q-item-section avatar><q-icon name="how_to_vote" /></q-item-section><q-item-section>Member Governance</q-item-section></q-item>
+    </template>
     <q-item clickable :to="`/manage/${getActiveGroup}/treasury`" v-if="isUserGuardian">
       <q-item-section avatar>
         <q-icon name="mdi-wallet" />
@@ -193,9 +198,7 @@ export default defineComponent({
   },
   methods: {
     handleNewProposal() {
-      setTimeout(() => {
-        this.$router.push(`/manage/${this.getActiveGroup}/new-proposal`)
-      }, 0);
+      this.$router.push(`/manage/${this.getActiveGroup}/new-proposal`);
     }
   }
 });

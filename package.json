@@ -6,16 +6,25 @@
   "author": "FreeDAO <https://www.freedao.io/>",
   "private": true,
   "scripts": {
+    "postinstall": "patch-package --error-on-fail",
     "dev": "quasar dev",
-    "build": "quasar build && cp _redirects dist/spa",
-    "build:pwa": "quasar build -m pwa"
+    "dev:local": "DAOSCAPE_LOCAL=1 quasar dev",
+    "build": "node scripts/build-production.cjs",
+    "build:pwa": "node scripts/build-production.cjs --pwa",
+    "verify:production": "node scripts/verify-production.cjs",
+    "check:mainnet": "node scripts/check-mainnet.cjs",
+    "test:production": "node --test scripts/*.test.cjs",
+    "preview:production": "node scripts/serve-production.cjs",
+    "deploy:local": "npm run build && npm run preview:production",
+    "deploy:icp": "node scripts/deploy-icp.cjs",
+    "deploy:icp:local": "node scripts/deploy-icp.cjs --local"
   },
   "dependencies": {
     "@babel/core": "7.17.8",
     "@eosdacio/ual-wax": "^1.5.1",
     "@google/model-viewer": "^3.1.1",
     "@proton/js": "^27.5.7",
-    "@proton/web-sdk": "^4.2.15",
+    "@proton/web-sdk": "5.1.0",
     "@quasar/extras": "^1.13.5",
     "@smontero/ual-sqrl": "^0.1.23",
     "axios": "^0.26.1",
@@ -46,6 +55,7 @@
     "babel-loader": "8.0.6",
     "copy-webpack-plugin": "5.0.2",
     "node-polyfill-webpack-plugin": "^1.1.4",
+    "patch-package": "8.0.1",
     "pug": "2.0.4",
     "pug-plain-loader": "1.0.0"
   },

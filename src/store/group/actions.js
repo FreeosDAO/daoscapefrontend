@@ -31,7 +31,7 @@ export async function resetStore({ commit }, payload) {
   commit('bucket/setActionBucket', [], { root: true });
 }
 
-export async function loadGroupRoutine({ dispatch, commit, rootGetters }, payload) {
+export async function loadGroupRoutine({ state, dispatch, commit, rootGetters }, payload) {
   // Loading.show({
   //   spinnerColor: 'white',
   //   messageColor: 'white',
@@ -39,6 +39,10 @@ export async function loadGroupRoutine({ dispatch, commit, rootGetters }, payloa
   //   message: 'Updated message'
   // })
   const groupname = payload.groupname;
+  if (state.activeGroup !== groupname) {
+    commit('setModules', false);
+    commit('elections/setElectionsContract', false, { root: true });
+  }
   let groupconfig = await dispatch("fetchGroupConfig", { groupname: groupname, vm: payload.vm });
   if (!groupconfig) {
     console.log(`group ${groupname} doesn't exist.`)
@@ -137,7 +141,7 @@ export async function fetchGroupConfig({ commit, rootState, rootGetters }, paylo
   return config
 }
 
-export async function fetchModules({ commit, rootState, rootGetters }, payload) {
+export async function fetchModules({ state, commit, rootState, rootGetters }, payload) {
   let res = await payload.vm.$eos.api.rpc.get_table_rows({
     json: true,
     code: payload.groupname,
@@ -145,13 +149,15 @@ export async function fetchModules({ commit, rootState, rootGetters }, payload) 
     table: "modules",
     limit: -1
   });
+  if (state.activeGroup !== payload.groupname) return false;
+  commit('setModules', res?.rows || []);
+  commit('elections/setElectionsContract', false, { root: true });
   if (res && res.rows.length) {
-    commit('setModules', res.rows);
     console.log(`fetched modules for group ${payload.groupname}`, res.rows);
     //REGISTER MODULES IN STORES
     let elections = res.rows.find(m => m.module_name == 'elections');
 
-    if (elections) {
+    if (elections && !res.rows.some(m => m.module_name === 'membergov')) {
       commit('elections/setElectionsContract', elections.slave_permission.actor, { root: true });
     }
 

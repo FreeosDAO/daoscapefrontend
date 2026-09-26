@@ -20,7 +20,8 @@ export function getActiveNetwork(state) {
 export function getRpcEndpoints(state, getters) {
   let rpcobjs = state.networks[getters.getActiveNetwork].config.rpcEndpoints;
   return rpcobjs.map((rpcobj) => {
-    return rpcobj.protocol + "://" + rpcobj.host;
+    const port = rpcobj.port && !((rpcobj.protocol === 'https' && rpcobj.port === '443') || (rpcobj.protocol === 'http' && rpcobj.port === '80')) ? ':' + rpcobj.port : '';
+    return rpcobj.protocol + "://" + rpcobj.host + port;
   });
 }
 export function getChainId(state, getters) {

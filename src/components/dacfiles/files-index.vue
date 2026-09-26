@@ -9,6 +9,7 @@
         </q-toolbar-title>
         <q-space />
         <q-btn
+        aria-label="Add document"
           round
           dense
           :icon="add_document_view ? 'mdi-minus' : 'mdi-plus'"
@@ -61,7 +62,7 @@
             <action-proposer>
               <template v-slot="scope">
                 <file-publisher
-                  :content="`this is test content`"
+                  :content="''"
                   @propose="scope.propose"
                   @addtobucket="scope.addtobucket"
                 />
@@ -105,6 +106,7 @@ export default defineComponent({
   },
   methods: {
     async loadFilesIndex() {
+      if (!this.getActiveGroup) return;
       this.is_loading = true;
       let res = await this.$eos.api.rpc
         .get_table_by_scope({
@@ -114,14 +116,10 @@ export default defineComponent({
           limit: -1,
         })
         .catch((e) => false);
-      if (res && res.rows.length) {
-        this.file_scopes = res.rows;
-      }
+      this.file_scopes = res ? res.rows : [];
       this.is_loading = false;
     },
   },
-  mounted() {
-    this.loadFilesIndex();
-  },
+  watch: { getActiveGroup: { immediate: true, handler(group) { if (group) this.loadFilesIndex(); } } },
 });
 </script>

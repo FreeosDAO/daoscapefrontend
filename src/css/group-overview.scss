@@ -1,0 +1,99 @@
+.group-overview { padding: 0 24px; min-height: 0 !important; color: #172329; font-family: Arial, Helvetica, sans-serif; }
+.group-overview a { text-decoration: none; color: inherit; }
+.group-overview p { text-align: left; }
+.group-hero { position: relative; min-height: 318px; display: flex; align-items: flex-start; gap: 30px; padding: 39px 29px 32px; border-radius: 10px; overflow: hidden; box-shadow: 0 3px 12px #39403308; }
+.group-hero-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.group-avatar { position: relative; flex-shrink: 0; width: 160px; height: 158px; background: #3d6660; border: 1px solid #61837a55; border-radius: 7px; display: grid; place-items: center; }
+.group-avatar > svg { width: 64px; height: 64px; color: #b4c9bc; stroke-width: 1; }
+.group-avatar > img { width: 100%; height: 100%; object-fit: contain; }
+.group-hero-copy { position: relative; width: min(445px, 50%); }
+.group-eyebrow { text-transform: uppercase; font-size: 12px; letter-spacing: .3px; color: #6b7271; margin: 0 0 6px; }
+.group-hero-copy h1 { font-family: 'Bodoni 72', Didot, 'Times New Roman', serif; font-size: 70px; line-height: .8; letter-spacing: -2.5px; margin: 0 0 8px; font-weight: 400; color: #101a20; overflow-wrap: anywhere; }
+.group-account-link { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: #42665f !important; }
+.group-account-link .q-icon { font-size: 17px; }
+.group-hero-description { font-size: 15px; line-height: 1.55; margin: 14px 0 0; max-width: 390px; }
+.group-hero-actions { display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+.overview-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 40px; min-height: 50px; min-width: 185px; padding: 12px 24px; font-family: inherit; font-size: 14px; cursor: pointer; border: 1px solid #999f96; background: #ffffff33; color: #152523; }
+.group-overview .overview-primary { color: #fff; background: linear-gradient(120deg, #213f3b, #3e635a); border-color: transparent; }
+.overview-primary svg { width: 19px; height: 19px; }
+.overview-secondary:hover { background: #ffffff99; }
+.overview-button:disabled { cursor: wait; opacity: .6; }
+.group-created { position: absolute; right: 87px; top: 46px; display: flex; flex-direction: column; gap: 4px; font-size: 13px; line-height: 1.5; }
+.group-more { position: absolute; right: 23px; top: 48px; color: #172329; }
+.group-terms { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 11px; margin-top: 12px; }
+.group-terms a { text-decoration: underline; }
+.group-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; margin-top: 20px; }
+.overview-stat { display: flex; align-items: flex-start; gap: 20px; min-height: 130px; padding: 24px 26px 18px; border: 1px solid #eaeae5; border-radius: 10px; background: #ffffff98; box-shadow: 0 3px 12px #26392e08; }
+.overview-stat > .q-icon { font-size: 40px; color: #466e64; flex-shrink: 0; margin-top: 3px; }
+.overview-stat h2 { font-family: Georgia, serif; font-size: 17px; line-height: 1.3; margin: 0 0 5px; letter-spacing: -.3px; font-weight: 400; }
+.overview-stat p { font-size: 12px; color: #81847e; margin: 0; }
+.overview-stat strong { display: block; font-family: Georgia, serif; font-size: 30px; line-height: 1; margin-top: 11px; font-weight: 400; }
+.overview-stat .stat-arrow { font-size: 20px; color: #25302a; align-self: center; margin-left: auto; }
+.maintainer-stat { gap: 17px; position: relative; }
+.maintainer-stat > div { min-width: 0; }
+.maintainer-value { display: block; font-size: 14px; margin-top: 18px; overflow-wrap: anywhere; padding-right: 10px; }
+.copy-maintainer { border: 0; background: transparent; color: #1c302b; font-size: 18px; padding: 0; cursor: pointer; margin-left: auto; align-self: flex-end; margin-bottom: 6px; }
+.group-info-grid { display: grid; grid-template-columns: 1.22fr 1fr; gap: 18px; margin-top: 18px; }
+.overview-panel { padding: 24px; border: 1px solid #eaeae5; border-radius: 10px; background: #ffffff99; box-shadow: 0 3px 14px #26392e07; }
+.overview-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 20px; min-height: 34px; }
+.overview-panel-heading h2 { font-family: 'Times New Roman', serif; font-size: 32px; font-weight: 400; letter-spacing: -.5px; line-height: 1.1; margin: 0; }
+.about-edit { display: inline-flex; align-items: center; gap: 9px; border: 1px solid #dedfd8; border-radius: 18px; padding: 9px 15px; background: transparent; font: inherit; font-size: 14px; cursor: pointer; color: #1c2927; }
+.group-about-copy { font-size: 14px; line-height: 1.7; color: #6c7571; }
+.group-about-copy :deep(p) { font-size: 15px; line-height: 1.6; text-align: left; margin: 0 0 18px; }
+.group-facts { display: flex; flex-direction: column; gap: 16px; padding-top: 22px; margin: 22px 0 0; border-top: 1px solid #e7e8e2; font-size: 13px; }
+.group-facts > div { display: flex; gap: 15px; align-items: center; }
+.group-facts dt { width: 160px; display: flex; align-items: center; gap: 16px; color: #788079; flex-shrink: 0; }
+.group-facts dt .q-icon, .group-facts dt svg { font-size: 17px; width: 17px; height: 17px; color: #172823; }
+.group-facts dd { margin: 0; }
+.overview-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.overview-tags > span { padding: 5px 12px; background: #edede9; border-radius: 20px; font-size: 12px; color: #7a7e77; }
+.overview-tags small { font-size: 12px; color: #81867f; }
+.quick-actions { border: 1px solid #e9eae4; border-radius: 10px; overflow: hidden; }
+.quick-actions > a { display: flex; align-items: center; gap: 22px; padding: 10px; min-height: 70px; border-bottom: 1px solid #e9eae4; }
+.quick-actions > a:last-child { border-bottom: 0; }
+.quick-actions > a:hover { background: #eaf0e77d; }
+.quick-action-icon { display: grid; place-items: center; border-radius: 13px; width: 49px; height: 49px; flex-shrink: 0; background: #efefeb; font-size: 24px; }
+.quick-action-copy { display: flex; flex-direction: column; gap: 5px; }
+.quick-action-copy strong { font-weight: 400; font-size: 14px; line-height: 1.35; }
+.quick-action-copy small { font-size: 12px; color: #80847d; line-height: 1.4; }
+.quick-action-arrow { margin-left: auto; font-size: 22px; color: #a0a49b; }
+.election-panel { margin-top: 20px; }
+.about-edit-dialog { width: 650px; max-width: calc(100vw - 32px); border-radius: 14px; background: #faf9f6; color: #25352e; }
+.about-edit-dialog h2 { font: 30px Georgia, serif; margin: 0; }
+.about-edit-dialog p { font-size: 13px; text-align: left; color: #6c7b6e; }
+.overview-loading { min-height: 550px; display: flex; align-items: center; justify-content: center; gap: 15px; color: #55786b; }
+.group-overview a:focus-visible, .group-overview button:focus-visible { outline: 2px solid #547f6e; outline-offset: 4px; }
+@media (max-width: 1300px) {
+  .group-hero { gap: 22px; padding: 30px 24px; }
+  .group-avatar { width: 115px; height: 115px; }
+  .group-hero-copy { width: 52%; }
+  .group-hero-copy h1 { font-size: 54px; }
+  .overview-button { min-width: 145px; padding: 12px 20px; }
+  .group-created { right: 60px; font-size: 12px; }
+  .overview-stat { padding: 22px 18px; gap: 14px; }
+  .group-summary { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .group-facts dt { width: 125px; }
+  .quick-actions > a { gap: 12px; }
+  .group-info-grid { grid-template-columns: 1.1fr 1fr; }
+}
+@media (max-width: 760px) {
+  .group-overview { padding: 0 16px; }
+  .group-hero { padding: 24px; flex-wrap: wrap; gap: 18px; }
+  .group-hero-art { object-position: 70% center; opacity: .24; }
+  .group-avatar { width: 76px; height: 76px; }
+  .group-avatar > svg { width: 41px; height: 41px; }
+  .group-hero-copy { width: 100%; }
+  .group-hero-copy h1 { font-size: 49px; }
+  .group-hero-description { font-size: 14px; }
+  .group-created { top: 30px; right: 65px; }
+  .group-more { top: 31px; right: 20px; }
+  .group-hero-actions { gap: 10px; }
+  .overview-button { min-width: 0; padding: 11px 21px; min-height: 44px; font-size: 13px; }
+  .group-summary { grid-template-columns: 1fr; gap: 12px; margin-top: 16px; }
+  .overview-stat { min-height: 112px; }
+  .group-info-grid { grid-template-columns: 1fr; gap: 16px; margin-top: 16px; }
+  .overview-panel { padding: 20px; }
+  .overview-panel-heading h2 { font-size: 30px; }
+  .group-facts dt { width: 110px; gap: 10px; }
+  .group-facts { font-size: 12px; }
+}

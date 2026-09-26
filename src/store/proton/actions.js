@@ -7,7 +7,7 @@ export async function login({ state, commit, getters, rootGetters }) {
 
   let session = await Proton.login(
     getters.getRpcEndpoints,
-    getters.chainId,
+    getters.getChainId,
     rootGetters["app/getAppConfig"].groups_contract
   );
 
@@ -17,7 +17,6 @@ export async function login({ state, commit, getters, rootGetters }) {
       commit("setAccountName", state.session.auth.actor.toString());
       commit("setPermission", state.session.auth.permission.toString());
 
-      console.warn("session", session);
       notifySuccess({message: state.accountName + ' successfully logged in.'})
     }
   }
@@ -28,7 +27,7 @@ export async function reconnect({ state, commit, getters, rootGetters }) {
 
   let session = await Proton.reconnect(
     getters.getRpcEndpoints,
-    getters.chainId,
+    getters.getChainId,
     rootGetters["app/getAppConfig"].groups_contract
   );
 
@@ -37,7 +36,6 @@ export async function reconnect({ state, commit, getters, rootGetters }) {
     commit("setAccountName", state.session.auth.actor.toString());
     commit("setPermission", state.session.auth.permission.toString());
 
-    console.warn("session", session);
     notifySuccess({message: 'Welcome back ' + state.accountName + '!'})
   }
 

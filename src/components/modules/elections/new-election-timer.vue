@@ -148,7 +148,7 @@ export default defineComponent({
     }
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     clearInterval(this.CLOCK_TIMER);
     this.CLOCK_TIMER = null;
   },

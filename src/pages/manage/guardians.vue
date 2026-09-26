@@ -1,99 +1,18 @@
 <template>
-  <q-page padding class="text-black constrain-page-width">
+  <q-page padding class="text-black constrain-page-width dao-page dao-guardians">
     <!-- content -->
-    <page-header title="Guardians" />
+    <page-header title="Guardians" eyebrow="Community workspace" description="Meet the trusted signers who review proposals and help govern your DAO." />
 
-    <div>
-      <q-input placeholder="Search" outlined v-model.trim="filter">
-        <!-- <template v-slot:hint>
-          <span class="text-grey-8 row" v-if="!getFilteredGuardians.length" >No Result</span>
-        </template> -->
-        <template v-slot:prepend>
-          <q-icon name="search" class="cursor-pointer" />
-        </template>
-        <template v-slot:append>
-          <transition-group
-            appear
-            enter-active-class="animated fadeInRight"
-            leave-active-class="animated fadeOutRight"
-            tag="div"
-          >
-            <q-icon
-              v-if="filter.length"
-              name="close"
-              key="has_filter"
-              @click="filter = ''"
-              class="cursor-pointer"
-            />
-            <q-icon
-              v-else
-              :name="menu_visible ? 'menu_open' : 'menu'"
-              class="cursor-pointer"
-              key="no_filter"
-            >
-              <q-menu fit @before-show="menu_visible = true" @hide="menu_visible = false">
-                <q-list style="min-width: 100px" class="primary-hover-list">
-                  <q-item clickable @click="new_cust_dialog = true" v-close-popup>
-                    <q-item-section avatar>
-                      <q-icon name="mdi-account-plus" />
-                    </q-item-section>
-                    <q-item-section>Invite Guardian</q-item-section>
-                  </q-item>
-                  <q-item clickable @click="rem_cust_dialog = true" v-close-popup>
-                    <q-item-section avatar>
-                      <q-icon name="mdi-account-minus" />
-                    </q-item-section>
-                    <q-item-section>Remove Guardian</q-item-section>
-                  </q-item>
-                  <q-item
-                    clickable
-                    @click="$store.commit('user/setMinifyGuardians', !getMinifyGuardians)"
-                    v-close-popup
-                  >
-                    <q-item-section avatar>
-                      <q-icon v-if="getMinifyGuardians" name="mdi-arrow-expand-all" />
-                      <q-icon v-else name="mdi-arrow-collapse-all" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>
-                        <span v-if="getMinifyGuardians">Expand</span>
-                        <span v-else>Minify</span>
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
-            </q-icon>
-          </transition-group>
-        </template>
-      </q-input>
-      <div class="q-mb-md">
-        <q-tabs
-          v-model="tabfilter"
-          dense
-          class="text-primary"
-          align="left"
-          no-caps
-          inline-label
-        >
-          <q-tab label="All" name="all" />
-        </q-tabs>
-        <q-separator />
-      </div>
-
-      <transition
-        appear
-        enter-active-class="animated fadeInDown"
-        class="column q-gutter-md"
-        tag="div"
-      >
-        <span class="row items-center text-grey-7" v-if="!getFilteredGuardians.length">
-          <q-icon name="error_outline" size="24px" class="q-mr-sm" />
-          No Guardians found...
-        </span>
-      </transition>
+    <div class="dao-search-row">
+      <q-input placeholder="Find a guardian" aria-label="Search guardians" outlined clearable v-model="filter"><template #prepend><q-icon name="search" /></template></q-input>
+      <q-btn v-if="getIsGuardian(getAccountName)" outline color="primary" icon="person_add" label="Invite" @click="new_cust_dialog = true" />
+      <q-btn flat round icon="more_horiz" aria-label="Guardian options"><q-menu><q-list>
+        <q-item v-if="getIsGuardian(getAccountName)" clickable v-close-popup @click="rem_cust_dialog = true"><q-item-section>Remove guardian</q-item-section></q-item>
+        <q-item clickable v-close-popup @click="$store.commit('user/setMinifyGuardians', !getMinifyGuardians)"><q-item-section>{{ getMinifyGuardians ? 'Show details' : 'Compact view' }}</q-item-section></q-item>
+      </q-list></q-menu></q-btn>
     </div>
-
+    <p class="text-grey-7 q-mb-lg">{{ getFilteredGuardians.length }} {{ getFilteredGuardians.length === 1 ? 'guardian' : 'guardians' }}</p>
+    <div v-if="!getFilteredGuardians.length" class="dao-empty"><q-icon name="mdi-account-key-outline" /><h2>No guardians found</h2><p>Try a different account name.</p></div>
     <transition-group
       appear
       enter-active-class="animated zoomIn"
@@ -105,7 +24,7 @@
         v-for="guardian in getFilteredGuardians"
         :guardian="guardian"
         :key="guardian.account"
-        class="col-xs-12 col-sm-6 col-md-4 col-lg-4 col-xl-4"
+        class="col-xs-12 col-sm-6 col-lg-4"
         :minify="getMinifyGuardians"
       />
     </transition-group>
@@ -116,7 +35,7 @@
       <q-card style="width: 100%; max-width: 350px">
         <q-card-section class="row justify-between items-center">
           <div class="text-grey-5 text-weight-light text-h5">Invite Guardian</div>
-          <q-btn icon="close" flat round dense v-close-popup />
+          <q-btn icon="close" aria-label="Close dialog" flat round dense v-close-popup />
         </q-card-section>
         <q-card-section>
           <q-input
@@ -131,7 +50,7 @@
               isValidAccountName,
               isExistingAccountNameWrapper,
             ]"
-            @input="account_name_validated = false"
+            @update:model-value="account_name_validated = false"
           >
             <template v-slot:hint>
               <span class="text-grey-8 row" v-if="account_name_validated">
@@ -157,7 +76,7 @@
       <q-card style="width: 100%; max-width: 350px">
         <q-card-section class="row justify-between items-center">
           <div class="text-grey-5 text-weight-light text-h5">Remove Guardian</div>
-          <q-btn icon="close" flat round dense v-close-popup />
+          <q-btn icon="close" aria-label="Close dialog" flat round dense v-close-popup />
         </q-card-section>
         <q-card-section>
           <q-input
@@ -168,7 +87,7 @@
             maxlength="12"
             :debounce="700"
             :rules="[(val) => !!val || '* Required', isValidAccountName, isGuardian]"
-            @input="rem_cust_validated = false"
+            @update:model-value="rem_cust_validated = false"
           >
             <template v-slot:hint>
               <span class="text-grey-8 row" v-if="rem_cust_validated">
@@ -230,12 +149,8 @@ export default defineComponent({
       getMinifyGuardians: "user/getMinifyGuardians",
     }),
     getFilteredGuardians() {
-      if (this.filter != "") {
-        this.filter = this.filter.toLowerCase();
-        return this.getGuardians.filter((c) => c.account.includes(this.filter));
-      } else {
-        return this.getGuardians;
-      }
+      const term = (this.filter || '').trim().toLowerCase();
+      return this.getGuardians.filter(c => c.account.includes(term));
     },
   },
   methods: {
@@ -288,17 +203,19 @@ export default defineComponent({
       this.rem_cust_dialog = false;
     },
     async isExistingAccountNameWrapper(v) {
+      this.account_name_validated = false;
       if (this.getIsGuardian(v)) {
         return "Already guardian.";
       } else {
         let t = await isExistingAccountName({ value: v, vm: this });
-        if (t === true) {
+        if (t === true && v === this.new_cust_name) {
           this.account_name_validated = true;
         }
         return t;
       }
     },
     isGuardian(v) {
+      this.rem_cust_validated = false;
       if (this.getIsGuardian(v)) {
         this.rem_cust_validated = true;
         return true;

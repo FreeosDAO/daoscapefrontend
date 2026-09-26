@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="constrain-page-width">
+  <q-page padding class="constrain-page-width dao-page">
     <page-header title="Member Registration" />
     <q-card>
       <q-card-section>

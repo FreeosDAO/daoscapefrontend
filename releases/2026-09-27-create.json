@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-09-26T19:48:45.811Z",
+  "url": "https://5hce3-liaaa-aaaao-qqfba-cai.icp0.io/create",
+  "stateHash": "e087fe1ff88f72ecd7cdd4fa6ffdea38f261ed0e9c261466412ed48775fe077b",
+  "assets": [
+    {
+      "file": "index.html",
+      "sha256": "6e82c31fd0fef42f24f78253de6878bf2952ebeb73beac7648a1270b4f6c7223",
+      "status": 200
+    },
+    {
+      "file": "js/app.36627c77.js",
+      "sha256": "d992b87b64920bde6ecea3f6502a4376f091e41c6a35188dd541c5f81a4a2bf6",
+      "status": 200
+    },
+    {
+      "file": "js/create.5526fe08.js",
+      "sha256": "9ea32a3bbc23fba876bbb96096dc74e23a48aed0065abd2ac540d7385e6c9489",
+      "status": 200
+    }
+  ],
+  "checks": {
+    "unitTests": 13,
+    "widths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "simulatedWalletFlow": [
+      "deposit",
+      "create",
+      "activate",
+      "rejection and retry"
+    ],
+    "mainnetTransactionsSigned": false
+  }
+}

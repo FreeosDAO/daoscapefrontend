@@ -1,356 +1,115 @@
 <template>
-  <q-page padding class="constrain-page-width">
-    <transition-group
-      v-if="getActiveGroupConfig"
-      appear
-      enter-active-class="animated fadeIn"
-      leave-active-class="animated fadeOut"
-      mode="out-in"
-      class="row q-col-gutter-md"
-      tag="div"
-    >
-      <div class="col-xs-12" key="header_info">
-        <q-card class="relative-position">
-          <q-card-section>
-
-            <div class="row justify-between">
-              <div class="col-xs-12 col-md-4 q-col-gutter-md">
-                <update-logo :show_edit="allowed_to_edit" class="q-mb-md" />
-              </div>
-
-              <div class="col-xs-12 col-md-8 q-col-gutter-md column items-start">
-                <div class="row justify-between full-width">
-                  <q-item class="no-padding q-mr-sm">
-                    <q-item-section>
-                      <q-item-label>Group Account</q-item-label>
-                      <q-item-label class="text-h4">{{getActiveGroupConfig.username}}</q-item-label>
-                      <q-item-label caption>
-                        <explorer-link :accountname="getActiveGroupConfig.groupname" :accountnameText="`View @${getActiveGroupConfig.groupname}`" />
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                  <q-item>
-                    <q-item-section>
-                      <q-item-label caption class="text-right">Created</q-item-label>
-                      <q-item-label
-                        ><date-string :date="getActiveGroupConfig.creation_date"
-                      /></q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </div>
-                
-                <div v-if="getActiveGroupConfig.meta.about" class="q-mt-md full-width">
-                  <div>About</div>
-                  <q-markdown
-                    class="text-caption text-weight-light"
-                    :src="getActiveGroupConfig.meta.about"
-                    :no-abbreviation="false"
-                  >
-                  </q-markdown>
-                </div>
-
-                <div v-if="getActiveGroupConfig.meta.links.length" class="text-weight-light row justify-between items-center full-width">
-                  <div>
-                    <groupLinks :links="getActiveGroupConfig.meta.links" />
-                  </div>
-                  <q-item class="no-padding">
-                    <q-item-section>
-                      <q-item-label>
-                        <group-tags
-                          :tags="getActiveGroupConfig.tags"
-                          content-class="bg-primary text-white"
-                        />
-                      </q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </div>
-
-                <div class="column full-width q-mt-auto justify-end">
-                  <div
-                    v-if="getCoreConfig && getCoreConfig.conf.userterms"
-                    class="row justify-end q-mt-sm text-weight-light"
-                  >
-                    <q-checkbox
-                      v-model="agree_terms"
-                      left-label
-                      label="I have read and I agree to the user terms."
-                    />
-                  </div>
-                  <div class="row justify-end full-width">
-                    <q-btn
-                      v-if="!getIsMember"
-                      label="Become A Member"
-                      color="primary"
-                      icon="add"
-                      @click="regmember"
-                      :loading="is_transacting"
-                    />
-                    <q-btn
-                      v-else
-                      label="unregister"
-                      color="primary"
-                      outline
-                      @click="unregmember"
-                      :loading="is_transacting"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-
-          </q-card-section>
-        </q-card>
-      </div>
-
-      <!--<div class="col-xs-12" key="clap_info">
-        <q-card>
-          <div class="row justify-between items-center">
-            <clap-for-group />
+  <q-page class="group-overview">
+    <template v-if="getActiveGroupConfig">
+      <section class="group-hero" aria-labelledby="group-title">
+        <img class="group-hero-art" src="~assets/group-marble-hero.png" alt="" />
+        <div class="group-avatar"><img v-if="getActiveGroupConfig.ui.logo && !logoFailed" :src="getActiveGroupConfig.ui.logo" :alt="`${getActiveGroup} logo`" @error="logoFailed = true" /><svg v-else viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="32" cy="32" r="29" /><ellipse cx="32" cy="32" rx="14" ry="29" /><path d="M32 3v58M3 32h58M7 17h50M7 47h50" /></svg></div>
+        <div class="group-hero-copy">
+          <p class="group-eyebrow">Group account</p>
+          <h1 id="group-title">{{ getActiveGroupConfig.username || getActiveGroup }}</h1>
+          <a v-if="explorerUrl" :href="explorerUrl" target="_blank" rel="noopener noreferrer" class="group-account-link"><q-icon name="link" />View @{{ getActiveGroup }}</a>
+          <p class="group-hero-description">{{ about }}</p>
+          <div v-if="!getIsMember && getCoreConfig && getCoreConfig.conf.userterms" class="group-terms"><router-link :to="`/manage/${getActiveGroup}/files`">Read the group’s user terms</router-link><q-checkbox v-model="agree_terms" label="I agree to the user terms" size="sm" /></div>
+          <div class="group-hero-actions">
+            <router-link class="overview-button overview-primary" :to="`/manage/${getActiveGroup}/proposals`">Enter Group <landing-icon name="arrow" /></router-link>
+            <button v-if="memberRegistration" class="overview-button overview-secondary" :disabled="is_transacting" @click="changeMembership(!getIsMember)"><q-spinner v-if="is_transacting" size="18px" />{{ getIsMember ? 'Unregister' : 'Become a Member' }}</button>
           </div>
-        </q-card>
-      </div>-->
-
-      <div class="col-xs-12 col-sm-6 col-lg-4" key="guardians_info">
-        <q-card class="primary-hover-list">
-          <q-item clickable :to="`/manage/${getActiveGroup}/guardians`">
-            <q-item-section avatar>
-              <q-icon name="mdi-account-key" color="primary" size="xl" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label class="text-weight-light text-h5 text-grey-7"
-                >Guardians</q-item-label
-              >
-            </q-item-section>
-            <q-item-section side>
-              <q-item-label class="text-h5 text-grey-7">{{
-                getNumberGuardians
-              }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-card>
+        </div>
+        <div class="group-created"><span>Created</span><span :title="getActiveGroupConfig.creation_date">{{ createdAgo }}</span></div>
+        <q-btn class="group-more" flat round dense icon="more_vert" aria-label="Group options"><q-menu><q-list style="min-width: 190px"><q-item clickable v-close-popup @click="copyText(getActiveGroup)"><q-item-section>Copy account name</q-item-section></q-item><q-item v-if="allowed_to_edit" clickable v-close-popup @click="editAboutOpen = true"><q-item-section>Edit about</q-item-section></q-item><q-item v-if="allowed_to_edit" clickable v-close-popup :to="logoEditUrl"><q-item-section>Edit group logo</q-item-section></q-item></q-list></q-menu></q-btn>
+      </section>
+      <section class="group-summary" aria-label="Community overview">
+        <router-link v-if="memberRegistration" class="overview-stat" :to="`/manage/${getActiveGroup}/members`"><q-icon name="groups" /><div><h2>Members</h2><p>People in this DAO</p><strong>{{ getCoreState ? getCoreState.state.member_count : '—' }}</strong></div><q-icon name="chevron_right" class="stat-arrow" /></router-link>
+        <router-link class="overview-stat" :to="`/manage/${getActiveGroup}/guardians`"><q-icon name="vpn_key" /><div><h2>Guardians</h2><p>Trusted signers</p><strong>{{ getNumberGuardians }}</strong></div><q-icon name="chevron_right" class="stat-arrow" /></router-link>
+        <div v-if="maintainer" class="overview-stat maintainer-stat"><q-icon name="settings" /><div><h2>Maintainer Account</h2><p>Manages group settings</p><span class="maintainer-value">{{ maintainer }}</span></div><button class="copy-maintainer" aria-label="Copy maintainer account" @click="copyText(maintainer)"><q-icon name="content_copy" /></button></div>
+        <router-link v-if="getElectionsState" class="overview-stat" :to="`/members/${getActiveGroup}/elections`"><q-icon name="how_to_vote" /><div><h2>Candidates</h2><p>Active election candidates</p><strong>{{ getElectionsState.active_candidate_count }}</strong></div><q-icon name="chevron_right" class="stat-arrow" /></router-link>
+      </section>
+      <div class="group-info-grid">
+        <section class="overview-panel group-about" aria-labelledby="about-title">
+          <div class="overview-panel-heading"><h2 id="about-title">About</h2><button v-if="allowed_to_edit" class="about-edit" @click="editAboutOpen = true"><q-icon name="edit" />Edit</button></div>
+          <q-markdown class="group-about-copy" :src="about" :no-abbreviation="false" />
+          <group-links v-if="getActiveGroupConfig.meta.links.length" :links="getActiveGroupConfig.meta.links" />
+          <dl class="group-facts">
+            <div><dt><q-icon name="event" />Created</dt><dd :title="getActiveGroupConfig.creation_date">{{ createdAgo }}</dd></div>
+            <div><dt><landing-icon name="globe" />Group Type</dt><dd>{{ networkLabel }}</dd></div>
+            <div><dt><q-icon name="description" />Proposals</dt><dd>{{ proposalCount }}</dd></div>
+            <div><dt><q-icon name="sell" />Tags</dt><dd class="overview-tags"><span v-for="tag in getActiveGroupConfig.tags" :key="tag">{{ tag }}</span><small v-if="!getActiveGroupConfig.tags.length">No tags yet</small></dd></div>
+            <div><dt><q-icon name="insert_drive_file" />Files</dt><dd>{{ fileCount === null ? '—' : `${fileCount}${moreFiles ? '+' : ''}` }}</dd></div>
+          </dl>
+        </section>
+        <section class="overview-panel" aria-labelledby="actions-title">
+          <div class="overview-panel-heading"><h2 id="actions-title">Quick Actions</h2></div>
+          <div class="quick-actions">
+            <router-link v-for="action in quickActions" :key="action.path" :to="`/manage/${getActiveGroup}/${action.path}`"><span class="quick-action-icon"><q-icon :name="action.icon" /></span><span class="quick-action-copy"><strong>{{ action.title }}</strong><small>{{ action.description }}</small></span><q-icon name="chevron_right" class="quick-action-arrow" /></router-link>
+          </div>
+        </section>
       </div>
-
-      <div
-        v-if="getElectionsState"
-        class="col-xs-12 col-sm-6 col-lg-4"
-        key="candidates_info"
-      >
-        <q-card class="primary-hover-list">
-          <q-item clickable :to="`/members/${getActiveGroup}/elections`">
-            <q-item-section avatar>
-              <q-icon name="mdi-account-card-details" color="primary" size="xl" />
-              <q-tooltip
-                class="bg-secondary"
-                :delay="500"
-                anchor="center right"
-                self="center left"
-                :offset="[10, 10]"
-              >
-                <div>
-                  Active Candidates: {{ getElectionsState.active_candidate_count }}
-                </div>
-                <div>
-                  Inactive Candidates: {{ getElectionsState.inactive_candidate_count }}
-                </div>
-              </q-tooltip>
-            </q-item-section>
-            <q-item-section>
-              <q-item-label class="text-weight-light text-h5 text-grey-7"
-                >Candidates</q-item-label
-              >
-            </q-item-section>
-            <q-item-section side>
-              <q-item-label class="text-h5 text-grey-7">{{
-                getElectionsState.active_candidate_count
-              }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-card>
-      </div>
-
-      <div
-        v-if="getCoreConfig && getCoreConfig.conf.member_registration"
-        class="col-xs-12 col-sm-6 col-lg-4"
-        key="members_info"
-      >
-        <q-card class="primary-hover-list">
-          <q-item clickable :to="`/manage/${getActiveGroup}/members`">
-            <q-item-section avatar>
-              <q-icon name="mdi-account-multiple-check" color="primary" size="xl" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label class="text-weight-light text-h5 text-grey-7"
-                >Members</q-item-label
-              >
-            </q-item-section>
-            <q-item-section side>
-              <q-item-label v-if="getCoreState" class="text-h5 text-grey-7">{{
-                getCoreState.state.member_count
-              }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-card>
-      </div>
-
-      <div
-        v-if="getCoreConfig && getCoreConfig.conf.maintainer_account.actor"
-        class="col-xs-12 col-sm-6 col-lg-4"
-        key="maintainer_account"
-      >
-        <q-card class="primary-hover-list">
-          <q-item clickable>
-            <q-item-section avatar>
-              <q-icon name="mdi-settings-transfer" color="primary" size="xl" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label class="text-weight-light text-h5 text-grey-7"
-                >Maintainer Account</q-item-label
-              >
-              <q-item-label caption
-                >{{ getCoreConfig.conf.maintainer_account.actor }}@{{
-                  getCoreConfig.conf.maintainer_account.permission
-                }}</q-item-label
-              >
-            </q-item-section>
-          </q-item>
-        </q-card>
-      </div>
-
-      <div
-        v-if="getElectionsContract"
-        class="col-xs-12 col-sm-6 col-lg-8"
-        key="new_election"
-      >
-        <q-card class="primary-hover-list">
-          <new-election-timer />
-        </q-card>
-      </div>
-    </transition-group>
+      <div v-if="getElectionsContract" class="overview-panel election-panel"><new-election-timer /></div>
+      <q-dialog v-model="editAboutOpen"><q-card class="about-edit-dialog"><q-card-section class="row items-center justify-between"><h2>Edit About</h2><q-btn flat round icon="close" aria-label="Close about editor" v-close-popup /></q-card-section><q-card-section><p>Changes are submitted as a proposal for your DAO to approve.</p><update-about /></q-card-section></q-card></q-dialog>
+    </template>
+    <div v-else class="overview-loading" role="status"><q-spinner size="32px" /><span>Loading your community...</span></div>
   </q-page>
 </template>
-
 <script>
-import { defineComponent } from "vue";
-import { mapGetters } from "vuex";
-import { openURL } from "quasar";
-import updateLogo from "components/meta/update-logo";
-import groupTags from "components/group-tags";
-import groupLinks from "components/group-links";
-import clapForGroup from "components/clap-for-group";
-import groupNotificationManager from "components/group-notification-manager";
-import dateString from "components/date-string";
-import explorerLink from "components/explorer-link";
-import newElectionTimer from "components/modules/elections/new-election-timer";
-import { notifyError } from "src/imports/notifications";
+import { mapGetters } from 'vuex';
+import { copyToClipboard } from 'quasar';
+import LandingIcon from 'components/home/landing-icon.vue';
+import GroupLinks from 'components/group-links.vue';
+import UpdateAbout from 'components/actions/update-about.vue';
+import NewElectionTimer from 'components/modules/elections/new-election-timer.vue';
+import { relativeTimeDelta } from 'src/imports/helpers';
+import { notifyError, notifySuccess } from 'src/imports/notifications';
 
-export default defineComponent({
-  name: "PageIndex",
-  components: {
-    updateLogo,
-    groupTags,
-    groupLinks,
-    clapForGroup,
-    groupNotificationManager,
-    newElectionTimer,
-    dateString,
-    explorerLink,
-  },
-  data() {
-    return {
-      agree_terms: false,
-      is_transacting: false,
-    };
-  },
+export default {
+  name: 'GroupOverview',
+  components: { LandingIcon, GroupLinks, UpdateAbout, NewElectionTimer },
+  data: () => ({ agree_terms: false, is_transacting: false, editAboutOpen: false, logoFailed: false, fileCount: null, moreFiles: false }),
   computed: {
-    ...mapGetters({
-      getAccountName: "proton/getAccountName",
-      getActiveGroup: "group/getActiveGroup",
-      getActiveGroupConfig: "group/getActiveGroupConfig",
-      getCoreConfig: "group/getCoreConfig",
-      getCoreState: "group/getCoreState",
-      getNumberGuardians: "group/getNumberGuardians",
-      getSelectedBlockExplorer: "user/getSelectedBlockExplorer",
-      getElectionsContract: "elections/getElectionsContract",
-      getElectionsState: "elections/getElectionsState",
-      getIsGuardian: "group/getIsGuardian",
-      getIsMember: "user/getIsMember",
-    }),
-    allowed_to_edit() {
-      if (this.getIsGuardian(this.getAccountName)) {
-        return true;
-      } else {
-        return false;
-      }
-    }
+    ...mapGetters({ getAccountName: 'proton/getAccountName', activeNetwork: 'proton/getActiveNetwork', appConfig: 'app/getAppConfig', getActiveGroup: 'group/getActiveGroup', getActiveGroupConfig: 'group/getActiveGroupConfig', getCoreConfig: 'group/getCoreConfig', getCoreState: 'group/getCoreState', getNumberGuardians: 'group/getNumberGuardians', getSelectedBlockExplorer: 'user/getSelectedBlockExplorer', getElectionsContract: 'elections/getElectionsContract', getElectionsState: 'elections/getElectionsState', getIsGuardian: 'group/getIsGuardian', getIsMember: 'user/getIsMember', getLatestUserterms: 'group/getLatestUserterms', proposals: 'group/getProposals' }),
+    allowed_to_edit() { return !!this.getIsGuardian(this.getAccountName); },
+    memberRegistration() { return !!this.getCoreConfig?.conf?.member_registration; },
+    about() { return this.getActiveGroupConfig?.meta?.about || 'A community building its future together.'; },
+    createdAgo() { const value = this.getActiveGroupConfig?.creation_date; return value ? relativeTimeDelta(Date.parse(value.endsWith('Z') ? value : `${value}Z`)) : '—'; },
+    explorerUrl() { const explorer = this.getSelectedBlockExplorer; return explorer ? `${explorer.base}${explorer.account}${this.getActiveGroup}` : ''; },
+    maintainer() { const account = this.getCoreConfig?.conf?.maintainer_account; return account?.actor ? `${account.actor}@${account.permission}` : ''; },
+    networkLabel() { return { local: 'Local (testing)', proton: 'XPR Network', protonTest: 'XPR Testnet' }[this.activeNetwork] || this.activeNetwork; },
+    proposalCount() { const lists = Object.values(this.proposals || {}); return lists.length && lists.every(Array.isArray) ? lists.reduce((count, list) => count + list.length, 0) : '—'; },
+    logoEditUrl() { return { path: `/manage/${this.getActiveGroup}/new-proposal`, query: { action: 'updatelogo', contract: this.appConfig.groups_contract, groupname: this.getActiveGroup } }; },
+    quickActions() {
+      const actions = [{ path: 'new-proposal', title: 'Create a Proposal', description: 'Start a new discussion or decision', icon: 'description' }];
+      if (this.allowed_to_edit) actions.push({ path: 'treasury', title: 'View Treasury', description: 'See assets and transactions', icon: 'account_balance_wallet' });
+      actions.push({ path: 'members', title: this.allowed_to_edit ? 'Manage Members' : 'View Members', description: this.allowed_to_edit ? 'Invite, remove or assign roles' : 'Meet the people in this DAO', icon: 'group' });
+      if (this.allowed_to_edit) actions.push({ path: 'modules', title: 'Configure Group', description: 'Thresholds, permissions and settings', icon: 'settings' });
+      return actions;
+    },
+  },
+  watch: {
+    getActiveGroupConfig: { immediate: true, handler(config) { if (config?.groupname) this.loadFileCount(config.groupname); } },
   },
   methods: {
-    openURL,
-    async regmember() {
-
-      // check if terms required
-      // if required & terms not agreed, exit
-      if(this.getCoreConfig.conf.userterms && !this.agree_terms){
-        notifyError({"message": "Please agree to the terms to become a member."})
-        return
-      }
-
-      let regmember = {
-        account: this.getActiveGroup,
-        name: "regmember",
-        data: {
-          actor: this.getAccountName,
-        },
-      };
-
-      let sign = {
-        account: this.getActiveGroup,
-        name: "signuserterm",
-        data: {
-          member: this.getAccountName,
-          agree_terms: this.agree_terms,
-        },
-      };
-      let actions = [regmember];
-      if (this.getCoreConfig.conf.userterms) {
-        actions.push(sign);
-      }
-      this.is_transacting = true;
-      let res = await this.$store.dispatch("proton/transact", {
-        actions: actions,
-        disable_signing_overlay: true,
-      });
-      if (res && res.trxid) {
-        let termsv =
-          this.getLatestUserterms && this.getLatestUserterms.id && this.agree_terms
-            ? this.getLatestUserterms.id
-            : 0;
-        this.$store.commit("user/setIsMember", {
-          account: this.getAccountName,
-          member_since: res.block_time,
-          agreed_userterms_version: termsv,
-        });
-      }
-      this.is_transacting = false;
+    async loadFileCount(group) {
+      this.fileCount = null;
+      try { const result = await this.$eos.api.rpc.get_table_by_scope({ code: group, table: 'dacfiles', limit: 1000 }); if (group === this.getActiveGroup) { this.fileCount = result.rows.reduce((sum, scope) => sum + Number(scope.count), 0); this.moreFiles = !!result.more; } }
+      catch (error) { this.fileCount = null; }
     },
-    async unregmember() {
-      let action = {
-        account: this.getActiveGroup,
-        name: "unregmember",
-        data: {
-          actor: this.getAccountName,
-        },
-      };
+    async copyText(text) {
+      try { await copyToClipboard(text); notifySuccess({ message: 'Copied to clipboard' }); }
+      catch (error) { notifyError({ message: 'Could not copy to clipboard.' }); }
+    },
+    async changeMembership(register) {
+      if (!this.getAccountName) { this.$store.dispatch('proton/login'); return; }
+      const needsTerms = !!this.getCoreConfig?.conf?.userterms;
+      if (register && needsTerms && !this.agree_terms) { notifyError({ message: 'Please agree to the terms to become a member.' }); return; }
+      const actions = [{ account: this.getActiveGroup, name: register ? 'regmember' : 'unregmember', data: { actor: this.getAccountName } }];
+      if (register && needsTerms) actions.push({ account: this.getActiveGroup, name: 'signuserterm', data: { member: this.getAccountName, agree_terms: this.agree_terms } });
       this.is_transacting = true;
-      let res = await this.$store.dispatch("proton/transact", {
-        actions: [action],
-        disable_signing_overlay: true,
-      });
-      if (res && res.trxid) {
-        this.$store.commit("user/setIsMember", false);
-      }
-      this.is_transacting = false;
+      try {
+        const result = await this.$store.dispatch('proton/transact', { actions, disable_signing_overlay: true });
+        if (result?.trxid) this.$store.commit('user/setIsMember', register ? { account: this.getAccountName, member_since: result.block_time, agreed_userterms_version: this.agree_terms ? this.getLatestUserterms?.id || 0 : 0 } : false);
+      } catch (error) { notifyError({ message: error.message || 'Could not update membership.' }); }
+      finally { this.is_transacting = false; }
     },
   },
-});
+};
 </script>
+<style scoped src="../../css/group-overview.scss" lang="scss"></style>

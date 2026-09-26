@@ -1,5 +1,6 @@
 <template>
-  <q-page padding class="constrain-page-width">
+  <q-page padding class="constrain-page-width dao-page dao-hooks">
+    <page-header title="Hooks" eyebrow="Community workspace" description="Connect contract actions and automate your community’s workflows." />
     <div>
       <q-input
         class="q-pb-md"
@@ -108,6 +109,7 @@
 </template>
 
 <script>
+import pageHeader from "components/page-header";
 import { defineComponent } from "vue";
 import { mapGetters } from "vuex";
 import addHook from "components/modules/hooks/add-hook";
@@ -116,6 +118,7 @@ import actionProposer from "components/actions/action-proposer";
 export default defineComponent({
   name: "hooks",
   components: {
+    pageHeader,
     addHook,
     actionProposer,
   },

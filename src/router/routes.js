@@ -32,6 +32,8 @@ const routes = [
     component: () => import(/* webpackChunkName: "groupLayout" */ 'layouts/GroupLayout.vue'),
     children: [
       { path: '', component: () => import(/* webpackChunkName: "groupInfo" */ 'pages/manage/info.vue') },
+      { path: 'sortition', component: () => import('pages/manage/governance.vue') },
+      { path: 'member-governance', component: () => import('pages/manage/governance.vue') },
       { path: 'guardians', component: () => import(/* webpackChunkName: "groupGuardians" */ 'pages/manage/guardians.vue') },
       { path: 'proposals', component: () => import(/* webpackChunkName: "groupProposals" */ 'pages/manage/proposals.vue') },
       { path: 'new-proposal', component: () => import(/* webpackChunkName: "groupNewProposal" */ 'pages/manage/new-proposal.vue') },

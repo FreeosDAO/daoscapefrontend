@@ -29,13 +29,13 @@
     <q-item
       v-if="getModuleByName('elections')"
       clickable
-      :to="`/members/${getActiveGroup}/elections`"
+      :to="getModuleByName('membergov') ? `/manage/${getActiveGroup}/sortition` : `/members/${getActiveGroup}/elections`"
     >
       <q-item-section avatar>
         <q-icon name="mdi-vote" />
       </q-item-section>
       <q-item-section>
-        <q-item-label>Elections</q-item-label>
+        <q-item-label>{{ getModuleByName('membergov') ? 'Sortition' : 'Elections' }}</q-item-label>
         <!-- <q-item-label caption>mining stats</q-item-label> -->
       </q-item-section>
     </q-item>

@@ -10,6 +10,8 @@ const { configure } = require('quasar/wrappers');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = configure(function (ctx) {
+  const localMode = ctx.dev && process.env.DAOSCAPE_LOCAL === '1';
+  const local = localMode ? require('./.local-chain.json') : {};
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
@@ -50,6 +52,11 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      env: {
+        LOCAL_CHAIN: localMode,
+        LOCAL_CHAIN_ID: local.chainId || '',
+        LOCAL_DEV_KEY: local.privateKey || ''
+      },
       vueRouterMode: 'history', // available values: 'hash', 'history'
       vueCompiler: true,
       // transpile: false,
@@ -89,6 +96,8 @@ module.exports = configure(function (ctx) {
       },
       extendWebpack (cfg) {
         cfg.resolve.fallback = { crypto: false };
+        // The current XPR SDK imports this polyfill without its .js extension.
+        cfg.resolve.alias['abortcontroller-polyfill/dist/polyfill-patch-fetch$'] = require.resolve('abortcontroller-polyfill/dist/polyfill-patch-fetch.js');
         cfg.module.rules.push({
           test: /\.pug$/,
           loader: 'pug-plain-loader'
@@ -116,11 +125,21 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
+      host: '127.0.0.1',
+      ...(localMode ? { static: [{
+        directory: require('path').resolve(__dirname, '../daoscapecore'),
+        publicPath: '/__local-contracts',
+        serveIndex: false
+      }, {
+        directory: require('path').resolve(__dirname, '../local-chain/public'),
+        publicPath: '/__local',
+        serveIndex: false
+      }] } : {}),
       server: {
         type: 'http'
       },
       port: 8080,
-      open: true // opens browser window automatically
+      open: false
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -206,6 +225,7 @@ module.exports = configure(function (ctx) {
 
       // Quasar plugins
       plugins: [
+        'Dialog',
         'Notify',
         'AddressbarColor',
         'Loading'

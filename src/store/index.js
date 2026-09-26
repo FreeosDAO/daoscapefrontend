@@ -39,7 +39,15 @@ export default store(function (/* { ssrContext } */) {
     },
     plugins: [
       createPersistedState({
-        key: "proton",
+        key: process.env.LOCAL_CHAIN ? 'proton-local-' + process.env.LOCAL_CHAIN_ID : 'daoscape-xpr-v1',
+        getState(key, storage) {
+          try {
+            const saved = JSON.parse(storage.getItem(key));
+            if (!saved?.proton) return undefined;
+            const allowed = process.env.LOCAL_CHAIN ? ['local'] : process.env.PROD ? ['proton'] : ['proton', 'protonTest'];
+            return allowed.includes(saved.proton.activeNetwork) ? saved : undefined;
+          } catch { return undefined; }
+        },
         paths: [
           "proton.session",
           "proton.activeNetwork",
@@ -47,7 +55,7 @@ export default store(function (/* { ssrContext } */) {
         ]
       }),
       createPersistedState({
-        key: "user",
+        key: process.env.LOCAL_CHAIN ? 'user-local-' + process.env.LOCAL_CHAIN_ID : 'user',
         paths: [
           "user.favouriteGroups",
           "user.resourceWarningLevels",

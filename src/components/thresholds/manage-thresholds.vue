@@ -8,6 +8,7 @@
       </q-toolbar-title>
       <q-space />
       <q-btn
+        aria-label="Manage thresholds"
         round
         dense
         :icon="add_threshold_view ? 'mdi-minus' : 'mdi-plus'"

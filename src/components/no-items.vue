@@ -1,7 +1,8 @@
 <template>
-  <q-item>
+  <q-item class="dao-no-items">
     <q-item-section>
       <q-item-label caption>
+        <q-icon name="inbox" class="dao-empty-icon" aria-hidden="true" />
         {{ text }}
       </q-item-label>
     </q-item-section>

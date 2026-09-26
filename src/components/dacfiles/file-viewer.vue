@@ -10,7 +10,7 @@
               v-else
               dense
               v-model="file_title"
-              :input-style="{ padding: 0, color: '#fff' }"
+              :input-style="{ padding: 0 }"
             />
           </q-toolbar-title>
           <q-space />

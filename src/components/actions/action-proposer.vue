@@ -81,6 +81,7 @@ export default defineComponent({
   },
   data() {
     return {
+      resetTimer: null,
       propose_state_tab: "request_input",
       error_msg: "",
       propose_title: "",
@@ -102,7 +103,7 @@ export default defineComponent({
       this.propose_state_tab = "add_to_bucket";
       let action = e_action;
       await this.$store.dispatch("bucket/addToBucket", { action: action, vm: this });
-      this.back_to_first_tab(1500);
+      this.back_to_first_tab(500);
     },
 
     async proposeAction(e_payload) {
@@ -131,12 +132,13 @@ export default defineComponent({
       }
     },
     back_to_first_tab(ms = 1500) {
-      setTimeout(() => {
+      clearTimeout(this.resetTimer);
+      this.resetTimer = setTimeout(() => {
         this.propose_state_tab = "request_input";
       }, ms);
     },
   },
 
-  mounted() {},
+  beforeUnmount() { clearTimeout(this.resetTimer); },
 });
 </script>

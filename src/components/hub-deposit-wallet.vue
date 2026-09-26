@@ -1,243 +1,79 @@
 <template>
-  <div v-if="getAppConfig && getAccountName">
-    <!-- <pre>{{getHubDeposits}}</pre> -->
-
-    <transition-group
-      appear
-      enter-active-class="animated zoomIn"
-      leave-active-class="animated zoomOut"
-      tag="div"
-    >
-      <div v-for="d in getHubDeposits" :key="d.contract + d.symbol">
-        <q-card>
-          <q-item>
-            <q-item-section avatar>
-              <q-img
-                contain
-                :src="d.logo"
-                spinner-color="white"
-                style="height: 50px; width: 50px"
-              />
-            </q-item-section>
-
-            <q-item-section>
-              <q-item-label class="text-weight-light text-h6">
-                <span>{{ d.amount }}</span>
-                <span class="text-weight-bold"> {{ d.symbol }}</span>
-              </q-item-label>
-              <q-item-label caption class="text-grey">Deposit Balance</q-item-label>
-            </q-item-section>
-            <q-item-section side> </q-item-section>
-          </q-item>
-        </q-card>
-      </div>
-
-      <div v-if="!getHubDeposits.length">
-        <q-card>
-          <q-item>
-            <q-item-section>
-              <q-item-label class="text-weight-light text-h6">
-                <span>0</span>
-                <span class="text-weight-bold"> {{ getAppConfig.system_token.symbol }}</span>
-              </q-item-label>
-              <q-item-label caption class="text-grey">Deposit Balance</q-item-label>
-            </q-item-section>
-            <q-item-section side> </q-item-section>
-          </q-item>
-        </q-card>
-      </div>
-      
-    </transition-group>
-
-    <q-tabs v-model="active_tab" dense align="left" class="text-primary q-mt-md">
-      <q-tab label="Deposit" name="deposit" />
-      <q-tab label="Withdraw" name="withdraw" />
-    </q-tabs>
-
-    <q-input
-      v-model="input_value"
-      class="q-mt-md"
-      type="number"
-      outlined
-      bottom-slots
-      dense
-    >
-      <template v-slot:append> {{ getAppConfig.system_token.symbol }}</template>
-    </q-input>
-
-    <div class="row justify-between q-mt-md">
-      <q-btn
-        icon="mdi-refresh"
-        color="primary"
-        dense
-        flat
-        @click="refresh_deposits"
-        :loading="is_loading_deposits"
-      >
-        <q-tooltip class="bg-secondary" :delay="500"> Reload </q-tooltip>
-      </q-btn>
-      <div>
-        <transition
-          enter-active-class="animated fadeInUp"
-          leave-active-class="animated fadeOutDown"
-          mode="out-in"
-        >
-          <q-btn
-            v-if="active_tab == 'withdraw'"
-            key="w"
-            label="withdraw"
-            @click="withdraw"
-            color="primary"
-            class="q-mr-sm"
-            :loading="is_withdrawing"
-            :disabled="!can_withdraw"
-          />
-          <q-btn
-            v-else
-            key="d"
-            label="deposit"
-            @click="deposit"
-            color="primary"
-            :loading="is_transfering"
-          />
-        </transition>
-      </div>
-    </div>
-    <!-- {{getHubDeposits}} -->
+  <div v-if="getAppConfig && getAccountName" class="hub-wallet">
+    <div class="hub-balance"><span><q-icon name="account_balance_wallet" /> Your hub deposit</span><strong>{{ balance.toFixed(selected_asset.precision) }} {{ selected_asset.symbol }}</strong><q-btn flat round icon="refresh" aria-label="Refresh hub deposit balance" :loading="is_loading_deposits" @click="refresh_deposits" /></div>
+    <q-tabs v-model="active_tab" align="left" no-caps active-color="primary" indicator-color="primary"><q-tab label="Deposit" name="deposit" /><q-tab label="Withdraw" name="withdraw" /></q-tabs>
+    <q-input v-model="input_value" :dark="false" class="q-mt-md" type="number" outlined label="Amount" min="0" :step="10 ** -selected_asset.precision" :hint="active_tab === 'withdraw' ? 'Withdraw unused funds to your connected wallet.' : `Send funds to ${getAppConfig.groups_contract} from your connected wallet.`" :disable="busy"><template #append><span class="hub-symbol">{{ selected_asset.symbol }}</span></template></q-input>
+    <p v-if="error" class="hub-error" role="alert">{{ error }}</p>
+    <div class="hub-actions"><span v-if="busy" role="status">Confirm in your wallet…</span><q-btn v-if="active_tab === 'withdraw'" unelevated label="Withdraw to wallet" color="primary" :loading="is_withdrawing" :disable="!can_withdraw || busy" @click="withdraw" /><q-btn v-else unelevated label="Deposit funds" color="primary" :loading="is_transfering" :disable="!validAmount || busy" @click="deposit" /></div>
   </div>
 </template>
-
 <script>
-import { mapGetters } from "vuex";
-import { defineComponent } from "vue";
-import { notifySuccess } from "src/imports/notifications";
-
-export default defineComponent({
-  name: "hubDepositWallet",
-  props: {
-    default_input_value: {
-      type: Number,
-      default: 0
-    }
-  },
-  data() {
-    return {
-      active_tab: "deposit",
-      transfer_asset: { contract: "eosio.token", quantity: "1.0000 EOS" },
-      input_value: "",
-      is_transfering: false,
-      is_withdrawing: false,
-      is_loading_deposits: false,
-      selected_index: 0,
-    };
-  },
+import { mapGetters } from 'vuex';
+import { notifySuccess } from 'src/imports/notifications';
+export default {
+  name: 'hubDepositWallet',
+  props: { default_input_value: { type: Number, default: 0 } },
+  data: () => ({ active_tab: 'deposit', input_value: '', is_transfering: false, is_withdrawing: false, is_loading_deposits: false, error: '' }),
   computed: {
-    ...mapGetters({
-      getAccountName: "proton/getAccountName",
-      getAppConfig: "app/getAppConfig",
-      getHubDeposits: "user/getHubDeposits"
-    }),
-    can_withdraw() {
-      return this.getHubDeposits && this.getHubDeposits.length;
-    },
-    selected_asset() {
-      if (this.getHubDeposits && this.getHubDeposits.length) {
-        return this.getHubDeposits[this.selected_index];
-      } else {
-        return this.getAppConfig.system_token;
-      }
-    },
+    ...mapGetters({ getAccountName: 'proton/getAccountName', getAppConfig: 'app/getAppConfig', getHubDeposits: 'user/getHubDeposits' }),
+    selected_asset() { return this.getAppConfig.system_token; },
+    balance() { const token = this.selected_asset; const row = (Array.isArray(this.getHubDeposits) ? this.getHubDeposits : []).find(d => d.symbol === token.symbol && d.contract === token.contract); return parseFloat(row?.quantity || '0'); },
+    validAmount() { const value = Number(this.input_value); return Number.isFinite(value) && value > 0 && value < 1e12 && Number(value.toFixed(this.selected_asset.precision)) === value; },
+    can_withdraw() { return this.validAmount && Number(this.input_value) <= this.balance; },
+    busy() { return this.is_transfering || this.is_withdrawing; },
   },
   methods: {
     async refresh_deposits() {
       this.is_loading_deposits = true;
-      await this.$store.dispatch("user/fetchHubDeposits", {
-        accountname: this.getAccountName,
-        vm: this,
-      });
-      this.is_loading_deposits = false;
-      this.input_value = "";
+      try { await this.$store.dispatch('user/fetchHubDeposits', { accountname: this.getAccountName, vm: this }); }
+      catch (_) { this.error = 'Could not refresh your balance. Check your connection and retry.'; }
+      finally { this.is_loading_deposits = false; }
     },
     async deposit() {
-      let open = {
-        account: this.getAppConfig.groups_contract,
-        name: "opendeposit",
-        data: {
-          account: this.getAccountName,
-          ram_payer: this.getAccountName,
-          amount: {
-            contract: this.selected_asset.contract,
-            quantity: Number(0).toFixed(4) + ` ${this.selected_asset.symbol}`,
-          },
-        },
-      };
-
-      let transfer = {
-        account: this.selected_asset.contract,
-        name: "transfer",
-        data: {
-          from: this.getAccountName,
-          to: this.getAppConfig.groups_contract,
-          quantity:
-            Number(this.input_value).toFixed(this.selected_asset.precision) +
-            ` ${this.selected_asset.symbol}`,
-          memo: "",
-        },
-      };
-      this.is_transfering = true
-      let res = await this.$store.dispatch("proton/transact", {
-        actions: [open, transfer],
-        disable_signing_overlay: true,
-      })
-
-      this.is_transfering = false
-
-      if(!res) return
-      notifySuccess({message: `Successfuly deposited ${Number(this.input_value).toFixed(this.selected_asset.precision)} ${this.selected_asset.symbol}`})
-      setTimeout(()=>{
-        this.refresh_deposits()
-      }, 1000)
-      
+      if (!this.validAmount || this.busy) return;
+      const token = this.selected_asset;
+      const quantity = `${Number(this.input_value).toFixed(token.precision)} ${token.symbol}`;
+      const actions = [
+        { account: this.getAppConfig.groups_contract, name: 'opendeposit', data: { account: this.getAccountName, ram_payer: this.getAccountName, amount: { contract: token.contract, quantity: `${(0).toFixed(token.precision)} ${token.symbol}` } } },
+        { account: token.contract, name: 'transfer', data: { from: this.getAccountName, to: this.getAppConfig.groups_contract, quantity, memo: '' } },
+      ];
+      await this.submit(actions, 'is_transfering', `Deposited ${quantity}`);
     },
     async withdraw() {
-      let withdraw = {
-        account: this.getAppConfig.groups_contract,
-        name: "withdraw",
-        data: {
-          account: this.getAccountName,
-          amount: {
-            contract: this.selected_asset.contract,
-            quantity:
-              Number(this.input_value).toFixed(this.selected_asset.precision) +
-              ` ${this.selected_asset.symbol}`,
-          },
-        },
-      };
-
-      this.is_withdrawing = true;
-      let res = await this.$store.dispatch("proton/transact", {
-        actions: [withdraw],
-        disable_signing_overlay: true,
-      });
-
-      this.is_withdrawing = false
-      
-      if(!res) return
-      notifySuccess({message: `Successfuly withdrawn ${Number(this.input_value).toFixed(this.selected_asset.precision)} ${this.selected_asset.symbol}`})
-      setTimeout(()=>{
-        this.refresh_deposits()
-      }, 1000)
-      
+      if (!this.can_withdraw || this.busy) return;
+      const token = this.selected_asset;
+      const quantity = `${Number(this.input_value).toFixed(token.precision)} ${token.symbol}`;
+      await this.submit([{ account: this.getAppConfig.groups_contract, name: 'withdraw', data: { account: this.getAccountName, amount: { contract: token.contract, quantity } } }], 'is_withdrawing', `Withdrawn ${quantity}`);
+    },
+    async submit(actions, flag, message) {
+      this[flag] = true; this.error = '';
+      try {
+        const receipt = await this.$store.dispatch('proton/transact', { actions, disable_signing_overlay: true });
+        if (!receipt?.trxid) { this.error = 'Transaction was not confirmed. Check your wallet and refresh your balance before retrying.'; return; }
+        notifySuccess({ message });
+        this.input_value = '';
+        await this.refresh_deposits();
+      } catch (_) { this.error = 'Transaction was not confirmed. Check your wallet and refresh your balance before retrying.'; }
+      finally { this[flag] = false; }
     },
   },
-  mounted() {
-    if (this.getAccountName) {
-      this.input_value = this.default_input_value
-      this.$store.dispatch("user/fetchHubDeposits", {
-        accountname: this.getAccountName,
-        vm: this,
-      });
-    }
-  },
-});
+  mounted() { this.input_value = this.default_input_value > 0 ? this.default_input_value.toFixed(this.selected_asset.precision) : ''; this.refresh_deposits(); },
+};
 </script>
+<style scoped>
+.hub-wallet { color: #17272b; background: #fffefa; border: 1px solid #e0e5da; border-radius: 12px; padding: 18px; }
+.hub-balance { display: flex; flex-wrap: wrap; align-items: center; column-gap: 10px; padding-bottom: 12px; }
+.hub-balance > span { width: 100%; color: #68776d; font-size: 12px; }
+.hub-balance > span .q-icon { font-size: 17px; margin-right: 5px; }
+.hub-balance strong { font-size: 20px; font-weight: 500; overflow-wrap: anywhere; }
+.hub-balance .q-btn { margin-left: auto; }
+.hub-wallet :deep(.q-btn) { border-radius: 24px; text-transform: none; min-height: 44px; letter-spacing: 0; }
+.hub-wallet :deep(.q-field__native) { color: #17272b; }
+.hub-wallet :deep(.q-field__control) { border-radius: 9px; }
+.hub-wallet :deep(.q-field__bottom) { color: #6c7970; line-height: 1.5; padding-bottom: 4px; }
+.hub-wallet :deep(.q-tab) { min-height: 44px; }
+.hub-symbol { color: #617366; font-size: 13px; }
+.hub-actions { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.hub-actions > span { font-size: 12px; color: #67766e; }
+.hub-error { font-size: 12px; color: #993c39; background: #fff0ed; padding: 12px; border-radius: 8px; margin: 20px 0 0; line-height: 1.6; text-align: left; }
+</style>

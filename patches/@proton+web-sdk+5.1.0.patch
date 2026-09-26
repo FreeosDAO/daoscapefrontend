@@ -1,0 +1,132 @@
+diff --git a/node_modules/@proton/web-sdk/lib/proton-web-sdk.js b/node_modules/@proton/web-sdk/lib/proton-web-sdk.js
+index d28f777..eb7ec0b 100644
+--- a/node_modules/@proton/web-sdk/lib/proton-web-sdk.js
++++ b/node_modules/@proton/web-sdk/lib/proton-web-sdk.js
+@@ -79,10 +79,10 @@ class Deferred {
+ let _childWindow = null;
+ class ProtonWebLink {
+     get childWindow() {
+-        return _childWindow;
++        return this._childWindow;
+     }
+     set childWindow(window) {
+-        _childWindow = window;
++        this._childWindow = window;
+     }
+     constructor(options) {
+         const rpcClass = options.usePulseVM ? js.JsonRpcPulseVM : js.JsonRpc;
+@@ -109,6 +109,13 @@ class ProtonWebLink {
+                 this.childWindow.close();
+             }
+             if (force || this.childWindow.closed) {
++                if (!force) {
++                    const cancelled = new Error('Wallet window closed. Please connect again.');
++                    this.deferredLogin?.reject(cancelled);
++                    this.deferredTransact?.deferral.reject(cancelled);
++                    this.deferredLogin = undefined;
++                    this.deferredTransact = undefined;
++                }
+                 this.childWindow = null;
+             }
+         }
+@@ -130,6 +137,7 @@ class ProtonWebLink {
+                     waitingForOpen: true,
+                 };
+                 this.childWindow = window.open(this.childUrl('/auth'), '_blank', OPEN_SETTINGS);
++            if (!this.childWindow) throw new Error('Allow pop-ups for DAOScape to connect your wallet.');
+                 try {
+                     const res = yield this.deferredTransact.deferral.promise;
+                     return res;
+@@ -155,6 +163,7 @@ class ProtonWebLink {
+                 this.deferredTransact = undefined;
+             }
+             this.childWindow = window.open(this.childUrl('/login'), '_blank', OPEN_SETTINGS);
++            if (!this.childWindow) throw new Error('Allow pop-ups for DAOScape to connect your wallet.');
+             this.deferredLogin = new Deferred();
+             try {
+                 this.storage.write('wallet-type', 'webauth');
+@@ -194,8 +203,7 @@ class ProtonWebLink {
+     }
+     onEvent(e) {
+         return __awaiter(this, void 0, void 0, function* () {
+-            if (e.origin.indexOf('https://webauth.com') === -1 &&
+-                e.origin.indexOf('https://testnet.webauth.com') === -1) {
++            if (e.origin !== new URL(this.childUrl('/')).origin || !this.childWindow || e.source !== this.childWindow) {
+                 return;
+             }
+             let eventData;
+@@ -220,7 +228,7 @@ class ProtonWebLink {
+                                 transaction: this.deferredTransact.transaction,
+                                 params: this.deferredTransact.params,
+                             },
+-                        }), '*');
++                        }), new URL(this.childUrl('/')).origin);
+                     }
+                 }
+                 // Close child
+diff --git a/node_modules/@proton/web-sdk/lib/proton-web-sdk.m.js b/node_modules/@proton/web-sdk/lib/proton-web-sdk.m.js
+index e160520..5aaa6b0 100644
+--- a/node_modules/@proton/web-sdk/lib/proton-web-sdk.m.js
++++ b/node_modules/@proton/web-sdk/lib/proton-web-sdk.m.js
+@@ -75,10 +75,10 @@ class Deferred {
+ let _childWindow = null;
+ class ProtonWebLink {
+     get childWindow() {
+-        return _childWindow;
++        return this._childWindow;
+     }
+     set childWindow(window) {
+-        _childWindow = window;
++        this._childWindow = window;
+     }
+     constructor(options) {
+         const rpcClass = options.usePulseVM ? JsonRpcPulseVM : JsonRpc;
+@@ -105,6 +105,13 @@ class ProtonWebLink {
+                 this.childWindow.close();
+             }
+             if (force || this.childWindow.closed) {
++                if (!force) {
++                    const cancelled = new Error('Wallet window closed. Please connect again.');
++                    this.deferredLogin?.reject(cancelled);
++                    this.deferredTransact?.deferral.reject(cancelled);
++                    this.deferredLogin = undefined;
++                    this.deferredTransact = undefined;
++                }
+                 this.childWindow = null;
+             }
+         }
+@@ -126,6 +133,7 @@ class ProtonWebLink {
+                     waitingForOpen: true,
+                 };
+                 this.childWindow = window.open(this.childUrl('/auth'), '_blank', OPEN_SETTINGS);
++            if (!this.childWindow) throw new Error('Allow pop-ups for DAOScape to connect your wallet.');
+                 try {
+                     const res = yield this.deferredTransact.deferral.promise;
+                     return res;
+@@ -151,6 +159,7 @@ class ProtonWebLink {
+                 this.deferredTransact = undefined;
+             }
+             this.childWindow = window.open(this.childUrl('/login'), '_blank', OPEN_SETTINGS);
++            if (!this.childWindow) throw new Error('Allow pop-ups for DAOScape to connect your wallet.');
+             this.deferredLogin = new Deferred();
+             try {
+                 this.storage.write('wallet-type', 'webauth');
+@@ -190,8 +199,7 @@ class ProtonWebLink {
+     }
+     onEvent(e) {
+         return __awaiter(this, void 0, void 0, function* () {
+-            if (e.origin.indexOf('https://webauth.com') === -1 &&
+-                e.origin.indexOf('https://testnet.webauth.com') === -1) {
++            if (e.origin !== new URL(this.childUrl('/')).origin || !this.childWindow || e.source !== this.childWindow) {
+                 return;
+             }
+             let eventData;
+@@ -216,7 +224,7 @@ class ProtonWebLink {
+                                 transaction: this.deferredTransact.transaction,
+                                 params: this.deferredTransact.params,
+                             },
+-                        }), '*');
++                        }), new URL(this.childUrl('/')).origin);
+                     }
+                 }
+                 // Close child
