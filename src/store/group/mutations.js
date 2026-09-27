@@ -182,3 +182,5 @@ export function setModules(state, payload){
 
 
 
+
+export function setGrantPolicy(state, policy) { state.grantPolicy = policy; }

@@ -1,6 +1,6 @@
 <template>
   <q-page class="dao-page dao-proposals">
-    <page-header title="Proposals" eyebrow="Community workspace" description="Shape what happens next. Review decisions, cast your vote, and follow their progress.">
+    <page-header title="Proposals" eyebrow="Community workspace" description="Review proposals, see guardian approvals, and follow each decision.">
       <q-btn unelevated color="primary" icon="add" label="Create proposal" :to="`/manage/${getActiveGroup}/new-proposal`" />
     </page-header>
     <div class="dao-stat-strip">

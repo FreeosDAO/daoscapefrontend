@@ -34,7 +34,8 @@
 
           <q-item-section style="margin-left: -7px">
             <q-item-label class="text-capitalize">{{ approver }}</q-item-label>
-            <q-item-label caption v-if="getIsGuardian(approver)">
+            <q-item-label caption v-if="validApprovals !== null">{{ validApprovals.includes(approver) ? 'Current valid guardian approval' : 'Recorded approval · no longer counts' }}</q-item-label>
+            <q-item-label caption v-else-if="getIsGuardian(approver)">
               Weight {{ getIsGuardian(approver).weight }}
             </q-item-label>
             <q-item-label caption v-else> Ex Guardian </q-item-label>
@@ -56,6 +57,7 @@ export default defineComponent({
     profilePic,
   },
   props: {
+    validApprovals: {type:Array,default:null},
     approvals: {
       type: Array,
       default: () => {

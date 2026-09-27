@@ -2,6 +2,7 @@
   <q-page padding class="constrain-page-width dao-page dao-modules">
 
     <page-header title="Configuration" eyebrow="Community workspace" description="Make this DAO your own. Manage governance settings and connected modules." />
+    <grant-policy />
     <q-card>
       <div class="row bg-secondary items-center justify-between" style="height: 60px">
         <div class="q-ml-md">
@@ -55,6 +56,7 @@ import pageHeader from "components/page-header";
 import configEditor from "components/config/config-editor";
 import configUpdater from "components/config/config-updater";
 
+import GrantPolicy from "components/config/grant-policy";
 import manageModules from "components/modules/manage-modules";
 
 // const kitten = window.httpVueLoader('http://localhost:8080/statics/test_component.vue');
@@ -63,6 +65,7 @@ export default defineComponent({
   name: "groupSubaccounts",
   components: {
     pageHeader,
+    GrantPolicy,
     configEditor,
     configUpdater,
     manageModules,

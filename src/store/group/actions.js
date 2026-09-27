@@ -1,3 +1,4 @@
+import { readGovernanceRows } from '../../utils/governance';
 import { getLogoForToken } from "../../imports/tokens.js";
 import { notifyError, notifySuccess } from '../../imports/notifications.js';
 // import { colors } from 'quasar';
@@ -14,6 +15,7 @@ import { setCssVar } from 'quasar';
 
 
 export async function resetStore({ commit }, payload) {
+  commit('setGrantPolicy', null);
   commit('setCoreConfig', false);
   commit('setGuardians', []);
   commit('setMyOldProfile', false);
@@ -40,6 +42,7 @@ export async function loadGroupRoutine({ state, dispatch, commit, rootGetters },
   // })
   const groupname = payload.groupname;
   if (state.activeGroup !== groupname) {
+    commit('setGrantPolicy', null);
     commit('setModules', false);
     commit('elections/setElectionsContract', false, { root: true });
   }
@@ -194,6 +197,7 @@ export async function fetchGuardians({ state, commit }, payload) {
     table: "custodians",
     limit: -1
   });
+  if(payload.groupname!==state.activeGroup)return;
   if (res && res.rows) {
     // add alive status
     let guardians = res.rows.map(guardian => {
@@ -223,7 +227,7 @@ export async function fetchGuardians({ state, commit }, payload) {
   }
 }
 
-export async function fetchProposals({ state, commit }, payload) {
+export async function fetchProposals({ state, commit, dispatch }, payload) {
   let res = await payload.vm.$eos.api.rpc.get_table_rows({
     json: true,
     code: payload.groupname,
@@ -232,6 +236,7 @@ export async function fetchProposals({ state, commit }, payload) {
     reverse: true,
     limit: -1
   });
+  if(payload.groupname!==state.activeGroup)return;
   if (res && res.rows) {
     res = res.rows;
 
@@ -253,7 +258,7 @@ export async function fetchProposals({ state, commit }, payload) {
       console.log(`fetched proposals for group ${payload.groupname}`, expired);
       commit('setProposals', { scope: 'expired', data: expired });
 
-      // return early
+      await dispatch('fetchGrantPolicy', payload);
       return
     }
 
@@ -492,6 +497,8 @@ export async function propose({ state, rootState, getters, dispatch, commit }, p
   // expiration:",
   // actions: []
 
+  await dispatch("fetchGrantPolicy", {groupname:state.activeGroup,vm:payload.vm});
+  if (!getters.getCanSubmitProposal) { notifyError({message:"Proposal submission is unavailable. Check membership, KYC and the guardian-controlled member-submission setting."}); return false; }
   let active_period = getters.getActivePeriod;
   let default_expiration = new Date(Date.now() + active_period).toISOString().split('.')[0]; //"2019-12-03T00:28:24.215Z"
 
@@ -576,3 +583,35 @@ export async function propose({ state, rootState, getters, dispatch, commit }, p
 }
 
 
+
+export async function fetchGrantPolicy({state,commit}, payload) {
+  const dao=payload.groupname, rpc=payload.vm.$eos.api.rpc;
+  const read=(table,scope=dao)=>readGovernanceRows(rpc,dao,table,scope);
+  try {
+    const {abi}=await rpc.get_abi(dao);
+    const available=abi.actions.some(a=>a.name==='setmprops');
+    const configs=abi.tables.some(t=>t.name==='govconfig') ? await read('govconfig') : [];
+    const pilot=!!configs[0];
+    const policy={loaded:true,pilot,available:available&&pilot,memberProposals:false,tokens:[],tags:{},seat:null,eligibleAccounts:[]};
+    if(pilot) {
+      policy.seat=(await read('govseat'))[0];
+      const proposals=(state.proposals.active||[]);
+      policy.tags=Object.fromEntries(await Promise.all(proposals.map(async p=>[p.id,await read('govapprovals',p.id)])));
+      if(available) {
+        const [settings,tokens,members]=await Promise.all([read('grantconfig'),read('granttokens'),read('members')]);
+        policy.memberProposals=!!settings[0]?.member_proposals;policy.tokens=tokens;policy.kyc=!!configs[0].rules.kyc;
+        policy.eligibleAccounts=members.map(m=>m.account);
+        // Only the connected account needs a KYC lookup; never infer identity from wallet labels.
+        if(policy.kyc) {
+          const account=this.getters['proton/getAccountName'];policy.eligibleAccounts=[];
+          if(account&&members.some(m=>m.account===account)) {
+            const result=await rpc.get_table_rows({json:true,code:'eosio.proton',scope:'eosio.proton',table:'usersinfo',lower_bound:account,upper_bound:account,limit:1});
+            const user=result.rows.find(u=>u.acc===account);
+            if(user?.verified&&user.kyc?.some(k=>k.kyc_level.includes('firstname')&&k.kyc_level.includes('lastname')))policy.eligibleAccounts=[account];
+          }
+        }
+      }
+    }
+    if(state.activeGroup===dao)commit('setGrantPolicy',policy);
+  } catch(e) {if(state.activeGroup===dao)commit('setGrantPolicy',{loaded:true,error:'Unable to verify proposal rules. Reload this DAO before signing.'});}
+}

@@ -1,5 +1,10 @@
 <template>
   <div>
+    <q-banner v-if="policy?.available" class="q-mb-md">
+      Grants need two guardian approvals. Member submissions are {{ policy.memberProposals ? 'on' : 'off' }}.
+      <span v-if="!canSubmit">You cannot currently submit: check your membership, KYC eligibility or guardian status.</span>
+      <div class="text-caption">Members: one outstanding proposal; 60 seconds between submissions. Title: 120 UTF-8 bytes; explanation: 4,096 bytes. Token transfer memos: 256 bytes.</div>
+    </q-banner>
     <q-card class="overflow-hidden">
       <!-- expand-icon-class="display-none" -->
       <q-expansion-item
@@ -210,7 +215,7 @@
                   size="md"
                 />
                 <q-btn
-                  :disabled="!propose_title || !propose_description"
+                  :disabled="!canSubmit || !propose_title || !propose_description"
                   label="propose"
                   @click="propose"
                   color="primary"
@@ -324,6 +329,8 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       getActionBucket: "bucket/getActionBucket",
+      canSubmit: "group/getCanSubmitProposal",
+      policy: "group/getGrantPolicy",
       getLinkedThresholdForContractAction: "group/getLinkedThresholdForContractAction",
     }),
     draggable_action_bucket: {
@@ -366,6 +373,10 @@ export default defineComponent({
     },
 
     async propose() {
+      if(!this.canSubmit)return;
+      if(this.policy?.available && (new TextEncoder().encode(this.propose_title).length>120 || new TextEncoder().encode(this.propose_description).length>4096)) {
+        this.$q.notify({type:'negative',message:'Title must fit 120 UTF-8 bytes and explanation 4,096 bytes.'});return;
+      }
       this.bucket_view = "request_signature";
       let actions = JSON.parse(JSON.stringify(this.getActionBucket));
       actions.forEach((a) => {

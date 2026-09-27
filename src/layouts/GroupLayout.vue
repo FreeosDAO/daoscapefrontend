@@ -54,19 +54,25 @@ import { notifyError } from 'src/imports/notifications';
 export default {
   name: 'GroupLayout',
   components: { LoginNetworkSwitcher, ManagementMenu, MembersMenu, LandingBrand, LandingIcon },
-  data() { return { leftDrawer: this.$q.screen.width > 1023, group_is_loading: false, unsubscribeTransactions: null }; },
+  data() { return { leftDrawer: this.$q.screen.width > 1023, group_is_loading: false, unsubscribeTransactions: null, policyTimer: null }; },
   computed: {
     ...mapGetters({ getAccountName: 'proton/getAccountName', activeNetwork: 'proton/getActiveNetwork', appConfig: 'app/getAppConfig', getActiveGroup: 'group/getActiveGroup' }),
     isMemberArea() { return this.$route.path.startsWith('/members/'); },
   },
   mounted() {
     document.body.classList.add("dao-theme");
+    this.policyTimer=setInterval(()=>{
+      if(document.hidden || !this.getActiveGroup || this.group_is_loading || this.$store.getters['proton/getIsTransacting'])return;
+      const payload={groupname:this.getActiveGroup,scope:this.getActiveGroup,vm:this};
+      Promise.allSettled(['fetchGuardians','fetchProposals'].map(action=>this.$store.dispatch('group/'+action,payload)));
+    },15000);
     this.unsubscribeTransactions = this.$store.subscribeAction({ after: action => {
       if (action.type === 'proton/transact' && this.getActiveGroup) this.loadGroup(this.getActiveGroup);
     } });
   },
-  beforeUnmount() { document.body.classList.remove("dao-theme"); if (this.unsubscribeTransactions) this.unsubscribeTransactions(); },
+  beforeUnmount() { clearInterval(this.policyTimer); document.body.classList.remove("dao-theme"); if (this.unsubscribeTransactions) this.unsubscribeTransactions(); },
   watch: {
+    getAccountName() { if(this.getActiveGroup)this.loadGroup(this.getActiveGroup); },
     '$q.screen.width'(width, previous) { if (width <= 1023 && previous > 1023) this.leftDrawer = false; },
     '$route.path'() { if (this.$q.screen.width <= 1023) this.leftDrawer = false; },
     '$route.params.groupname': { immediate: true, handler(group, previous) { if (group && group !== previous) this.loadGroup(group); } },

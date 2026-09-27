@@ -1,3 +1,4 @@
+import { validGuardian, approvalStatus } from '../../utils/guardian-grants';
 function parseMicroSeconds(us, precision = 2) {
     us = Number(us);
     if (us >= 1000000) {
@@ -35,10 +36,10 @@ export function getNumberGuardians(state){
     return state.guardians.length;
 }
 
-export function getIsGuardian(state) {
+export function getIsGuardian(state, getters, rootState, rootGetters) {
     return accountname => {
         let guardian = state.guardians.find(c => accountname == c.account);
-        return guardian;
+        return validGuardian(guardian, state.grantPolicy?.seat, (rootGetters["app/getCLOCK"] || Date.now()) / 1000) ? guardian : undefined;
     };
 }
 
@@ -227,3 +228,14 @@ export function getCPUStats(state) {
   export function getActivePeriod(state, getters, rootState, rootGetters){
     return state.active_period[rootGetters["proton/getActiveNetwork"]]
   }
+export function getGrantPolicy(state) { return state.grantPolicy; }
+export function getApprovalStatus(state, getters, rootState, rootGetters) {
+  return proposal => approvalStatus({dao:state.activeGroup, proposal, policy:state.grantPolicy,
+    guardians:state.guardians, threshold:getters.getThresholdByName(proposal.required_threshold),
+    now:(rootGetters['app/getCLOCK'] || Date.now())/1000, inactiveAfter:state.coreConfig?.conf?.inactivate_cust_after_sec || 0});
+}
+export function getCanSubmitProposal(state, getters, rootState, rootGetters) {
+  const account=rootGetters['proton/getAccountName'];
+  if(!account || !state.grantPolicy?.loaded || state.grantPolicy.error)return false;
+  return !!getters.getIsGuardian(account) || !!(state.grantPolicy.available && state.grantPolicy.memberProposals && state.grantPolicy.eligibleAccounts?.includes(account));
+}

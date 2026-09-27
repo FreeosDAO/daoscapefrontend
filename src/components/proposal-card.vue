@@ -70,7 +70,7 @@
               {{ proposal.actions.length }}
             </q-badge>
           </q-tab>
-          <q-tab label="Votes" name="votes">
+          <q-tab label="Approvals" name="votes">
             <q-badge
               v-if="proposal.approvals.length"
               floating
@@ -90,7 +90,7 @@
           transition-next="fade"
         >
           <q-tab-panel name="votes" class="overflow-hidden">
-            <approvals-list :approvals="proposal.approvals" />
+            <approvals-list :approvals="proposal.approvals" :valid-approvals="getApprovalStatus(proposal).fixed && proposalstate === 'active' ? getApprovalStatus(proposal).valid : null" />
           </q-tab-panel>
 
           <q-tab-panel name="about" class="overflow-hidden no-padding">
@@ -140,7 +140,7 @@
         <div class="q-pa-md row justify-between">
           <trx-id :trxid="proposal.trx_id" />
           <proposal-btns
-            v-if="proposalstate == 'active'"
+            v-if="proposalstate == 'active' || (proposalstate == 'expired' && proposal.proposer === getAccountName)"
             :proposal="proposal"
             @useraction="handleUserAction"
           />
@@ -221,6 +221,7 @@ export default defineComponent({
       getThresholdByName: "group/getThresholdByName",
       getIsGuardian: "group/getIsGuardian",
       getCLOCK: "app/getCLOCK",
+      getApprovalStatus: "group/getApprovalStatus",
     }),
     hasVoted() {
       let res = false;
@@ -230,23 +231,8 @@ export default defineComponent({
       return res;
     },
     getThresholdScore() {
-      let res = {
-        approved_weight: 0,
-        threshold: "",
-        threshold_name: "",
-      };
-      let t = this.getThresholdByName(this.proposal.required_threshold);
-      if (this.proposal && this.proposal.approvals && t) {
-        res.threshold = t.threshold;
-        res.threshold_name = t.threshold_name;
-        this.proposal.approvals.forEach((approver) => {
-          const cust = this.getIsGuardian(approver);
-          if (cust) {
-            res.approved_weight += cust.weight;
-          }
-        });
-      }
-      return res;
+      const status = this.getApprovalStatus(this.proposal);
+      return { approved_weight:status.score, threshold:Number.isFinite(status.required)?status.required:'—', threshold_name:status.fixed?'guardian approvals':this.proposal.required_threshold };
     },
     getExpirationStats() {
       let submitted = new Date(this.proposal.submitted + ".000+00:00").getTime();
@@ -316,6 +302,8 @@ export default defineComponent({
         default:
           break;
       }
+      await this.$store.dispatch('group/fetchProposals',{groupname:this.getActiveGroup,scope:this.getActiveGroup,vm:this});
+      await this.$store.dispatch('group/fetchGuardians',{groupname:this.getActiveGroup,vm:this});
     },
     async push(action) {
       this.is_signing = true;
