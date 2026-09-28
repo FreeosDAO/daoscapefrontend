@@ -1,0 +1,37 @@
+{
+  "checkedAt": "2026-09-28T00:14:34.902Z",
+  "url": "https://5hce3-liaaa-aaaao-qqfba-cai.icp0.io",
+  "frontendSourceCommit": "32f8cd9",
+  "wallet": {
+    "popup": "https://webauth.com/login",
+    "closedWithoutSigning": true,
+    "cancellationMessage": "Wallet window closed. Please connect again.",
+    "connectButtonEnabledAfterCancellation": true
+  },
+  "displayCheck": {
+    "method": "Temporary read-only session fixture in an isolated Playwright browser; public XPR RPC data unchanged; transaction broadcasting blocked. This does not establish wallet authentication.",
+    "account": "jjkelsey",
+    "paths": [
+      "/manage/freedaocore/modules",
+      "/manage/freedaocore/proposals",
+      "/manage/freedaocore/member-governance"
+    ],
+    "widths": [
+      320,
+      390,
+      1440
+    ],
+    "horizontalOverflowAfterResponsiveLayoutSettled": false,
+    "grantPolicy": {
+      "loaded": true,
+      "pilot": true,
+      "available": true,
+      "memberProposals": false,
+      "tokens": [],
+      "eligibleMemberCount": 7,
+      "kyc": false
+    }
+  },
+  "mainnetWalletTransactionsSigned": false,
+  "note": "Screenshots kept in ignored output/playwright/grants-live/. Initial immediate resize measurement preceded the responsive layout update; settled-width assertions passed at all three widths without source changes."
+}

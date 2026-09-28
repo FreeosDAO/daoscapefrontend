@@ -126,3 +126,31 @@ Asset comparison evidence is committed in `releases/2026-09-27-create.json`.
 Local screenshots and browser traces remain in ignored `output/playwright/`.
 This redesign is separate from the future guided module installer in Decision
 D001; it does not install the FreeDAOCore pilot modules for newly created DAOs.
+
+## Guardian grants — 28 September 2026
+
+Deployed source commit `32f8cd9` to the same canister after the compatible
+FreeDAOCore core upgrade. Added the guardian-controlled member submission toggle,
+two-current-guardian payment approvals and constitutional token policy controls.
+Production authentication remains XPR Wallet only.
+
+All 20 regression tests passed. The release exclusion scan passed, and all 172
+served assets plus seven history-mode routes match the production build.
+Static-site state hash:
+`21b0c03696c8a434ee8e091129138b42ab0b76fcc1b57e7de07db6be6bb96e7a`.
+Evidence: `releases/2026-09-28-guardian-grants.json`. Reproduce the asset check with:
+
+```sh
+node scripts/verify-live.cjs 21b0c03696c8a434ee8e091129138b42ab0b76fcc1b57e7de07db6be6bb96e7a releases/2026-09-28-guardian-grants.json
+```
+
+Browser checks opened the real WebAuth popup and verified cancellation feedback.
+Configuration, Proposals and Member Governance fit 320/390/1440px after the
+responsive layout settled. These protected-page display checks used a temporary
+read-only session fixture with public mainnet data and broadcasting blocked;
+they did not authenticate a wallet or sign a vote. The fixture was cleared after
+the checks. Details: `releases/2026-09-28-guardian-grants-browser.json`.
+
+Member submissions are off until two valid guardians approve enabling them.
+Non-XPR spending assets require a member policy vote. This deployment does not
+complete the outstanding FreeDAOCore mainnet election/recall lifecycle trial.
